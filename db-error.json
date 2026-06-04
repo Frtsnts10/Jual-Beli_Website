@@ -1,0 +1,6 @@
+{
+  "code": "23502",
+  "details": "Failing row contains (9aa537df-5b4c-47b9-8916-204de8268efc, df580b11-64c9-48b8-a70b-e4dcd706e830, null, filbert10.work@gmail.com, null, [{\"name\": \"Netflix\", \"status\": \"active\", \"variant\": \"Netflix Mas..., 1, 2026-05-17 15:35:15.158186+00).",
+  "hint": null,
+  "message": "null value in column \"name\" of relation \"customers\" violates not-null constraint"
+}
