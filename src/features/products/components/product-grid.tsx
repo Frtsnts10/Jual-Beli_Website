@@ -8,6 +8,7 @@ import { useCart } from "@/features/cart/context/cart-context";
 import { getProductImage } from "../utils/product-assets";
 import { Chip } from "@heroui/react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 
 interface ProductGridProps {
   products: Product[];
@@ -57,7 +58,7 @@ export function ProductGrid({ products, currency = "$" }: ProductGridProps) {
         <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4">
           <Package className="w-7 h-7 text-zinc-600" />
         </div>
-        <p className="text-zinc-600 font-bold uppercase tracking-widest text-xs">No products in vault</p>
+        <p className="text-zinc-600 font-bold uppercase tracking-widest text-xs">No products in cart</p>
       </motion.div>
     );
   }
@@ -113,7 +114,7 @@ export function ProductGrid({ products, currency = "$" }: ProductGridProps) {
                       <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-zinc-950/20" />
 
                       {product.category && (
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-4 left-4 z-10">
                           <Chip
                             size="sm"
                             variant="soft"
@@ -124,10 +125,12 @@ export function ProductGrid({ products, currency = "$" }: ProductGridProps) {
                         </div>
                       )}
 
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-                        <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/10 flex items-center justify-center">
-                          <ArrowUpRight className="w-4 h-4 text-white" />
-                        </div>
+                      <div className="absolute top-3 right-3 z-20">
+                        <WishlistButton 
+                          product={product} 
+                          variant="flat" 
+                          className="bg-black/60 backdrop-blur-md border border-white/10" 
+                        />
                       </div>
                     </div>
 

@@ -163,9 +163,9 @@ export function CartDrawer() {
                     <ShoppingBag className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-black text-white uppercase tracking-widest">Active Vault</h2>
+                    <h2 className="text-sm font-black text-white uppercase tracking-widest">Active Cart</h2>
                     <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">
-                      {totalItems} {totalItems === 1 ? "artifact" : "artifacts"} secured
+                      {totalItems} {totalItems === 1 ? "item" : "items"} secured
                     </p>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export function CartDrawer() {
                     <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
                       <Package className="w-9 h-9 text-zinc-700" />
                     </div>
-                    <p className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-6">Vault is empty</p>
+                    <p className="text-xs font-bold text-zinc-600 uppercase tracking-widest mb-6">Cart is empty</p>
                     <button
                       onClick={() => setIsCartOpen(false)}
                       className="border border-white/10 text-zinc-400 hover:text-white rounded-xl font-bold uppercase tracking-widest text-[10px] px-6 h-10 transition-colors bg-white/5 cursor-pointer"
@@ -213,7 +213,7 @@ export function CartDrawer() {
                               </span>
                             </div>
                             <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest mb-4">
-                              {item.category || "Artifact"}
+                              {item.category || "Item"}
                             </p>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">

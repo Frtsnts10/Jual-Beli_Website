@@ -103,7 +103,7 @@ export default async function JournalPage() {
         {/* Hero Header */}
         <div className="max-w-3xl space-y-6">
           <Chip
-            variant="flat"
+            variant="soft"
             size="sm"
             className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
           >
@@ -136,7 +136,7 @@ export default async function JournalPage() {
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-black text-indigo-400 font-mono tracking-wider">{entry.version}</span>
                       <Chip
-                        variant="flat"
+                        variant="soft"
                         size="sm"
                         className={`${entry.categoryBg} ${entry.categoryText} border-none text-[8px] font-bold uppercase tracking-widest`}
                       >

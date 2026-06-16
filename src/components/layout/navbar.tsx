@@ -36,9 +36,10 @@ export function Navbar({ user, storeName }: NavbarProps) {
         {/* Center Nav Links — flex-1 + flex justify-center so it truly centers */}
         <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
           {[
-            { label: "Inventory", href: "/#collection" },
-            { label: "Journal", href: "#" },
-            { label: "Protocol", href: "#" },
+            { label: "Collection", href: "/#collection" },
+            { label: "Groups", href: "/#groups" },
+            { label: "Features", href: "/#features" },
+            { label: "Reviews", href: "/#reviews" },
           ].map((item) => (
             <Link
               key={item.label}

@@ -161,7 +161,7 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/5">
               <div className="space-y-3">
                 <Chip
-                  variant="flat"
+                  variant="soft"
                   size="sm"
                   className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
                 >

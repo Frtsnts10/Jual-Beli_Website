@@ -5,20 +5,24 @@ import { Product } from "@/features/products/actions/product-actions";
 import { ProductGrid } from "@/features/products/components/product-grid";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Hero } from "./hero";
+import { ProductCarousel } from "./product-carousel";
 import { Stats } from "./stats";
 import { Features } from "./features";
 import { Reviews } from "./reviews";
+import { GroupsDisplay } from "./groups-display";
 import { Button, Chip } from "@heroui/react";
+
+import { DigitalAccount } from "@/features/digital-accounts/actions/digital-account-actions";
 
 interface LandingPageClientProps {
   products: Product[];
   store: any;
   user: any;
   stats: any;
+  digitalAccounts?: DigitalAccount[];
 }
 
-export function LandingPageClient({ products, store, user, stats }: LandingPageClientProps) {
+export function LandingPageClient({ products, store, user, stats, digitalAccounts = [] }: LandingPageClientProps) {
   const storeName = store?.name || "Premium Storefront";
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -35,7 +39,7 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
   const currency = store?.currency === "USD" ? "$" : (store?.currency === "IDR" ? "Rp" : (store?.currency || "Rp"));
 
   return (
-    <main className="min-h-screen bg-zinc-950">
+    <main className="min-h-screen bg-background text-foreground">
       {/* Subtle radial ambient glow fixed in background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl" />
@@ -44,11 +48,11 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
       </div>
 
       <Navbar user={user} storeName={storeName} />
-      <Hero />
+      <ProductCarousel products={products} currency={currency} />
 
       {/* Stats Section */}
-      <div className="border-y border-white/5 bg-zinc-900/30 backdrop-blur-sm relative z-10">
-        <Stats productsCount={products.length} statsData={stats} />
+      <div className="border-y border-default-100 bg-background/50 backdrop-blur-sm relative z-10">
+        <Stats products={products} />
       </div>
 
       {/* Products / Collection Section */}
@@ -63,10 +67,10 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
             >
               Collection
             </Chip>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Inventory Matrix</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">Inventory Matrix</h2>
             <div className="flex items-center gap-2 mt-3">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-default-500 font-bold uppercase tracking-widest">
                 Live sync with {storeName}
               </p>
             </div>
@@ -76,13 +80,9 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
           <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
-              variant={selectedCategory === null ? "secondary" : "outline"}
+              variant={selectedCategory === null ? "solid" : "bordered" as any}
               onPress={() => setSelectedCategory(null)}
-              className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px] ${
-                selectedCategory === null
-                  ? "bg-white text-black"
-                  : "border-white/10 text-zinc-400 hover:text-white hover:border-white/20"
-              }`}
+              className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px]`}
             >
               All
             </Button>
@@ -90,13 +90,9 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
               <Button
                 key={cat}
                 size="sm"
-                variant={selectedCategory === cat ? "secondary" : "outline"}
+                variant={selectedCategory === cat ? "solid" : "bordered" as any}
                 onPress={() => setSelectedCategory(cat)}
-                className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px] ${
-                  selectedCategory === cat
-                    ? "bg-white text-black"
-                    : "border-white/10 text-zinc-400 hover:text-white hover:border-white/20"
-                }`}
+                className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px]`}
               >
                 {cat}
               </Button>
@@ -107,13 +103,18 @@ export function LandingPageClient({ products, store, user, stats }: LandingPageC
         <ProductGrid products={filteredProducts} currency={currency} />
       </section>
 
+      {/* Groups Display Section */}
+      <div id="groups" className="border-t border-default-100 bg-background/40 relative z-10">
+        <GroupsDisplay digitalAccounts={digitalAccounts} />
+      </div>
+
       {/* Features Section */}
-      <div className="border-t border-white/5 bg-zinc-900/20 relative z-10">
+      <div id="features" className="border-t border-default-100 bg-background/60 relative z-10">
         <Features />
       </div>
 
       {/* Reviews Section */}
-      <div id="reviews" className="border-t border-white/5 bg-zinc-950 relative z-10">
+      <div id="reviews" className="border-t border-default-100 bg-background relative z-10">
         <Reviews />
       </div>
 

@@ -1,19 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Shield, Fingerprint } from "lucide-react";
-import { Chip, Separator } from "@heroui/react";
+import { Shield } from "lucide-react";
 import { AuthForm } from "@/features/auth/components/auth-form";
-import { customerSignInAction, customerSignUpAction } from "@/features/auth/actions/customer-auth-actions";
 import Link from "next/link";
-import { useActionState } from "react";
 
 export default function CustomerAuthPage() {
   const [isLogin, setIsLogin] = useState(true);
-  const [state, formAction, isPending] = useActionState(
-    isLogin ? customerSignInAction : customerSignUpAction,
-    null
-  );
 
   return (
     <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 relative overflow-hidden">
@@ -61,12 +54,7 @@ export default function CustomerAuthPage() {
             </button>
           </div>
 
-          <AuthForm
-            isLogin={isLogin}
-            state={state}
-            isPending={isPending}
-            formAction={formAction}
-          />
+          <AuthForm isLogin={isLogin} />
         </div>
 
         <p className="text-center mt-8 flex items-center justify-center gap-2 text-[10px] text-zinc-700 font-bold uppercase tracking-widest">
@@ -77,3 +65,4 @@ export default function CustomerAuthPage() {
     </main>
   );
 }
+

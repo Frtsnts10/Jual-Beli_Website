@@ -4,7 +4,7 @@ import { Cpu, ArrowLeft, Network, ShieldAlert, Zap, Layers } from "lucide-react"
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { getStoreAction } from "@/features/stores/actions/store-actions";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { getAuthenticatedUser } from "@/lib/firebase/server";
 import { Chip, Separator } from "@heroui/react";
 
 export default async function ProtocolPage() {
@@ -12,8 +12,8 @@ export default async function ProtocolPage() {
   const store = await getStoreAction(storeId);
   const storeName = store?.name || "Premium Storefront";
 
-  const supabase = await createServerSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
+  const decoded = await getAuthenticatedUser();
+  const user = decoded ? { email: decoded.email, uid: decoded.uid, name: decoded.name } : null;
 
   const specs = [
     {

@@ -1,17 +1,12 @@
 "use client";
 
 import React from "react";
-import { TrendingUp, Package2, Server, Activity } from "lucide-react";
+import { Package2 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
+import { Product } from "@/features/products/actions/product-actions";
 
 interface StatsProps {
-  productsCount: number;
-  statsData?: {
-    ordersCount: number;
-    activeNodes: number;
-    latency: string;
-    uptime: string;
-  };
+  products: Product[];
 }
 
 const containerVariants: Variants = {
@@ -38,17 +33,17 @@ const cardVariants: Variants = {
   }
 };
 
-export function Stats({ productsCount, statsData }: StatsProps) {
-  const uptimeVal = statsData?.uptime || "99.99%";
-  const nodesVal = statsData?.activeNodes !== undefined ? statsData.activeNodes.toLocaleString() : "1,240";
-  const latencyVal = statsData?.latency || "14ms";
-
-  const stats = [
-    { label: "Uptime", value: uptimeVal, icon: TrendingUp, valueColor: "text-emerald-400", cardClass: "border-emerald-500/15 bg-emerald-500/5 hover:border-emerald-500/30" },
-    { label: "Products", value: productsCount.toString(), icon: Package2, valueColor: "text-white", cardClass: "border-white/10 bg-white/[0.03] hover:border-white/20" },
-    { label: "Active Nodes", value: nodesVal, icon: Server, valueColor: "text-blue-400", cardClass: "border-blue-500/15 bg-blue-500/5 hover:border-blue-500/30" },
-    { label: "Avg Latency", value: latencyVal, icon: Activity, valueColor: "text-violet-400", cardClass: "border-violet-500/15 bg-violet-500/5 hover:border-violet-500/30" },
+export function Stats({ products }: StatsProps) {
+  // Use up to 4 top products to display their stock
+  const topProducts = products.slice(0, 4);
+  const colors = [
+    { valueColor: "text-emerald-400", cardClass: "border-emerald-500/15 bg-emerald-500/5 hover:border-emerald-500/30" },
+    { valueColor: "text-blue-400", cardClass: "border-blue-500/15 bg-blue-500/5 hover:border-blue-500/30" },
+    { valueColor: "text-violet-400", cardClass: "border-violet-500/15 bg-violet-500/5 hover:border-violet-500/30" },
+    { valueColor: "text-amber-400", cardClass: "border-amber-500/15 bg-amber-500/5 hover:border-amber-500/30" },
   ];
+
+  if (topProducts.length === 0) return null;
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-20">
@@ -59,24 +54,31 @@ export function Stats({ productsCount, statsData }: StatsProps) {
         viewport={{ once: true, margin: "-100px" }}
         className="grid grid-cols-2 md:grid-cols-4 gap-5"
       >
-        {stats.map((stat, i) => {
-          const Icon = stat.icon;
+        {topProducts.map((product, i) => {
+          const colorTheme = colors[i % colors.length];
           return (
             <motion.div
-              key={i}
+              key={product.id}
               variants={cardVariants}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className={`border ${stat.cardClass} rounded-3xl transition-colors duration-300 shadow-xl backdrop-blur-sm`}
+              className={`border ${colorTheme.cardClass} rounded-3xl transition-colors duration-300 shadow-xl backdrop-blur-sm`}
             >
               <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{stat.label}</p>
-                  <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                    <Icon className={`w-4 h-4 ${stat.valueColor}`} />
+                <div className="flex items-center justify-between mb-4 gap-4">
+                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest line-clamp-1">
+                    {product.name}
+                  </p>
+                  <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    <Package2 className={`w-4 h-4 ${colorTheme.valueColor}`} />
                   </div>
                 </div>
-                <p className={`text-4xl font-black tracking-tighter ${stat.valueColor}`}>{stat.value}</p>
+                <div className="flex items-baseline gap-2">
+                  <p className={`text-4xl font-black tracking-tighter ${colorTheme.valueColor}`}>
+                    {product.stock}
+                  </p>
+                  <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Left</span>
+                </div>
               </div>
             </motion.div>
           );
