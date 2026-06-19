@@ -66,7 +66,7 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
                   </div>
                   <div>
                     <h4 className="text-xs font-black text-white uppercase tracking-wider">
-                      Order #{order.id.slice(0, 8).toUpperCase()}
+                      Order #{order.id.startsWith("ORD-") ? order.id.slice(4) : order.id}
                     </h4>
                     <p className="text-[10px] text-zinc-500 mt-1 font-mono">{dateStr}</p>
                   </div>

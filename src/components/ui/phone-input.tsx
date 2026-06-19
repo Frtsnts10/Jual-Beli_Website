@@ -124,9 +124,7 @@ export function PhoneInput({
         value={phoneNumber}
         onChange={(e) => handlePhoneChange(e.target.value)}
         color="secondary"
-        classNames={{
-          input: "pl-[84px]"
-        }}
+        className="[&_input]:pl-[84px]"
       />
     </div>
   );
