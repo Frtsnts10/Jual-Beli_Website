@@ -11,6 +11,7 @@ export interface Store {
   email?: string | null;
   instagram?: string | null;
   whatsapp?: string | null;
+  bio?: string | null;
 }
 
 export async function getStoreAction(storeId: string): Promise<Store | null> {
@@ -32,6 +33,7 @@ export async function getStoreAction(storeId: string): Promise<Store | null> {
       email: data.email || null,
       instagram: data.instagram || null,
       whatsapp: data.whatsapp || null,
+      bio: data.bio || null,
     };
   } catch (err: any) {
     console.error(">>> [ERROR] getStoreAction failed:", err.message);

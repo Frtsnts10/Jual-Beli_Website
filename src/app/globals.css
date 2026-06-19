@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "../../node_modules/@heroui/react/dist/styles.css";
 
-@plugin "../hero.js";
+@plugin "../hero.ts";
 @source "../**/*.{js,ts,jsx,tsx}";
 @source "../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 
@@ -17,7 +17,7 @@
   --foreground: #f1f5f9;
 }
 
-body {
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   scroll-behavior: smooth;

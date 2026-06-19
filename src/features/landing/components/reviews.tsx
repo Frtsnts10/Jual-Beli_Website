@@ -5,22 +5,16 @@ import { Star, CheckCircle, MessageSquare, Plus, Send } from "lucide-react";
 import { Card, Separator, Button, Chip } from "@heroui/react";
 import { FormInput } from "@/components/ui/form-input";
 
-interface Review {
-  id: number;
-  name: string;
-  handle: string;
-  rating: number;
-  badge: string;
-  product: string;
-  comment: string;
-  avatarBg: string;
-  initials: string;
-  date: string;
+import { Review as DBReview } from "@/features/reviews/actions/review-actions";
+
+// We use the DBReview interface now
+interface Review extends DBReview {
+  id: string;
 }
 
 const INITIAL_REVIEWS: Review[] = [
   {
-    id: 1,
+    id: "1",
     name: "Alex Rivera",
     handle: "@rivera.sec",
     rating: 5,
@@ -29,10 +23,11 @@ const INITIAL_REVIEWS: Review[] = [
     comment: "Incredibly smooth account allocation. The shard was delivered to my profile dashboard instantly. Cleanest interface I have ever experienced.",
     avatarBg: "from-indigo-500 to-blue-600",
     initials: "AR",
-    date: "2 days ago"
+    date: "2 days ago",
+    store_id: "default"
   },
   {
-    id: 2,
+    id: "2",
     name: "Sophia Chen",
     handle: "@soph.dev",
     rating: 5,
@@ -41,10 +36,11 @@ const INITIAL_REVIEWS: Review[] = [
     comment: "The Access Key Vault is absolute perfection. Copy-pasting works perfectly, and my shared family profile slot has been running operational with zero interruptions for 3 months.",
     avatarBg: "from-emerald-400 to-teal-600",
     initials: "SC",
-    date: "1 week ago"
+    date: "1 week ago",
+    store_id: "default"
   },
   {
-    id: 3,
+    id: "3",
     name: "Marcus Vance",
     handle: "@vance.eth",
     rating: 5,
@@ -53,12 +49,19 @@ const INITIAL_REVIEWS: Review[] = [
     comment: "Outstanding delivery performance. I received the credentials pass within seconds of payment verification. This storefront is set in a class of its own.",
     avatarBg: "from-amber-400 to-rose-600",
     initials: "MV",
-    date: "3 weeks ago"
+    date: "3 weeks ago",
+    store_id: "default"
   }
 ];
 
-export function Reviews() {
-  const [reviews, setReviews] = useState<Review[]>(INITIAL_REVIEWS);
+interface ReviewsProps {
+  initialReviews?: Review[];
+}
+
+export function Reviews({ initialReviews = [] }: ReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>(
+    initialReviews.length > 0 ? initialReviews : []
+  );
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -71,7 +74,7 @@ export function Reviews() {
     if (!name || !comment || !product) return;
 
     const newReview: Review = {
-      id: Date.now(),
+      id: Date.now().toString(),
       name,
       handle: `@${name.toLowerCase().replace(/\s+/g, "")}.node`,
       rating,
@@ -80,7 +83,8 @@ export function Reviews() {
       comment,
       avatarBg: "from-purple-500 to-indigo-600",
       initials: name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
-      date: "Just now"
+      date: "Just now",
+      store_id: "" // dummy
     };
 
     setReviews([newReview, ...reviews]);
@@ -114,15 +118,15 @@ export function Reviews() {
           <div className="bg-zinc-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-sm space-y-6">
             {/* Display Average Rating */}
             <div className="flex items-center gap-6">
-              <span className="text-6xl font-black text-white tracking-tighter">4.9</span>
+              <span className="text-6xl font-black text-white tracking-tighter">0.0</span>
               <div>
-                <div className="flex gap-1 text-amber-400 mb-1">
+                <div className="flex gap-1 text-zinc-800 mb-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-4.5 h-4.5 fill-current" />
                   ))}
                 </div>
                 <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                  Based on {reviews.length + 2450} Shards
+                  Based on {reviews.length} Reviews
                 </span>
               </div>
             </div>
@@ -215,50 +219,57 @@ export function Reviews() {
 
         {/* Right Columns: Deployed Reviews Stream */}
         <div className="lg:col-span-2 space-y-5">
-          {reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-zinc-900/30 border border-white/5 hover:border-white/12 p-8 rounded-3xl transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm flex flex-col gap-6"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
-                {/* User Details */}
-                <div className="flex items-center gap-4">
-                  <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${review.avatarBg} text-white font-black flex items-center justify-center text-xs shrink-0`}>
-                    {review.initials}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <h4 className="text-xs font-black text-white uppercase tracking-wider">{review.name}</h4>
-                      <div className="flex items-center gap-1.5 text-[8px] bg-indigo-500/10 text-indigo-400 font-black px-2.5 py-1 rounded-full uppercase tracking-widest">
-                        <CheckCircle className="w-2.5 h-2.5" /> {review.badge}
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-zinc-600 mt-1.5 font-mono">{review.handle}</p>
-                  </div>
-                </div>
-
-                {/* Rating display */}
-                <div className="flex flex-col sm:items-end gap-2">
-                  <div className="flex gap-1 text-amber-400">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">{review.date}</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-white/5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest leading-none">Bounded Shard:</span>
-                  <span className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-widest">{review.product}</span>
-                </div>
-                <p className="text-zinc-300 text-xs font-medium leading-relaxed font-sans">
-                  "{review.comment}"
-                </p>
-              </div>
+          {reviews.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 border border-dashed border-white/10 rounded-3xl bg-zinc-900/30 backdrop-blur-sm">
+              <MessageSquare className="w-8 h-8 text-zinc-600 mb-4" />
+              <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">No feedback logs deployed yet</p>
             </div>
-          ))}
+          ) : (
+            reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-zinc-900/30 border border-white/5 hover:border-white/12 p-8 rounded-3xl transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm flex flex-col gap-6"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
+                  {/* User Details */}
+                  <div className="flex items-center gap-4">
+                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-tr ${review.avatarBg} text-white font-black flex items-center justify-center text-xs shrink-0`}>
+                      {review.initials}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3">
+                        <h4 className="text-xs font-black text-white uppercase tracking-wider">{review.name}</h4>
+                        <div className="flex items-center gap-1.5 text-[8px] bg-indigo-500/10 text-indigo-400 font-black px-2.5 py-1 rounded-full uppercase tracking-widest">
+                          <CheckCircle className="w-2.5 h-2.5" /> {review.badge}
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-zinc-600 mt-1.5 font-mono">{review.handle}</p>
+                    </div>
+                  </div>
+
+                  {/* Rating display */}
+                  <div className="flex flex-col sm:items-end gap-2">
+                    <div className="flex gap-1 text-amber-400">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">{review.date}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/5 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest leading-none">Bounded Shard:</span>
+                    <span className="text-[9px] text-indigo-400 font-extrabold uppercase tracking-widest">{review.product}</span>
+                  </div>
+                  <p className="text-zinc-300 text-xs font-medium leading-relaxed font-sans">
+                    "{review.comment}"
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
       </div>

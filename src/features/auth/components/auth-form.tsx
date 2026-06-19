@@ -45,8 +45,7 @@ export function AuthForm({ isLogin }: AuthFormProps) {
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const name = formData.get("name") as string;
-
+    
     try {
       if (isLogin) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -54,12 +53,21 @@ export function AuthForm({ isLogin }: AuthFormProps) {
         await handleSessionCreation(idToken);
         router.push("/profile");
       } else {
+        const firstName = formData.get("firstName") as string;
+        const lastName = formData.get("lastName") as string;
+        const name = `${firstName} ${lastName}`.trim();
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCredential.user, { displayName: name });
+        
+        // Send email verification
+        const { sendEmailVerification } = await import("firebase/auth");
+        await sendEmailVerification(userCredential.user);
+
         const idToken = await userCredential.user.getIdToken();
         await handleSessionCreation(idToken);
-        setSuccess("Identity initialized. Securing connection...");
-        setTimeout(() => router.push("/profile"), 1000);
+        setSuccess("Identity initialized. Please check your email to verify your account.");
+        setTimeout(() => router.push("/profile"), 2000);
       }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
@@ -100,17 +108,31 @@ export function AuthForm({ isLogin }: AuthFormProps) {
         )}
 
         {!isLogin && (
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Identity Designation</label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-              <input
-                name="name"
-                type="text"
-                placeholder="Alexander Vance"
-                required
-                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 text-sm text-white font-medium placeholder:text-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors"
-              />
+          <div className="flex gap-4">
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">First Name</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                <input
+                  name="firstName"
+                  type="text"
+                  placeholder="Alexander"
+                  required
+                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 text-sm text-white font-medium placeholder:text-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 flex-1">
+              <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Last Name</label>
+              <div className="relative">
+                <input
+                  name="lastName"
+                  type="text"
+                  placeholder="Vance"
+                  required
+                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl px-5 text-sm text-white font-medium placeholder:text-zinc-700 focus:outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
             </div>
           </div>
         )}

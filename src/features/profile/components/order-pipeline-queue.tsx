@@ -32,11 +32,11 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
     <div className="space-y-10 mb-20">
       {/* Header */}
       <div className="flex items-center gap-6">
-        <h2 className="text-2xl font-black text-white uppercase tracking-widest shrink-0">Order Pipeline Queue</h2>
+        <h2 className="text-2xl font-black text-white uppercase tracking-widest shrink-0">Active Orders</h2>
         <Separator className="bg-white/5 hidden md:block" />
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Pipeline Live</span>
+          <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Live Updates</span>
         </div>
       </div>
 
@@ -83,7 +83,7 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
                     <span className="text-zinc-700">|</span>
                     <span className="text-zinc-600">Fulfillment:</span>
                     <span className={isFulfilled ? "text-emerald-400" : isCancelled ? "text-rose-500" : "text-amber-500 animate-pulse"}>
-                      {isFulfilled ? "Completed" : isCancelled ? "Cancelled" : "Allocating Shards"}
+                      {isFulfilled ? "Completed" : isCancelled ? "Cancelled" : "Preparing Delivery"}
                     </span>
                   </div>
 
@@ -96,7 +96,7 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
                 <div className="px-6 pb-6 pt-4 border-t border-white/5 bg-black/20 space-y-6">
                   {/* Progress Timeline Tracker */}
                   <div className="p-4 bg-zinc-950/60 border border-white/5 rounded-2xl">
-                    <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-4">Pipeline Protocol Status</p>
+                    <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-4">Order Status Tracking</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Step 1: Payment Verification */}
                       <div className="flex items-start gap-3">
@@ -104,9 +104,9 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
                           {isPaid ? <CheckCircle className="w-3.5 h-3.5" /> : "1"}
                         </div>
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-wider text-white">1. Secure Payment Node</p>
+                          <p className="text-[10px] font-black uppercase tracking-wider text-white">1. Payment Verified</p>
                           <p className="text-[9px] text-zinc-500 mt-0.5">
-                            {isPaid ? "Transaction validated successfully." : "Awaiting payment protocol verification."}
+                            {isPaid ? "Your payment has been successfully processed." : "Awaiting payment confirmation."}
                           </p>
                         </div>
                       </div>
@@ -129,13 +129,13 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
                           )}
                         </div>
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-wider text-white">2. Credential Shard Allocation</p>
+                          <p className="text-[10px] font-black uppercase tracking-wider text-white">2. Delivery & Activation</p>
                           <p className="text-[9px] text-zinc-500 mt-0.5">
                             {isFulfilled 
-                              ? "Credential keys generated and bound to active matrix." 
+                              ? "Your account credentials have been successfully delivered." 
                               : isCancelled 
                               ? "Fulfillment terminated." 
-                              : "Allocating unique digital warehouse stream slots..."}
+                              : "Preparing your digital products for delivery..."}
                           </p>
                         </div>
                       </div>
@@ -144,7 +144,7 @@ export function OrderPipelineQueue({ orders }: OrderPipelineQueueProps) {
 
                   {/* Items included */}
                   <div>
-                    <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-3">Acquisition Node Payload</p>
+                    <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mb-3">Order Items</p>
                     <div className="divide-y divide-white/5">
                       {order.items.map((item: any, itemIdx: number) => (
                         <div key={itemIdx} className="py-3 flex items-center justify-between gap-4 text-xs">

@@ -41,6 +41,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
         storeEmail={store?.email}
         storeInstagram={store?.instagram}
         storeWhatsapp={store?.whatsapp}
+        storeBio={store?.bio}
       />
     </main>
   );

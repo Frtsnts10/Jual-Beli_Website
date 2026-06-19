@@ -51,11 +51,11 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
     <div className="space-y-10">
       {/* Header */}
       <div className="flex items-center gap-6">
-        <h2 className="text-2xl font-black text-white uppercase tracking-widest shrink-0">Acquisition Matrix</h2>
+        <h2 className="text-2xl font-black text-white uppercase tracking-widest shrink-0">Order History</h2>
         <Separator className="bg-white/5 hidden md:block" />
         <div className="flex items-center gap-2 shrink-0">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Live Sync</span>
+          <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Synced</span>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
       {purchased_products.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-40 border border-dashed border-white/10 rounded-3xl">
           <Package className="w-20 h-20 text-zinc-800 mb-6" />
-          <p className="text-xs text-zinc-700 font-black uppercase tracking-widest">Vault is currently empty</p>
+          <p className="text-xs text-zinc-700 font-black uppercase tracking-widest">No previous orders found</p>
         </div>
       ) : (
         <div className="flex flex-col gap-5">
@@ -97,7 +97,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                     {/* Metadata grid */}
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 lg:gap-16">
                       <div>
-                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">Acquired</p>
+                        <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mb-1">Ordered On</p>
                         <p className="text-xs text-white font-bold">
                           {formatDateOnly(order.bought_date)}
                         </p>
@@ -113,7 +113,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                               : "bg-emerald-500/10 text-emerald-500"
                           }`}
                         >
-                          {order.status === "banned" ? "Restricted" : "Operational"}
+                          {order.status === "banned" ? "Suspended" : "Active"}
                         </Chip>
                       </div>
                       <div>
@@ -126,7 +126,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                             </div>
                           </TooltipTrigger>
                           <TooltipContent className="bg-zinc-900 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white px-3 py-1.5 rounded-lg">
-                            Protocol Termination Date
+                            Subscription End Date
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -138,11 +138,11 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                     <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400 font-bold">
-                          🔑 Decrypted Access Credentials
+                          🔑 Your Access Credentials
                         </div>
                         {order.credentials.group_assigned && (
                           <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-500 bg-white/5 border border-white/10 px-2.5 py-1 rounded-xl">
-                            <span>Node: {order.credentials.group_assigned}</span>
+                            <span>Group: {order.credentials.group_assigned}</span>
                           </div>
                         )}
                       </div>
@@ -174,7 +174,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                         {order.credentials.pin && (
                           <div className="bg-black/30 border border-white/5 p-4 rounded-2xl flex flex-col justify-between">
                             <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest mb-2 block">
-                              📍 Profile PIN Allocation
+                              📍 Profile PIN
                             </span>
                             <div className="flex items-center justify-between gap-3 min-w-0">
                               <span className="text-xs font-mono font-bold truncate text-white min-w-0">{order.credentials.pin}</span>
@@ -187,7 +187,7 @@ export function AcquisitionHistory({ purchased_products }: AcquisitionHistoryPro
                   ) : (
                     <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-2 text-zinc-500 text-[9px] font-black uppercase tracking-widest leading-none">
                       <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                      <span>Fulfilling Shard... Allocating unique digital warehouse credentials.</span>
+                      <span>Processing... Preparing your credentials for delivery.</span>
                     </div>
                   )}
                 </div>

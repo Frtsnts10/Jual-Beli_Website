@@ -27,10 +27,12 @@ export default async function ProfilePage() {
     );
   }
 
-  const { purchased_products = [], total_orders = 0, orders = [] } = result;
+  const { customer, purchased_products = [], total_orders = 0, orders = [] } = result as any;
 
   return (
     <ProfilePageClient 
+      customer={customer}
+      storeId={storeId}
       purchased_products={purchased_products} 
       total_orders={total_orders} 
       orders={orders}

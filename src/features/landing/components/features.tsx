@@ -58,6 +58,8 @@ const cardVariants: Variants = {
 
 export function Features() {
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
+  const [isBentoModalOpen, setIsBentoModalOpen] = useState(false);
+  const [isFlashModalOpen, setIsFlashModalOpen] = useState(false);
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-24 md:py-32">
@@ -84,9 +86,9 @@ export function Features() {
             if (i === 0) {
               setIsSecurityModalOpen(true);
             } else if (i === 1) {
-              document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
+              setIsBentoModalOpen(true);
             } else if (i === 2) {
-              document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" });
+              setIsFlashModalOpen(true);
             }
           };
 
@@ -120,7 +122,7 @@ export function Features() {
       {/* Security Mesh Modal */}
       {isSecurityModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-in fade-in duration-300">
-          <div className="bg-zinc-900 border border-white/10 p-8 rounded-3xl max-w-lg w-full relative shadow-2xl space-y-6">
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6">
             <button
               onClick={() => setIsSecurityModalOpen(false)}
               className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors text-[9px] font-black uppercase tracking-widest font-mono border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-lg bg-white/[0.02]"
@@ -155,6 +157,84 @@ export function Features() {
                 <p className="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-1.5 font-mono">Failsafe Mirroring</p>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
                   Encrypted database states are mirrored across 12 independent, geographically-isolated nodes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bento Core Modal */}
+      {isBentoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-in fade-in duration-300">
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6">
+            <button
+              onClick={() => setIsBentoModalOpen(false)}
+              className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors text-[9px] font-black uppercase tracking-widest font-mono border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-lg bg-white/[0.02]"
+            >
+              [ ESC / CLOSE ]
+            </button>
+            <div>
+              <Chip
+                variant="soft"
+                size="sm"
+                className="bg-amber-500/10 text-amber-400 border-none text-[9px] font-bold uppercase tracking-widest mb-3"
+              >
+                Artifact Management Architecture
+              </Chip>
+              <h3 className="text-2xl font-black text-white uppercase tracking-tight">Bento Core Specs</h3>
+            </div>
+            
+            <div className="space-y-4 pt-2">
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="text-[9px] text-amber-400 font-black uppercase tracking-widest mb-1.5 font-mono">Structural Integrity</p>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">
+                  Each digital asset is compartmentalized in isolated memory cells, preventing data contamination.
+                </p>
+              </div>
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-1.5 font-mono">Dynamic Categorization</p>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">
+                  Real-time algorithmic sorting ensures your portfolio remains perfectly structured at any scale.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Flash Delivery Modal */}
+      {isFlashModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-lg animate-in fade-in duration-300">
+          <div className="bg-zinc-900 border border-white/10 p-6 rounded-3xl max-w-md w-full relative shadow-2xl space-y-6">
+            <button
+              onClick={() => setIsFlashModalOpen(false)}
+              className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors text-[9px] font-black uppercase tracking-widest font-mono border border-white/5 hover:border-white/10 px-3 py-1.5 rounded-lg bg-white/[0.02]"
+            >
+              [ ESC / CLOSE ]
+            </button>
+            <div>
+              <Chip
+                variant="soft"
+                size="sm"
+                className="bg-blue-500/10 text-blue-400 border-none text-[9px] font-bold uppercase tracking-widest mb-3"
+              >
+                Instant Propagation Network
+              </Chip>
+              <h3 className="text-2xl font-black text-white uppercase tracking-tight">Flash Delivery Specs</h3>
+            </div>
+            
+            <div className="space-y-4 pt-2">
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-1.5 font-mono">Optical Speed</p>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">
+                  Assets are delivered to your profile via edge-optimized networks in under 80 milliseconds.
+                </p>
+              </div>
+              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
+                <p className="text-[9px] text-indigo-400 font-black uppercase tracking-widest mb-1.5 font-mono">Global Availability</p>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">
+                  Redundant edge nodes ensure 99.999% uptime for instant fulfillment worldwide.
                 </p>
               </div>
             </div>

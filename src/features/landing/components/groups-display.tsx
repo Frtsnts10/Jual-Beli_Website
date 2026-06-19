@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { Chip, Card, Button } from "@heroui/react";
-import { Users, Plus } from "lucide-react";
+import { Users, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { DigitalAccount } from "@/features/digital-accounts/actions/digital-account-actions";
 
 interface GroupsDisplayProps {
@@ -10,6 +10,16 @@ interface GroupsDisplayProps {
 }
 
 export function GroupsDisplay({ digitalAccounts = [] }: GroupsDisplayProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo = direction === "left" ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
+    }
+  };
+
   // Map raw digital accounts to UI format
   const groups = useMemo(() => {
     const avatarColors = [
@@ -27,7 +37,7 @@ export function GroupsDisplay({ digitalAccounts = [] }: GroupsDisplayProps) {
 
       return {
         id: acc.id,
-        appName: acc.provider || "Unknown App",
+        appName: acc.email ? `${acc.provider} - ${acc.email.split("@")[0]}` : acc.provider || "Unknown App",
         maxMembers: acc.total_profiles || 5,
         currentMembers
       };
@@ -38,22 +48,36 @@ export function GroupsDisplay({ digitalAccounts = [] }: GroupsDisplayProps) {
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-28 relative">
-      <div className="flex flex-col items-center text-center mb-16">
-        <Chip variant="soft" size="sm" className="mb-3 font-bold tracking-widest uppercase text-[10px] border-none text-secondary">
-          Shared Nodes
-        </Chip>
-        <h2 className="text-4xl md:text-5xl font-black tracking-tight uppercase">Active Co-op Groups</h2>
-        <p className="text-default-500 text-xs mt-3 uppercase tracking-wider font-bold max-w-2xl">
-          Join an existing group to save costs immediately. Slots are limited per application.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        <div>
+          <Chip variant="soft" size="sm" className="mb-3 font-bold tracking-widest uppercase text-[10px] border-none text-secondary">
+            Shared Nodes
+          </Chip>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight uppercase">Active Co-op Groups</h2>
+          <p className="text-default-500 text-xs mt-3 uppercase tracking-wider font-bold max-w-2xl">
+            Join an existing group to save costs immediately. Slots are limited per application.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button isIconOnly variant="ghost" onPress={() => scroll("left")} className="rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12">
+            <ChevronLeft size={20} />
+          </Button>
+          <Button isIconOnly variant="ghost" onPress={() => scroll("right")} className="rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 w-12 h-12">
+            <ChevronRight size={20} />
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div 
+        ref={scrollRef}
+        className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide py-4 pb-12 -mx-6 px-6 lg:-mx-0 lg:px-0"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {groups.map((group) => {
           const isFull = group.currentMembers.length === group.maxMembers;
           return (
-            <Card key={group.id} className="border border-default-200 bg-background/60 backdrop-blur-md h-full">
-              <div className="p-6 flex flex-col justify-between">
+            <Card key={group.id} className="flex-none w-[85%] md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 snap-start border border-default-200 bg-background/60 backdrop-blur-md h-full">
+              <div className="p-6 flex flex-col justify-between h-full w-full">
                 <div>
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="font-bold text-lg leading-tight">{group.appName}</h3>
@@ -62,7 +86,7 @@ export function GroupsDisplay({ digitalAccounts = [] }: GroupsDisplayProps) {
                     </Chip>
                   </div>
                   
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-3 mb-6 h-[260px] overflow-y-auto pr-2 scrollbar-hide">
                     {Array.from({ length: group.maxMembers }).map((_, i) => {
                       const member = group.currentMembers[i];
                       if (member) {

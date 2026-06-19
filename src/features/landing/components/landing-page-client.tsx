@@ -13,6 +13,7 @@ import { GroupsDisplay } from "./groups-display";
 import { Button, Chip } from "@heroui/react";
 
 import { DigitalAccount } from "@/features/digital-accounts/actions/digital-account-actions";
+import { Review } from "@/features/reviews/actions/review-actions";
 
 interface LandingPageClientProps {
   products: Product[];
@@ -20,9 +21,10 @@ interface LandingPageClientProps {
   user: any;
   stats: any;
   digitalAccounts?: DigitalAccount[];
+  reviews?: Review[];
 }
 
-export function LandingPageClient({ products, store, user, stats, digitalAccounts = [] }: LandingPageClientProps) {
+export function LandingPageClient({ products, store, user, stats, digitalAccounts = [], reviews = [] }: LandingPageClientProps) {
   const storeName = store?.name || "Premium Storefront";
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -51,12 +53,12 @@ export function LandingPageClient({ products, store, user, stats, digitalAccount
       <ProductCarousel products={products} currency={currency} />
 
       {/* Stats Section */}
-      <div className="border-y border-default-100 bg-background/50 backdrop-blur-sm relative z-10">
+      <div className="border-y border-default-100 bg-background/50 backdrop-blur-sm relative">
         <Stats products={products} />
       </div>
 
       {/* Products / Collection Section */}
-      <section id="collection" className="relative z-10 max-w-7xl mx-auto px-6 py-28">
+      <section id="collection" className="relative max-w-7xl mx-auto px-6 py-28">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 mb-16">
           <div>
@@ -80,9 +82,9 @@ export function LandingPageClient({ products, store, user, stats, digitalAccount
           <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
-              variant={selectedCategory === null ? "solid" : "bordered" as any}
+              variant={selectedCategory === null ? "solid" : "light" as any}
               onPress={() => setSelectedCategory(null)}
-              className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px]`}
+              className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px] ${selectedCategory === null ? 'bg-indigo-500 text-white' : 'text-zinc-400 hover:text-white bg-transparent'}`}
             >
               All
             </Button>
@@ -90,9 +92,9 @@ export function LandingPageClient({ products, store, user, stats, digitalAccount
               <Button
                 key={cat}
                 size="sm"
-                variant={selectedCategory === cat ? "solid" : "bordered" as any}
+                variant={selectedCategory === cat ? "solid" : "light" as any}
                 onPress={() => setSelectedCategory(cat)}
-                className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px]`}
+                className={`h-10 px-5 rounded-xl font-bold uppercase tracking-widest text-[10px] ${selectedCategory === cat ? 'bg-indigo-500 text-white' : 'text-zinc-400 hover:text-white bg-transparent'}`}
               >
                 {cat}
               </Button>
@@ -104,18 +106,18 @@ export function LandingPageClient({ products, store, user, stats, digitalAccount
       </section>
 
       {/* Groups Display Section */}
-      <div id="groups" className="border-t border-default-100 bg-background/40 relative z-10">
+      <div id="groups" className="border-t border-default-100 bg-background/40 relative">
         <GroupsDisplay digitalAccounts={digitalAccounts} />
       </div>
 
       {/* Features Section */}
-      <div id="features" className="border-t border-default-100 bg-background/60 relative z-10">
+      <div id="features" className="border-t border-default-100 bg-background/60 relative">
         <Features />
       </div>
 
       {/* Reviews Section */}
-      <div id="reviews" className="border-t border-default-100 bg-background relative z-10">
-        <Reviews />
+      <div id="reviews" className="border-t border-default-100 bg-background relative">
+        <Reviews initialReviews={reviews} />
       </div>
 
       <Footer 
@@ -123,6 +125,7 @@ export function LandingPageClient({ products, store, user, stats, digitalAccount
         storeEmail={store?.email}
         storeInstagram={store?.instagram}
         storeWhatsapp={store?.whatsapp}
+        storeBio={store?.bio}
       />
     </main>
   );

@@ -2,7 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { MessageCircle, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa6";
 import { Separator } from "@heroui/react";
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -26,9 +27,10 @@ interface FooterProps {
   storeEmail?: string | null;
   storeInstagram?: string | null;
   storeWhatsapp?: string | null;
+  storeBio?: string | null;
 }
 
-export function Footer({ storeName, storeEmail, storeInstagram, storeWhatsapp }: FooterProps) {
+export function Footer({ storeName, storeEmail, storeInstagram, storeWhatsapp, storeBio }: FooterProps) {
   const initial = storeName[0]?.toUpperCase() || "S";
   const year = new Date().getFullYear();
 
@@ -57,7 +59,7 @@ export function Footer({ storeName, storeEmail, storeInstagram, storeWhatsapp }:
               </div>
             </div>
             <p className="text-zinc-500 text-xs leading-relaxed max-w-xs font-medium">
-              Premium digital commerce infrastructure built for the next generation of artifacts and digital assets.
+              {storeBio || "Premium digital commerce infrastructure built for the next generation of artifacts and digital assets."}
             </p>
             <div className="flex items-center gap-3 mt-8">
               {[
@@ -68,7 +70,7 @@ export function Footer({ storeName, storeEmail, storeInstagram, storeWhatsapp }:
                   rel: "noopener noreferrer" 
                 },
                 { 
-                  Icon: MessageCircle, 
+                  Icon: FaWhatsapp, 
                   href: whatsappVal.startsWith("http") ? whatsappVal : `https://wa.me/${whatsappVal.replace(/\+/g, "")}`, 
                   target: "_blank", 
                   rel: "noopener noreferrer" 
@@ -98,9 +100,9 @@ export function Footer({ storeName, storeEmail, storeInstagram, storeWhatsapp }:
             <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-6">Platform</p>
             <div className="flex flex-col gap-4">
               {[
-                { label: "Inventory", href: "/#collection" },
-                { label: "Journal", href: "/journal" },
-                { label: "Protocol", href: "/protocol" },
+                { label: "Collection", href: "/#collection" },
+                { label: "Updates", href: "/journal" },
+                { label: "How It Works", href: "/protocol" },
               ].map((item) => (
                 <Link key={item.label} href={item.href} className="text-xs text-zinc-400 hover:text-white transition-colors font-medium uppercase tracking-widest">
                   {item.label}

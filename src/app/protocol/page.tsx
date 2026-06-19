@@ -17,21 +17,21 @@ export default async function ProtocolPage() {
 
   const specs = [
     {
-      title: "01. Encrypted Shard Allocation Matrix",
+      title: "01. Instant Automated Delivery",
       icon: Network,
-      desc: "Every digital subscription or asset is treated as a cryptographic credential shard. Upon verification, the shard is split, encrypted using AES-256-GCM, and mapped directly to a client's isolated session vault. No direct user-to-node passwords ever persist.",
-      status: "Active Protocol"
+      desc: "Every digital subscription or product is delivered automatically. As soon as your payment is verified, your account credentials are securely generated and instantly available on your profile dashboard.",
+      status: "Active"
     },
     {
-      title: "02. Zero-Knowledge Checkout Authorization",
+      title: "02. Secure Checkout",
       icon: Zap,
-      desc: "Payment processing and delivery triggers are validated through an off-chain Zero-Knowledge proof mechanism. This establishes instant asset allocation immediately upon webhook broadcast without relying on central escrow authorization databases.",
+      desc: "Our payment processing is fully encrypted and securely validated. We ensure your payment details are safe, and your products are allocated to you without delay.",
       status: "Operational"
     },
     {
-      title: "03. Decentralized Mirror Sync Failsafes",
+      title: "03. High Availability",
       icon: Layers,
-      desc: "To prevent subscription interruptions, credentials shards are mirrored across 12 independent, geographically-isolated nodes. If a single node reports a heartbeat anomaly, the platform instantly re-encrypts and shifts allocations to operational nodes.",
+      desc: "To ensure you always have access to your purchased accounts, our systems are backed up across multiple servers. If any issues arise, our platform instantly reroutes to ensure zero downtime.",
       status: "Automated Failsafe"
     }
   ];
@@ -49,7 +49,7 @@ export default async function ProtocolPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full flex-grow space-y-16">
         {/* Back Link */}
         <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Terminal
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
         {/* Hero Section */}
@@ -59,13 +59,13 @@ export default async function ProtocolPage() {
             size="sm"
             className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
           >
-            System Specs Whitepaper
+            How It Works
           </Chip>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase">
-            Obsidian Protocol Mesh
+            Our Delivery System
           </h1>
           <p className="text-zinc-500 text-sm md:text-base leading-relaxed font-medium">
-            Read the technical schematics and security blueprints guiding our automated digital assets delivery, vault encryption, and decentralized node infrastructure.
+            Learn how our automated system delivers your digital products instantly and securely.
           </p>
         </div>
 
@@ -105,24 +105,24 @@ export default async function ProtocolPage() {
         {/* Monospace System Node Console Visualizer */}
         <div className="bg-black/40 border border-white/5 rounded-3xl p-8 font-mono space-y-6">
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Active Shards Route Visualizer</span>
+            <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Order Fulfillment Process</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest">LIVE MESH SYNC</span>
+              <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest">SYSTEM ONLINE</span>
             </div>
           </div>
           <pre className="text-[10px] text-zinc-400 overflow-x-auto leading-relaxed whitespace-pre font-bold select-none p-4 bg-zinc-950/50 rounded-2xl">
-{`   [CLIENT COMPASS] ────► [ZK AUTHC PORTAL] ────► [VAULT KEY DECRYPT] ────► [SHARD RENDER]
+{`   [SELECT PRODUCT] ────► [SECURE CHECKOUT] ────► [PAYMENT VERIFIED] ────► [INSTANT DELIVERY]
           │                                                                      ▲
-          └─────────────► [12x PEER MIRRORS (FAILSAFE ACTIVE)] ──────────────────┘
+          └─────────────► [AUTOMATED STOCK RESERVATION] ─────────────────────────┘
 
-   • NODE CLUSTER #01: OPERATIONAL | HEARTBEAT: 22ms | PARITY: 100%
-   • NODE CLUSTER #02: OPERATIONAL | HEARTBEAT: 16ms | PARITY: 100%
-   • NODE CLUSTER #03: OPERATIONAL | HEARTBEAT: 34ms | PARITY: 100%`}
+   • STOREFRONT SYSTEM: OPERATIONAL | UPTIME: 99.99%
+   • DELIVERY ENGINE: OPERATIONAL | AVG SPEED: < 1s
+   • SUPPORT DESK: ONLINE | AVG RESPONSE: < 5m`}
           </pre>
           <div className="flex items-center gap-2.5 text-[8px] text-zinc-600 font-black uppercase tracking-widest">
             <ShieldAlert className="w-3.5 h-3.5 text-indigo-500" />
-            Security Shielding Mesh Enabled across all active virtual interfaces.
+            All transactions are securely processed and encrypted.
           </div>
         </div>
       </div>
@@ -132,6 +132,7 @@ export default async function ProtocolPage() {
         storeEmail={store?.email}
         storeInstagram={store?.instagram}
         storeWhatsapp={store?.whatsapp}
+        storeBio={store?.bio}
       />
     </main>
   );

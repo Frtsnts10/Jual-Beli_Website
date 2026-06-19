@@ -10,13 +10,15 @@ import { AcquisitionHistory } from "./acquisition-history";
 import { OrderPipelineQueue } from "./order-pipeline-queue";
 
 interface ProfilePageClientProps {
+  customer: { id: string | null; name: string; email: string; phone: string };
+  storeId: string;
   purchased_products: any[];
   total_orders: number;
   orders: any[];
   customerSignOutAction: any;
 }
 
-export function ProfilePageClient({ purchased_products, total_orders, orders, customerSignOutAction }: ProfilePageClientProps) {
+export function ProfilePageClient({ customer, storeId, purchased_products, total_orders, orders, customerSignOutAction }: ProfilePageClientProps) {
   return (
     <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -38,13 +40,13 @@ export function ProfilePageClient({ purchased_products, total_orders, orders, cu
               </Button>
             </Link>
             <div>
-              <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Vault Access</h1>
+              <h1 className="text-4xl font-black text-white tracking-tighter uppercase">My Profile</h1>
               <Chip
                 size="sm"
                 variant="soft"
                 className="mt-2 bg-indigo-500/10 text-indigo-400 border-none text-[10px] font-bold uppercase tracking-widest"
               >
-                Identity: Verified Protocol Node
+                Status: Verified Customer
               </Chip>
             </div>
           </div>
@@ -55,7 +57,7 @@ export function ProfilePageClient({ purchased_products, total_orders, orders, cu
               className="flex items-center gap-2 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-rose-400 hover:border-rose-500/30 h-12 px-6 rounded-2xl transition-all cursor-pointer bg-transparent"
             >
               <LogOut className="w-4 h-4" />
-              Decommission Session
+              Sign Out
             </button>
           </form>
         </div>
@@ -63,7 +65,7 @@ export function ProfilePageClient({ purchased_products, total_orders, orders, cu
         {/* Identity + Security Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-20">
           <div className="lg:col-span-4">
-            <IdentityCard total_orders={total_orders} />
+            <IdentityCard total_orders={total_orders} customer={customer} storeId={storeId} />
           </div>
           <div className="lg:col-span-8">
             <SecurityMessage />

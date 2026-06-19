@@ -4,14 +4,16 @@ import { getStoreAction, getStorefrontStatsAction } from "@/features/stores/acti
 import { getDigitalAccountsAction } from "@/features/digital-accounts/actions/digital-account-actions";
 import { getAuthenticatedUser } from "@/lib/firebase/server";
 import { LandingPageClient } from "@/features/landing/components/landing-page-client";
+import { getReviewsAction } from "@/features/reviews/actions/review-actions";
 
 export default async function StorefrontLanding() {
   const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
-  const [products, store, stats, digitalAccounts] = await Promise.all([
+  const [products, store, stats, digitalAccounts, reviews] = await Promise.all([
     getProductsAction(storeId),
     getStoreAction(storeId),
     getStorefrontStatsAction(storeId),
-    getDigitalAccountsAction(storeId)
+    getDigitalAccountsAction(storeId),
+    getReviewsAction(storeId)
   ]);
   
   const decoded = await getAuthenticatedUser();
@@ -25,6 +27,7 @@ export default async function StorefrontLanding() {
       user={user} 
       stats={stats} 
       digitalAccounts={digitalAccounts}
+      reviews={reviews}
     />
   );
 }

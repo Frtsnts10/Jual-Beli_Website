@@ -42,11 +42,7 @@ export async function getCustomerOrdersAction(storeId: string) {
     .limit(1)
     .get();
 
-  if (custSnap.empty) {
-    return { purchased_products: [], total_orders: 0, orders };
-  }
-
-  const customer = custSnap.docs[0].data();
+  const customer = custSnap.empty ? { email: user.email, name: "", phone: "" } : custSnap.docs[0].data();
   const purchasedProducts = Array.isArray(customer.purchased_products) ? customer.purchased_products : [];
 
   // 3. Enrich purchased products with live warehouse credentials
@@ -72,6 +68,12 @@ export async function getCustomerOrdersAction(storeId: string) {
   );
 
   return {
+    customer: {
+      id: custSnap.empty ? null : custSnap.docs[0].id,
+      name: customer.name || user.name || "",
+      email: customer.email || user.email,
+      phone: customer.phone || "",
+    },
     purchased_products: enrichedProducts,
     total_orders: customer.total_orders || 0,
     orders

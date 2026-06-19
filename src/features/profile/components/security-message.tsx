@@ -18,13 +18,13 @@ export function SecurityMessage() {
           size="sm"
           className="bg-indigo-500/10 text-indigo-400 border-none text-[10px] font-bold uppercase tracking-widest mb-8 self-start"
         >
-          <Cpu className="w-3 h-3 inline-block mr-1.5" />
-          Obsidian Security Mesh
+          <ShieldCheck className="w-3 h-3 inline-block mr-1.5" />
+          Customer Guarantee
         </Chip>
 
-        <h3 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Failsafe Protocol Active</h3>
+        <h3 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Secure Delivery Guarantee</h3>
         <p className="text-base text-zinc-500 leading-relaxed font-medium max-w-lg">
-          Your digital assets are encrypted and mirrored across 12 distributed nodes. Management and dispute resolution are handled via the decentralized authority protocol.
+          All purchases are protected by our secure delivery system. If you experience any issues accessing your digital products, our 24/7 support team is here to help.
         </p>
       </div>
     </Card>

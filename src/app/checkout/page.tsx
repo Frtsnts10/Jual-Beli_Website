@@ -3,8 +3,10 @@
 import React, { useState } from "react";
 import { useCart } from "@/features/cart/context/cart-context";
 import { Button, Input, Card, Separator, Chip } from "@heroui/react";
+import { PhoneInput } from "@/components/ui/phone-input";
 import Link from "next/link";
-import { ShieldCheck, CreditCard, Lock, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ShieldCheck, CreditCard, Lock, ShoppingCart, ArrowLeft } from "lucide-react";
 
 declare global {
   interface Window {
@@ -20,6 +22,7 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
   });
+  const router = useRouter();
 
   const handlePayment = async () => {
     if (!formData.name || !formData.email) return alert("Name and Email are required");
@@ -38,12 +41,26 @@ export default function CheckoutPage() {
       
       const data = await response.json();
       
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      
       if (data.token) {
         window.snap.pay(data.token, {
-          onSuccess: function (result: any) {
+          onSuccess: async function (result: any) {
             console.log("success", result);
+            // Manually verify with the backend (since localhost webhooks usually fail)
+            try {
+              await fetch("/api/checkout/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderId: data.orderId, storeId: process.env.NEXT_PUBLIC_STORE_ID }),
+              });
+            } catch (e) { console.error(e); }
+
             clearCart();
-            alert("Payment successful!");
+            router.push("/profile");
           },
           onPending: function (result: any) {
             console.log("pending", result);
@@ -80,6 +97,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <Link 
+        href="/" 
+        className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors mb-8"
+      >
+        <ArrowLeft size={16} />
+        Back to Shopping
+      </Link>
+
       <div className="flex flex-col items-center text-center mb-12">
         <Chip variant="soft" size="sm" className="mb-3 font-bold tracking-widest uppercase text-[10px] border-none text-secondary">
           Secure Checkout
@@ -96,29 +121,27 @@ export default function CheckoutPage() {
               </h2>
               
               <div className="space-y-4">
-                <div><label className="text-sm font-bold">Full Name</label>
+                <div className="flex flex-col gap-1.5"><label className="text-sm font-bold text-zinc-300">Full Name</label>
                 <Input 
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e: any) => setFormData({...formData, name: e.target.value})}
                   required
-                  variant="secondary"
+                  color="secondary"
                 /></div>
-                <div><label className="text-sm font-bold">Email Address</label>
+                <div className="flex flex-col gap-1.5"><label className="text-sm font-bold text-zinc-300">Email Address</label>
                 <Input 
                   type="email"
                   placeholder="john@example.com"
                   value={formData.email}
                   onChange={(e: any) => setFormData({...formData, email: e.target.value})}
                   required
-                  variant="secondary"
+                  color="secondary"
                 /></div>
-                <div><label className="text-sm font-bold">Phone Number (Optional)</label>
-                <Input 
-                  type="tel"
-                  placeholder="+62 812..."
+                <div className="flex flex-col gap-1.5"><label className="text-sm font-bold text-zinc-300">Phone Number (Optional)</label>
+                <PhoneInput 
                   value={formData.phone}
-                  onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
+                  onChange={(val) => setFormData({...formData, phone: val})}
                 /></div>
               </div>
             </div>

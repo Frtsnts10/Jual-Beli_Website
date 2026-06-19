@@ -20,14 +20,14 @@ interface JournalEntry {
 const ENTRIES: JournalEntry[] = [
   {
     version: "v3.0.0",
-    title: "Firebase Migration & Xendit Integration",
+    title: "Firebase Migration & Midtrans Integration",
     date: "May 30, 2026",
     category: "Deploy",
     categoryBg: "bg-indigo-500/10",
     categoryText: "text-indigo-400",
     highlights: [
       "Migrated entire backend from Supabase to Firebase Firestore + Firebase Auth.",
-      "Integrated Xendit payment gateway for SaaS billing and product checkouts.",
+      "Integrated Midtrans payment gateway for automated order processing.",
       "Implemented session cookie authentication via Firebase Admin SDK.",
       "Rebuilt all server actions to use Firestore document-based queries."
     ]
@@ -97,7 +97,7 @@ export default async function JournalPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full flex-grow space-y-16">
         {/* Back Link */}
         <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Terminal
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
         {/* Hero Header */}
@@ -107,14 +107,14 @@ export default async function JournalPage() {
             size="sm"
             className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
           >
-            Changelog Logs
+            Store Updates
           </Chip>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase flex items-center gap-4">
             <BookOpen className="w-10 h-10 text-indigo-400" />
-            Platform Journal
+            Latest Updates
           </h1>
           <p className="text-zinc-500 text-sm md:text-base leading-relaxed font-medium">
-            Chronological logging of core storefront improvements, cryptographic updates, database schemas, and UX deployments.
+            Stay up to date with our latest product additions, platform improvements, and store news.
           </p>
         </div>
 
@@ -178,6 +178,7 @@ export default async function JournalPage() {
         storeEmail={store?.email}
         storeInstagram={store?.instagram}
         storeWhatsapp={store?.whatsapp}
+        storeBio={store?.bio}
       />
     </main>
   );

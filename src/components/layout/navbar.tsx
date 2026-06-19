@@ -16,7 +16,7 @@ export function Navbar({ user, storeName }: NavbarProps) {
 
   return (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] max-w-5xl z-50">
-      <div className="flex items-center h-14 px-5 rounded-2xl bg-zinc-900/80 border border-white/10 backdrop-blur-xl shadow-2xl shadow-black/50">
+      <div className="flex items-center h-14 px-5 rounded-2xl bg-black/90 border border-white/10 backdrop-blur-xl shadow-2xl shadow-black/80">
 
         {/* Brand — fixed width so center doesn't shift */}
         <Link href="/" className="flex items-center gap-3 shrink-0 w-44">
@@ -36,9 +36,9 @@ export function Navbar({ user, storeName }: NavbarProps) {
         {/* Center Nav Links — flex-1 + flex justify-center so it truly centers */}
         <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
           {[
+            { label: "Featured", href: "/#featured" },
             { label: "Collection", href: "/#collection" },
             { label: "Groups", href: "/#groups" },
-            { label: "Features", href: "/#features" },
             { label: "Reviews", href: "/#reviews" },
           ].map((item) => (
             <Link
