@@ -3,39 +3,29 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { CartDrawer } from "@/features/cart/components/cart-drawer";
+import { Navbar } from "@/components/navbar";
+import { getStore } from "@/features/stores/api";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Shop Website — Premium Digital Commerce",
-  description: "Secure, curated, and instantly accessible digital artifacts for the next generation.",
+  title: "STORE.",
+  description: "Lightweight. Premium.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const store = await getStore();
+  const storeName = store?.name || "STORE";
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                let theme = localStorage.getItem('theme') || 'system';
-                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              } catch (_) {}
-            `,
-          }}
-        />
-      </head>
-      <body className={`${inter.className} font-sans antialiased bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-50 min-h-screen selection:bg-indigo-500 selection:text-white transition-colors overflow-x-hidden`}>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${inter.className} font-sans antialiased bg-neutral-950 text-neutral-50 min-h-screen selection:bg-blue-500 selection:text-white transition-colors overflow-x-hidden flex flex-col`}>
         <Providers>
+          <Navbar storeName={storeName} />
           {children}
           <CartDrawer />
         </Providers>

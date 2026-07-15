@@ -1,13 +1,14 @@
 "use client";
 
-import { CartProvider } from "@/features/cart/context/cart-context";
-import { MidtransProvider } from "./providers/midtrans-provider";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { useRouter } from "next/navigation";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
   return (
-    <CartProvider>
+    <NextThemesProvider attribute="class" defaultTheme="dark">
       {children}
-      <MidtransProvider />
-    </CartProvider>
+    </NextThemesProvider>
   );
 }

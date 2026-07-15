@@ -65,10 +65,6 @@ export function EditProfileModal({ isOpen, onClose, customer, storeId }: EditPro
                   value={phone} 
                   onChange={(val) => setPhone(val)} 
                   placeholder="812-3456-7890"
-                  classNames={{
-                    inputWrapper: "bg-zinc-900 border-white/10 data-[hover=true]:border-indigo-500/50 group-data-[focus=true]:border-indigo-500/50",
-                    input: "text-white placeholder:text-zinc-500"
-                  }}
                 />
               </div>
               <FormInput 
@@ -83,7 +79,7 @@ export function EditProfileModal({ isOpen, onClose, customer, storeId }: EditPro
               <Button variant="ghost" onPress={onClose} className="text-zinc-400 hover:text-white border-transparent">
                 Cancel
               </Button>
-              <Button onPress={handleSave} disabled={isLoading} className="bg-indigo-600 text-white font-bold tracking-widest uppercase text-xs disabled:opacity-50">
+              <Button onPress={handleSave} isDisabled={isLoading} className="bg-indigo-600 text-white font-bold tracking-widest uppercase text-xs disabled:opacity-50">
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save Changes"}
               </Button>
             </div>

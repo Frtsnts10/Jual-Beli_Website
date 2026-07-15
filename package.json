@@ -4,6 +4,7 @@
   "description": "Premium digital commerce frontend interface",
   "author": "Filbert",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

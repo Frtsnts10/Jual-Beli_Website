@@ -19,7 +19,7 @@ export function IdentityCard({ total_orders, customer, storeId }: IdentityCardPr
     <>
       <Card className="bg-zinc-900 border border-white/10 rounded-3xl h-full relative overflow-hidden group">
         <div className="absolute top-4 right-4 z-10">
-          <Button isIconOnly variant="flat" size="sm" className="bg-white/10 text-white hover:bg-white/20 rounded-full" onPress={() => setIsEditOpen(true)}>
+          <Button isIconOnly variant="secondary" size="sm" className="bg-white/10 text-white hover:bg-white/20 rounded-full" onPress={() => setIsEditOpen(true)}>
             <Edit2 className="w-4 h-4" />
           </Button>
         </div>

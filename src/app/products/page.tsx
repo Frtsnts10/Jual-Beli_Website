@@ -1,31 +1,66 @@
-import { getProductsAction } from "@/features/products/actions/product-actions";
-import { ProductGrid } from "@/features/products/components/product-grid";
-import { Chip } from "@heroui/react";
+import { getProducts } from "@/features/products/api";
+import { Button } from "@heroui/react";
+import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
 
-export default async function ProductsPage() {
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
-  const products = await getProductsAction(storeId);
-  const currency = "Rp"; // could be fetched from store but hardcoded for now or we could fetch store as well
+export default async function ProductsPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const searchParams = await props.searchParams;
+  const categoryParam = typeof searchParams.category === 'string' ? searchParams.category : undefined;
+
+  let products = await getProducts();
+
+  if (categoryParam) {
+    products = products.filter(product => {
+      let groupKey = product.category || "Other Essentials";
+      groupKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
+      return groupKey === categoryParam;
+    });
+  }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
-      <div className="mb-12">
-        <Chip variant="soft" size="sm" className="mb-3 font-bold tracking-widest uppercase text-[10px] border-none text-secondary">
-          Catalog
-        </Chip>
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase">All Products</h1>
-        <p className="text-default-500 text-xs mt-3 uppercase tracking-wider font-bold max-w-2xl">
-          Browse our entire inventory of premium digital goods and services.
-        </p>
-      </div>
-      
-      {products.length === 0 ? (
-        <div className="text-center py-20 text-default-500">
-          No products available at the moment.
+    <div className="flex-1 flex flex-col">
+
+      <main className="flex-1 px-6 py-32 max-w-7xl mx-auto w-full relative z-10">
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            {categoryParam ? `${categoryParam} Services` : "All Products"}
+          </h1>
+          <p className="text-neutral-400 text-lg">
+            {categoryParam 
+              ? `Browse our premium ${categoryParam} accounts and subscriptions.`
+              : "Browse our complete collection of premium essentials."
+            }
+          </p>
         </div>
-      ) : (
-        <ProductGrid products={products} currency={currency} />
-      )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Link href={`/product/${product.slug}`} key={product.id} className="group flex flex-col rounded-2xl bg-neutral-900/50 border border-neutral-800 overflow-hidden hover:border-neutral-700 hover:bg-neutral-900 transition-all">
+              <div className="relative aspect-[4/5] overflow-hidden bg-neutral-800">
+                <img 
+                  src={product.images[0]} 
+                  alt={product.name}
+                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-5 flex flex-col flex-1">
+                <h3 className="font-semibold mb-1 group-hover:text-blue-400 transition-colors">{product.name}</h3>
+                <div className="flex items-center justify-between mt-auto pt-4">
+                  <span className="font-medium">
+                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: product.currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(product.price)}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
+
+      <footer className="border-t border-neutral-800 px-6 py-8 text-center text-neutral-500 text-sm mt-12">
+        <p>&copy; {new Date().getFullYear()} STORE. All rights reserved.</p>
+      </footer>
     </div>
   );
 }

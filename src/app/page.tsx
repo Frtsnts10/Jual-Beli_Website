@@ -1,33 +1,52 @@
-import React from "react";
-import { getProductsAction } from "@/features/products/actions/product-actions";
-import { getStoreAction, getStorefrontStatsAction } from "@/features/stores/actions/store-actions";
-import { getDigitalAccountsAction } from "@/features/digital-accounts/actions/digital-account-actions";
-import { getAuthenticatedUser } from "@/lib/firebase/server";
-import { LandingPageClient } from "@/features/landing/components/landing-page-client";
-import { getReviewsAction } from "@/features/reviews/actions/review-actions";
+import { getProducts } from "@/features/products/api";
+import { HeroCarousel } from "@/components/hero-carousel";
+import { ProductGroup } from "@/components/product-group";
 
-export default async function StorefrontLanding() {
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
-  const [products, store, stats, digitalAccounts, reviews] = await Promise.all([
-    getProductsAction(storeId),
-    getStoreAction(storeId),
-    getStorefrontStatsAction(storeId),
-    getDigitalAccountsAction(storeId),
-    getReviewsAction(storeId)
-  ]);
-  
-  const decoded = await getAuthenticatedUser();
-  // Transform to a simpler user object for the client component
-  const user = decoded ? { email: decoded.email, uid: decoded.uid, name: decoded.name } : null;
+export default async function HomePage() {
+  const products = await getProducts();
+
+  // Group products by category
+  const groupedProducts = products.reduce((acc, product) => {
+    let groupKey = product.category || "Other Essentials";
+    groupKey = groupKey.charAt(0).toUpperCase() + groupKey.slice(1);
+
+    if (!acc[groupKey]) {
+      acc[groupKey] = [];
+    }
+    acc[groupKey].push(product);
+    return acc;
+  }, {} as Record<string, typeof products>);
+
+  const groupKeys = Object.keys(groupedProducts);
 
   return (
-    <LandingPageClient 
-      products={products} 
-      store={store} 
-      user={user} 
-      stats={stats} 
-      digitalAccounts={digitalAccounts}
-      reviews={reviews}
-    />
+    <div className="flex-1 flex flex-col bg-background text-foreground">
+      <HeroCarousel />
+
+      <main className="flex-1 -mt-10 relative z-20">
+        <div className="bg-background rounded-t-[3rem] pt-10 pb-20 shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
+          {groupKeys.length > 0 ? (
+            groupKeys.map((key) => (
+              <ProductGroup 
+                key={key} 
+                categoryId={key}
+                title={`${key} Services`} 
+                description={`Browse our premium ${key} accounts and subscriptions.`}
+                products={groupedProducts[key].slice(0, 4)} 
+              />
+            ))
+          ) : (
+            <div className="text-center py-20 text-neutral-500">
+              No products found in the database.
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 px-6 py-12 text-center text-neutral-500 text-sm bg-neutral-950">
+        <p>&copy; {new Date().getFullYear()} STORE. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }

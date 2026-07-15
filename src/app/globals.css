@@ -7,19 +7,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+}
+
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --bg: #0b0f19; /* Default to dark immediately */
+  --fg: #f8fafc;
 }
 
 .dark {
-  --background: #090d16;
-  --foreground: #f1f5f9;
+  --bg: #0b0f19;
+  --fg: #f8fafc;
 }
 
 html, body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg);
+  color: var(--fg);
   scroll-behavior: smooth;
 }
 
