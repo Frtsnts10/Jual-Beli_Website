@@ -4,9 +4,13 @@ import { useCartStore } from "../store";
 import { Button } from "@heroui/react";
 import { X, Trash2, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 export function CartDrawer() {
-  const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice } = useCartStore();
+  const { items, isOpen, setIsOpen, removeItem, updateQuantity } = useCartStore();
+  
+  const totalPrice = items.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  const cartCurrency = items.length > 0 ? items[0].product.currency : "USD";
 
   return (
     <AnimatePresence>
@@ -60,7 +64,11 @@ export function CartDrawer() {
                       <div className="flex justify-between items-start mb-1">
                         <h3 className="font-medium text-sm line-clamp-1">{item.product.name}</h3>
                         <span className="font-semibold text-sm">
-                          {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.product.currency }).format(item.product.price * item.quantity)}
+                          {new Intl.NumberFormat('en-US', { 
+                            style: 'currency', 
+                            currency: item.product.currency,
+                            maximumFractionDigits: item.product.currency === 'IDR' ? 0 : 2
+                          }).format(item.product.price * item.quantity)}
                         </span>
                       </div>
                       <p className="text-neutral-500 text-xs mb-3">Qty: {item.quantity}</p>
@@ -100,12 +108,18 @@ export function CartDrawer() {
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-neutral-400 font-medium">Subtotal</span>
                   <span className="text-xl font-bold">
-                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalPrice)}
+                    {new Intl.NumberFormat('en-US', { 
+                      style: 'currency', 
+                      currency: cartCurrency,
+                      maximumFractionDigits: cartCurrency === 'IDR' ? 0 : 2
+                    }).format(totalPrice)}
                   </span>
                 </div>
-                <Button size="lg" variant="primary" className="w-full font-semibold rounded-xl h-14">
-                  Proceed to Checkout
-                </Button>
+                <Link href="/checkout" onClick={() => setIsOpen(false)} className="w-full block">
+                  <Button size="lg" variant="primary" className="w-full font-semibold rounded-xl h-14">
+                    Proceed to Checkout
+                  </Button>
+                </Link>
               </div>
             )}
           </motion.div>
