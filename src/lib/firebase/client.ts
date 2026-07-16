@@ -12,7 +12,18 @@ const firebaseConfig = {
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+
+// Initialize auth and db only if we have an API key (prevents build errors on Vercel without env vars)
+let auth: ReturnType<typeof getAuth>;
+let db: ReturnType<typeof getFirestore>;
+
+if (firebaseConfig.apiKey) {
+  auth = getAuth(app);
+  db = getFirestore(app);
+} else {
+  // Mock objects for build time
+  auth = {} as ReturnType<typeof getAuth>;
+  db = {} as ReturnType<typeof getFirestore>;
+}
 
 export { app, auth, db };
