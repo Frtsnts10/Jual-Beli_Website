@@ -8,10 +8,15 @@ import { getStore } from "@/features/stores/api";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "STORE.",
-  description: "Lightweight. Premium.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const store = await getStore();
+  const storeName = store?.name || "STORE";
+
+  return {
+    title: `${storeName}.`,
+    description: "Lightweight. Premium.",
+  };
+}
 
 export default async function RootLayout({
   children,
