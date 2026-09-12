@@ -1,9 +1,13 @@
 import { getProducts } from "@/features/products/api";
+import { getCarouselSlides } from "@/features/carousel/api";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { ProductGroup } from "@/components/product-group";
 
 export default async function HomePage() {
-  const products = await getProducts();
+  const [products, slides] = await Promise.all([
+    getProducts(),
+    getCarouselSlides(),
+  ]);
 
   // Group products by category
   const groupedProducts = products.reduce((acc, product) => {
@@ -21,7 +25,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex-1 flex flex-col bg-background text-foreground">
-      <HeroCarousel />
+      <HeroCarousel slides={slides} />
 
       <main className="flex-1 -mt-10 relative z-20">
         <div className="bg-background rounded-t-[3rem] pt-10 pb-20 shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
