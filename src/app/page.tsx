@@ -3,6 +3,10 @@ import { getCarouselSlides } from "@/features/carousel/api";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { ProductGroup } from "@/components/product-group";
 
+// Inventory stock and the hero carousel change without a redeploy, so this
+// page must read fresh data on every request rather than being frozen at build time.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [products, slides] = await Promise.all([
     getProducts(),

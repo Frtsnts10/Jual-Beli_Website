@@ -65,15 +65,6 @@
         { "fieldPath": "store_id", "order": "ASCENDING" },
         { "fieldPath": "order", "order": "ASCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "carousel_slides",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "store_id", "order": "ASCENDING" },
-        { "fieldPath": "active", "order": "ASCENDING" },
-        { "fieldPath": "order", "order": "ASCENDING" }
-      ]
     }
   ],
   "fieldOverrides": []
