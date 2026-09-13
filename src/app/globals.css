@@ -13,8 +13,8 @@
 }
 
 :root {
-  --bg: #0b0f19; /* Default to dark immediately */
-  --fg: #f8fafc;
+  --bg: #faf9f6;
+  --fg: #1c1917;
 }
 
 .dark {
