@@ -1,12 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 import { ShoppingCart, Search } from "lucide-react";
 import { useCartStore } from "@/features/cart/store";
 
+// The login page renders its own "Toko." brand mark and back-to-home link,
+// so the global navbar above it would just be redundant chrome.
+const HIDDEN_ON = ["/login"];
+
 export function Navbar({ storeName = "STORE" }: { storeName?: string }) {
   const { toggleCart, totalItems } = useCartStore();
+  const pathname = usePathname();
+
+  if (HIDDEN_ON.includes(pathname)) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-stone-200">
