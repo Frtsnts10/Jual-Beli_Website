@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Shield } from "lucide-react";
 import { AuthForm } from "@/features/auth/components/auth-form";
 import Link from "next/link";
 
@@ -9,60 +8,49 @@ export default function CustomerAuthPage() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <main className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(99,102,241,0.08),transparent)] pointer-events-none" />
-
+    <main className="min-h-screen bg-[#faf9f6] flex items-center justify-center p-6">
       <div className="w-full max-w-md relative z-10">
         {/* Brand */}
-        <div className="text-center mb-12">
-          <Link href="/" className="inline-flex items-center gap-3 mb-10 group">
-            <div className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center font-black text-2xl transition-all group-hover:scale-110">
-              S
+        <div className="text-center mb-10">
+          <Link href="/" className="inline-flex items-center gap-2 mb-8">
+            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
             </div>
-            <div className="flex flex-col items-start">
-              <span className="text-[11px] font-black text-white uppercase tracking-widest">Obsidian Secure</span>
-              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5">Protocol Terminal</span>
-            </div>
+            <span className="text-xl font-extrabold tracking-tight text-stone-900">Toko<span className="text-blue-600">.</span></span>
           </Link>
-          <h2 className="text-5xl font-black text-white tracking-tighter uppercase leading-tight mb-2">
-            {isLogin ? "Authenticate" : "Initialize"}{" "}
-            <span className="bg-gradient-to-r from-white to-indigo-400 bg-clip-text text-transparent">
-              Protocol.
-            </span>
+          <h2 className="text-3xl font-extrabold text-stone-900 tracking-tight">
+            {isLogin ? "Welcome back" : "Create your account"}
           </h2>
+          <p className="text-stone-500 text-sm mt-2">
+            {isLogin ? "Sign in to view your orders and account." : "Sign up to start shopping and track your orders."}
+          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-zinc-900/60 border border-white/10 rounded-3xl backdrop-blur-md p-8">
+        <div className="bg-white border border-stone-200 rounded-3xl shadow-xl p-8">
           {/* Tab switcher */}
-          <div className="flex items-center gap-0 border-b border-white/5 mb-8">
+          <div className="flex items-center gap-0 border-b border-stone-200 mb-8">
             <button
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-colors ${
-                isLogin ? "text-white border-b-2 border-indigo-500 -mb-px" : "text-zinc-500 hover:text-zinc-300"
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${
+                isLogin ? "text-stone-900 border-b-2 border-blue-600 -mb-px" : "text-stone-400 hover:text-stone-600"
               }`}
             >
-              Access Vault
+              Sign In
             </button>
             <button
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-colors ${
-                !isLogin ? "text-white border-b-2 border-indigo-500 -mb-px" : "text-zinc-500 hover:text-zinc-300"
+              className={`flex-1 py-3 text-sm font-bold transition-colors ${
+                !isLogin ? "text-stone-900 border-b-2 border-blue-600 -mb-px" : "text-stone-400 hover:text-stone-600"
               }`}
             >
-              Create Identity
+              Create Account
             </button>
           </div>
 
           <AuthForm isLogin={isLogin} />
         </div>
-
-        <p className="text-center mt-8 flex items-center justify-center gap-2 text-[10px] text-zinc-700 font-bold uppercase tracking-widest">
-          <Shield className="w-4 h-4 text-indigo-500/50" />
-          End-to-End Encrypted Handshake
-        </p>
       </div>
     </main>
   );
 }
-

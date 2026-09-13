@@ -1,11 +1,8 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Shield, BookOpen, AlertCircle, FileCheck, ArrowLeft, Cpu } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { Shield, BookOpen, FileCheck, ArrowLeft, Cpu } from "lucide-react";
 import { getStoreAction } from "@/features/stores/actions/store-actions";
-import { getAuthenticatedUser } from "@/lib/firebase/server";
 import { Chip, Separator } from "@heroui/react";
 
 interface LegalDoc {
@@ -111,31 +108,20 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
   const store = await getStoreAction(storeId);
   const storeName = store?.name || "Premium Storefront";
 
-  const decoded = await getAuthenticatedUser();
-  const user = decoded ? { email: decoded.email, uid: decoded.uid, name: decoded.name } : null;
-
   const Icon = doc.icon;
 
   return (
-    <main className="min-h-screen bg-zinc-950 flex flex-col justify-between">
-      {/* Background glow */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl" />
-      </div>
-
-      <Navbar user={user} storeName={storeName} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full flex-grow">
+    <div className="flex-1 flex flex-col">
+      <div className="max-w-7xl mx-auto px-6 py-28 w-full flex-grow">
         {/* Back Link */}
-        <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest mb-12">
+        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[10px] font-black uppercase tracking-widest mb-12">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 items-start">
           {/* Sidebar Navigation */}
           <div className="space-y-4 lg:sticky lg:top-28">
-            <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest ml-1 mb-6">Legal Documents</p>
+            <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest ml-1 mb-6">Legal Documents</p>
             <div className="flex flex-col gap-2">
               {Object.entries(LEGAL_DOCS).map(([key, item]) => {
                 const isActive = key === slug;
@@ -145,8 +131,8 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
                     href={`/legal/${key}`}
                     className={`p-4 rounded-xl border text-xs font-black uppercase tracking-widest transition-all ${
                       isActive
-                        ? "bg-white text-black border-white"
-                        : "bg-white/[0.02] border-white/5 text-zinc-400 hover:text-white hover:border-white/10"
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white border-stone-200 text-stone-500 hover:text-stone-900 hover:border-stone-300"
                     }`}
                   >
                     {item.title}
@@ -157,54 +143,50 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
           </div>
 
           {/* Document Content */}
-          <div className="lg:col-span-3 space-y-10 bg-zinc-900/30 border border-white/5 p-8 sm:p-12 rounded-3xl backdrop-blur-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/5">
+          <div className="lg:col-span-3 space-y-10 bg-white border border-stone-200 shadow-sm p-8 sm:p-12 rounded-3xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-stone-200">
               <div className="space-y-3">
                 <Chip
                   variant="soft"
                   size="sm"
-                  className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
+                  className="bg-blue-50 text-blue-700 border-none text-[9px] font-bold uppercase tracking-widest"
                 >
                   {doc.chip}
                 </Chip>
-                <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight uppercase flex items-center gap-3">
-                  <Icon className="w-8 h-8 text-indigo-400" />
+                <h1 className="text-3xl sm:text-4xl font-black text-stone-900 tracking-tight uppercase flex items-center gap-3">
+                  <Icon className="w-8 h-8 text-blue-600" />
                   {doc.title}
                 </h1>
-                <p className="text-zinc-500 text-xs sm:text-sm font-medium">{doc.subtitle}</p>
+                <p className="text-stone-500 text-xs sm:text-sm font-medium">{doc.subtitle}</p>
               </div>
             </div>
 
             <div className="space-y-12">
               {doc.sections.map((section, idx) => (
                 <div key={idx} className="space-y-4">
-                  <h3 className="text-sm font-black text-white uppercase tracking-widest font-mono">
+                  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest font-mono">
                     {section.title}
                   </h3>
-                  <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed font-sans font-medium">
+                  <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-sans font-medium">
                     {section.desc}
                   </p>
                 </div>
               ))}
             </div>
 
-            <Separator className="bg-white/5" />
+            <Separator className="bg-stone-200" />
 
-            <div className="flex items-center gap-2.5 text-[9px] text-zinc-500 font-black uppercase tracking-widest font-mono">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="flex items-center gap-2.5 text-[9px] text-stone-500 font-black uppercase tracking-widest font-mono">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Verified Secure Document
             </div>
           </div>
         </div>
       </div>
 
-      <Footer 
-        storeName={storeName} 
-        storeEmail={store?.email}
-        storeInstagram={store?.instagram}
-        storeWhatsapp={store?.whatsapp}
-        storeBio={store?.bio}
-      />
-    </main>
+      <footer className="border-t border-stone-200 px-6 py-8 text-center text-stone-400 text-sm">
+        <p>&copy; {new Date().getFullYear()} {storeName}. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }
