@@ -27,8 +27,8 @@ export default async function RootLayout({
   const storeName = store?.name || "STORE";
 
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
-      <body className={`${inter.className} font-sans antialiased bg-neutral-950 text-neutral-50 min-h-screen selection:bg-blue-500 selection:text-white transition-colors overflow-x-hidden flex flex-col`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} font-sans antialiased bg-background text-foreground min-h-screen selection:bg-blue-600 selection:text-white transition-colors overflow-x-hidden flex flex-col`}>
         <Providers>
           <Navbar storeName={storeName} />
           {children}

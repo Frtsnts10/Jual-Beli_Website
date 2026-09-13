@@ -2,32 +2,41 @@
 
 import Link from "next/link";
 import { Button } from "@heroui/react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Search } from "lucide-react";
 import { useCartStore } from "@/features/cart/store";
 
 export function Navbar({ storeName = "STORE" }: { storeName?: string }) {
   const { toggleCart, totalItems } = useCartStore();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 flex justify-center mt-4 px-6 pointer-events-none">
-      <div className="pointer-events-auto flex items-center justify-between w-full max-w-5xl h-16 px-6 bg-neutral-950/70 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl">
-        <Link href="/" className="text-xl font-bold tracking-tighter text-white uppercase">
-          {storeName}<span className="text-blue-500">.</span>
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-stone-200">
+      <div className="max-w-7xl mx-auto flex items-center gap-6 px-6 lg:px-16 h-20">
+        <Link href="/" className="shrink-0 text-[19px] font-extrabold tracking-tight text-stone-900">
+          {storeName}<span className="text-blue-600">.</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/products" className="text-neutral-300 hover:text-white transition-colors">Products</Link>
-          <Link href="/about" className="text-neutral-300 hover:text-white transition-colors">About</Link>
-          <Link href="/faq" className="text-neutral-300 hover:text-white transition-colors">FAQ</Link>
+
+        <div className="hidden md:flex flex-1 items-center gap-2.5 max-w-md bg-white border border-stone-200 rounded-xl px-4 py-2.5">
+          <Search className="w-4 h-4 text-stone-400 shrink-0" />
+          <span className="text-sm text-stone-400 truncate">Search Netflix, Spotify, Canva...</span>
+        </div>
+
+        <nav className="hidden lg:flex items-center gap-6 text-[13.5px] font-semibold text-stone-700 ml-auto">
+          <Link href="/products" className="hover:text-stone-950 transition-colors">All Products</Link>
+          <Link href="/profile" className="hover:text-stone-950 transition-colors">Track Order</Link>
         </nav>
-        <Button 
+
+        <Button
           isIconOnly
-          variant="ghost" 
-          className="relative text-white hover:bg-white/10 rounded-full border-transparent"
+          variant="ghost"
+          className="relative text-stone-800 hover:bg-stone-100 rounded-xl ml-2 lg:ml-0 shrink-0"
           onPress={toggleCart}
+          aria-label="Open cart"
         >
           <ShoppingCart className="w-5 h-5" />
           {totalItems > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full" />
+            <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">
+              {totalItems}
+            </span>
           )}
         </Button>
       </div>
