@@ -1,19 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { Cpu, ArrowLeft, Network, ShieldAlert, Zap, Layers } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { ArrowLeft, Network, ShieldAlert, Zap, Layers } from "lucide-react";
 import { getStoreAction } from "@/features/stores/actions/store-actions";
-import { getAuthenticatedUser } from "@/lib/firebase/server";
 import { Chip, Separator } from "@heroui/react";
 
 export default async function ProtocolPage() {
   const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
   const store = await getStoreAction(storeId);
   const storeName = store?.name || "Premium Storefront";
-
-  const decoded = await getAuthenticatedUser();
-  const user = decoded ? { email: decoded.email, uid: decoded.uid, name: decoded.name } : null;
 
   const specs = [
     {
@@ -37,18 +31,10 @@ export default async function ProtocolPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-zinc-950 flex flex-col justify-between">
-      {/* Dynamic Ambient Spotlights */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl" />
-      </div>
-
-      <Navbar user={user} storeName={storeName} />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full flex-grow space-y-16">
+    <div className="flex-1 flex flex-col">
+      <div className="max-w-7xl mx-auto px-6 py-28 w-full flex-grow space-y-16">
         {/* Back Link */}
-        <Link href="/" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest">
+        <Link href="/" className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[10px] font-black uppercase tracking-widest">
           <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
         </Link>
 
@@ -57,43 +43,43 @@ export default async function ProtocolPage() {
           <Chip
             variant="soft"
             size="sm"
-            className="bg-indigo-500/10 text-indigo-400 border-none text-[9px] font-bold uppercase tracking-widest"
+            className="bg-blue-50 text-blue-700 border-none text-[9px] font-bold uppercase tracking-widest"
           >
             How It Works
           </Chip>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight uppercase">
+          <h1 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tight uppercase">
             Our Delivery System
           </h1>
-          <p className="text-zinc-500 text-sm md:text-base leading-relaxed font-medium">
+          <p className="text-stone-500 text-sm md:text-base leading-relaxed font-medium">
             Learn how our automated system delivers your digital products instantly and securely.
           </p>
         </div>
 
-        <Separator className="bg-white/5" />
+        <Separator className="bg-stone-200" />
 
-        {/* Technical Schematics Map */}
+        {/* Feature cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {specs.map((spec, i) => {
             const Icon = spec.icon;
             return (
               <div
                 key={i}
-                className="bg-zinc-900/30 border border-white/5 p-8 rounded-3xl backdrop-blur-sm flex flex-col justify-between min-h-[350px] hover:border-white/10 transition-all duration-300"
+                className="bg-white border border-stone-200 shadow-sm p-8 rounded-3xl flex flex-col justify-between min-h-[350px] hover:border-stone-300 transition-all duration-300"
               >
                 <div className="space-y-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-indigo-400" />
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h3 className="text-sm font-black text-white uppercase tracking-widest font-mono">
+                  <h3 className="text-sm font-black text-stone-900 uppercase tracking-widest font-mono">
                     {spec.title}
                   </h3>
-                  <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed font-medium">
+                  <p className="text-stone-600 text-xs sm:text-sm leading-relaxed font-medium">
                     {spec.desc}
                   </p>
                 </div>
-                <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/5">
-                  <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest font-mono">System State:</span>
-                  <div className="flex items-center gap-1.5 text-[8px] bg-indigo-500/10 text-indigo-400 font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
+                <div className="flex items-center justify-between mt-8 pt-6 border-t border-stone-200">
+                  <span className="text-[8px] text-stone-500 font-bold uppercase tracking-widest font-mono">System State:</span>
+                  <div className="flex items-center gap-1.5 text-[8px] bg-blue-50 text-blue-700 font-black px-2 py-0.5 rounded-full uppercase tracking-widest">
                     {spec.status}
                   </div>
                 </div>
@@ -102,16 +88,16 @@ export default async function ProtocolPage() {
           })}
         </div>
 
-        {/* Monospace System Node Console Visualizer */}
-        <div className="bg-black/40 border border-white/5 rounded-3xl p-8 font-mono space-y-6">
-          <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Order Fulfillment Process</span>
+        {/* System console visualizer */}
+        <div className="bg-stone-900 border border-stone-800 rounded-3xl p-8 font-mono space-y-6">
+          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">Order Fulfillment Process</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-[8px] text-emerald-400 font-bold uppercase tracking-widest">SYSTEM ONLINE</span>
             </div>
           </div>
-          <pre className="text-[10px] text-zinc-400 overflow-x-auto leading-relaxed whitespace-pre font-bold select-none p-4 bg-zinc-950/50 rounded-2xl">
+          <pre className="text-[10px] text-stone-300 overflow-x-auto leading-relaxed whitespace-pre font-bold select-none p-4 bg-black/30 rounded-2xl">
 {`   [SELECT PRODUCT] ────► [SECURE CHECKOUT] ────► [PAYMENT VERIFIED] ────► [INSTANT DELIVERY]
           │                                                                      ▲
           └─────────────► [AUTOMATED STOCK RESERVATION] ─────────────────────────┘
@@ -120,20 +106,16 @@ export default async function ProtocolPage() {
    • DELIVERY ENGINE: OPERATIONAL | AVG SPEED: < 1s
    • SUPPORT DESK: ONLINE | AVG RESPONSE: < 5m`}
           </pre>
-          <div className="flex items-center gap-2.5 text-[8px] text-zinc-600 font-black uppercase tracking-widest">
-            <ShieldAlert className="w-3.5 h-3.5 text-indigo-500" />
+          <div className="flex items-center gap-2.5 text-[8px] text-stone-400 font-black uppercase tracking-widest">
+            <ShieldAlert className="w-3.5 h-3.5 text-blue-400" />
             All transactions are securely processed and encrypted.
           </div>
         </div>
       </div>
 
-      <Footer 
-        storeName={storeName} 
-        storeEmail={store?.email}
-        storeInstagram={store?.instagram}
-        storeWhatsapp={store?.whatsapp}
-        storeBio={store?.bio}
-      />
-    </main>
+      <footer className="border-t border-stone-200 px-6 py-8 text-center text-stone-400 text-sm">
+        <p>&copy; {new Date().getFullYear()} {storeName}. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }

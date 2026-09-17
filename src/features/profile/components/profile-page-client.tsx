@@ -20,12 +20,7 @@ interface ProfilePageClientProps {
 
 export function ProfilePageClient({ customer, storeId, purchased_products, total_orders, orders, customerSignOutAction }: ProfilePageClientProps) {
   return (
-    <main className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl" />
-      </div>
-
+    <main className="min-h-screen bg-[#faf9f6] text-stone-900 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 py-16 lg:py-24 relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-20">
@@ -34,17 +29,17 @@ export function ProfilePageClient({ customer, storeId, purchased_products, total
               <Button
                 isIconOnly
                 variant="outline"
-                className="border-white/10 bg-white/5 hover:bg-white/10 rounded-2xl w-12 h-12"
+                className="border-stone-200 bg-white hover:bg-stone-50 rounded-2xl w-12 h-12"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             </Link>
             <div>
-              <h1 className="text-4xl font-black text-white tracking-tighter uppercase">My Profile</h1>
+              <h1 className="text-4xl font-black text-stone-900 tracking-tighter uppercase">My Profile</h1>
               <Chip
                 size="sm"
                 variant="soft"
-                className="mt-2 bg-indigo-500/10 text-indigo-400 border-none text-[10px] font-bold uppercase tracking-widest"
+                className="mt-2 bg-blue-50 text-blue-700 border-none text-[10px] font-bold uppercase tracking-widest"
               >
                 Status: Verified Customer
               </Chip>
@@ -54,7 +49,7 @@ export function ProfilePageClient({ customer, storeId, purchased_products, total
           <form action={customerSignOutAction}>
             <button
               type="submit"
-              className="flex items-center gap-2 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-rose-400 hover:border-rose-500/30 h-12 px-6 rounded-2xl transition-all cursor-pointer bg-transparent"
+              className="flex items-center gap-2 border border-stone-200 text-[10px] font-black uppercase tracking-widest text-stone-500 hover:text-rose-600 hover:border-rose-300 h-12 px-6 rounded-2xl transition-all cursor-pointer bg-white"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
