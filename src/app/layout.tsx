@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { CartDrawer } from "@/features/cart/components/cart-drawer";
 import { Navbar } from "@/components/navbar";
 import { getStore } from "@/features/stores/api";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default async function RootLayout({
           {children}
           <CartDrawer />
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
