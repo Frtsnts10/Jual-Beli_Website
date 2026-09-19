@@ -65,14 +65,6 @@
         { "fieldPath": "store_id", "order": "ASCENDING" },
         { "fieldPath": "order", "order": "ASCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "digital_accounts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "store_id", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
-      ]
     }
   ],
   "fieldOverrides": []
