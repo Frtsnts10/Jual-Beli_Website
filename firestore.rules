@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Both the dashboard and the storefront reach Firestore exclusively through the
+// Firebase Admin SDK (src/lib/firebase/server.ts), which runs server-side and
+// bypasses these rules entirely. No browser code in either app reads or writes
+// Firestore — the client SDK is used only for Firebase Auth.
+//
+// The web API key and project id are public (they ship in every browser bundle),
+// so anything these rules allow is reachable by anyone on the internet, not just
+// by the app. Since no legitimate client request exists, the correct policy is to
+// deny every direct client request and let the server actions — which check the
+// session cookie and store ownership before touching data — be the only way in.
+//
+// If you ever add a client-side Firestore read, it will fail until you add an
+// explicit match block for that collection here.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
