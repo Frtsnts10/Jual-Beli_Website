@@ -6,18 +6,38 @@ import { cookies } from 'next/headers';
 // point the Admin SDK at the wrong Firebase project.
 const FIREBASE_PROJECT_ID = "web-store-4cf23";
 
-if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-  } catch (error) {
-    console.error('Firebase Admin initialization error', error);
+// Hosting dashboards commonly store the key with its newlines escaped, wrapped in
+// quotes, or re-wrapped at a different width. Any of those reach the OpenSSL decoder
+// as a malformed PEM, so normalise back to a canonical 64-column block first.
+function formatPrivateKey(key?: string) {
+  if (!key) return undefined;
+
+  const cleaned = key.replace(/\\n/g, '\n').replace(/"/g, '').replace(/'/g, '');
+
+  const header = '-----BEGIN PRIVATE KEY-----';
+  const footer = '-----END PRIVATE KEY-----';
+
+  if (cleaned.includes(header) && cleaned.includes(footer)) {
+    const body = cleaned.replace(header, '').replace(footer, '').replace(/\s+/g, '');
+    const chunks = body.match(/.{1,64}/g) || [];
+    return `${header}\n${chunks.join('\n')}\n${footer}`;
   }
+
+  return cleaned;
+}
+
+if (!admin.apps.length) {
+  // Deliberately not wrapped in try/catch: a swallowed failure here leaves no default
+  // app, and the admin.firestore() call below then throws "The default Firebase app
+  // does not exist" — which hides the real cause (bad credentials) behind a misleading
+  // message on every page.
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
+    }),
+  });
 }
 
 export const adminDb = admin.firestore();
