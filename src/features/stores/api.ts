@@ -1,8 +1,9 @@
 import { adminDb } from "@/lib/firebase/server";
+import { getActiveStoreId } from "@/lib/get-store-id";
 import { Store } from "@/types/schema";
 
 export async function getStore(): Promise<Store | null> {
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+  const storeId = await getActiveStoreId();
   if (!storeId) return null;
 
   try {

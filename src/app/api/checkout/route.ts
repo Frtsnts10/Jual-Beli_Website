@@ -2,22 +2,23 @@ import { NextResponse } from "next/server";
 // @ts-ignore
 import midtransClient from "midtrans-client";
 import { adminDb, getAuthenticatedUser } from "@/lib/firebase/server";
+import { getActiveStoreId } from "@/lib/get-store-id";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { items, customerDetails, storeId } = body;
-    
+    const { items, customerDetails } = body;
+
     const user = await getAuthenticatedUser();
     if (!user) {
       return NextResponse.json({ error: "You must be logged in to checkout" }, { status: 401 });
     }
-    
+
     if (!user.email_verified) {
       return NextResponse.json({ error: "Please verify your email address before purchasing products. Check your inbox for the verification link." }, { status: 403 });
     }
 
-    const activeStoreId = storeId || process.env.NEXT_PUBLIC_STORE_ID;
+    const activeStoreId = await getActiveStoreId();
     if (!activeStoreId) {
       return NextResponse.json({ error: "Missing store context" }, { status: 400 });
     }

@@ -55,7 +55,7 @@ export default function CheckoutPage() {
               await fetch("/api/checkout/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ orderId: data.orderId, storeId: process.env.NEXT_PUBLIC_STORE_ID }),
+                body: JSON.stringify({ orderId: data.orderId }),
               });
             } catch (e) { console.error(e); }
 

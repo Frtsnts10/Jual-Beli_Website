@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Calendar, CheckCircle2 } from "lucide-react";
 import { getStoreAction } from "@/features/stores/actions/store-actions";
+import { getActiveStoreId } from "@/lib/get-store-id";
 import { Chip, Separator } from "@heroui/react";
 
 interface JournalEntry {
@@ -74,8 +75,8 @@ const ENTRIES: JournalEntry[] = [
 ];
 
 export default async function JournalPage() {
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
-  const store = await getStoreAction(storeId);
+  const storeId = await getActiveStoreId();
+  const store = storeId ? await getStoreAction(storeId) : null;
   const storeName = store?.name || "Premium Storefront";
 
   return (

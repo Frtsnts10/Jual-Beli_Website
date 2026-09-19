@@ -1,8 +1,9 @@
 import { Product } from "@/types/schema";
 import { adminDb } from "@/lib/firebase/server";
+import { getActiveStoreId } from "@/lib/get-store-id";
 
 export async function getProducts(): Promise<Product[]> {
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID;
+  const storeId = await getActiveStoreId();
   if (!storeId) return [];
 
   try {

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Shield, BookOpen, FileCheck, ArrowLeft, Cpu } from "lucide-react";
 import { getStoreAction } from "@/features/stores/actions/store-actions";
+import { getActiveStoreId } from "@/lib/get-store-id";
 import { Chip, Separator } from "@heroui/react";
 
 interface LegalDoc {
@@ -104,8 +105,8 @@ export default async function LegalPage({ params }: { params: Promise<{ slug: st
     return notFound();
   }
 
-  const storeId = process.env.NEXT_PUBLIC_STORE_ID!;
-  const store = await getStoreAction(storeId);
+  const storeId = await getActiveStoreId();
+  const store = storeId ? await getStoreAction(storeId) : null;
   const storeName = store?.name || "Premium Storefront";
 
   const Icon = doc.icon;
