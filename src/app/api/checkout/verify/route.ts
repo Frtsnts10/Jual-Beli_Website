@@ -5,10 +5,10 @@ import midtransClient from "midtrans-client";
 
 export async function POST(req: Request) {
   try {
-    const { orderId, storeId } = await req.json();
+    const { orderId } = await req.json();
 
-    if (!orderId || !storeId) {
-      return NextResponse.json({ error: "Missing orderId or storeId" }, { status: 400 });
+    if (!orderId) {
+      return NextResponse.json({ error: "Missing orderId" }, { status: 400 });
     }
 
     // Fetch the order
@@ -16,10 +16,17 @@ export async function POST(req: Request) {
     if (!orderDoc.exists) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
-    
+
     const orderData = orderDoc.data();
     if (orderData?.payment_status === "paid") {
       return NextResponse.json({ success: true, message: "Order already paid" });
+    }
+
+    // The order carries the store it was placed against, so the client
+    // doesn't need to know or send a store id at all.
+    const storeId = orderData?.store_id;
+    if (!storeId) {
+      return NextResponse.json({ error: "Order has no associated store" }, { status: 400 });
     }
 
     // Fetch Midtrans keys

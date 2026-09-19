@@ -1,4 +1,5 @@
 import { adminDb } from "@/lib/firebase/server";
+import { getActiveStoreId } from "@/lib/get-store-id";
 
 export interface CarouselSlide {
   id: string;
@@ -10,7 +11,7 @@ export interface CarouselSlide {
 }
 
 export async function getCarouselSlides(storeId?: string): Promise<CarouselSlide[]> {
-  const id = storeId || process.env.NEXT_PUBLIC_STORE_ID;
+  const id = storeId || (await getActiveStoreId());
   if (!id) return [];
 
   try {
