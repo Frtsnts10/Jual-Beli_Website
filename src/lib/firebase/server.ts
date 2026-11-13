@@ -1,4 +1,6 @@
-import * as admin from 'firebase-admin';
+import { cert, getApp, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { cookies } from 'next/headers';
 
 // Hardcoded to match the project the client SDK talks to (src/lib/firebase/client.ts) —
@@ -26,13 +28,14 @@ function formatPrivateKey(key?: string) {
   return cleaned;
 }
 
-if (!admin.apps.length) {
-  // Deliberately not wrapped in try/catch: a swallowed failure here leaves no default
-  // app, and the admin.firestore() call below then throws "The default Firebase app
-  // does not exist" — which hides the real cause (bad credentials) behind a misleading
-  // message on every page.
-  admin.initializeApp({
-    credential: admin.credential.cert({
+// Initialised on first use rather than at import time, so `next build` can collect
+// page data without credentials. A credential problem then throws its real error
+// (e.g. "Failed to parse private key") at the first Firestore/Auth call, instead of
+// failing the whole build or surfacing as "The default Firebase app does not exist".
+function getAdminApp() {
+  if (getApps().length > 0) return getApp();
+  return initializeApp({
+    credential: cert({
       projectId: FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
@@ -40,8 +43,18 @@ if (!admin.apps.length) {
   });
 }
 
-export const adminDb = admin.firestore();
-export const adminAuth = admin.auth();
+function lazy<T extends object>(resolve: () => T): T {
+  return new Proxy({} as T, {
+    get(_target, prop) {
+      const instance = resolve();
+      const value = Reflect.get(instance, prop, instance);
+      return typeof value === 'function' ? value.bind(instance) : value;
+    },
+  });
+}
+
+export const adminDb = lazy(() => getFirestore(getAdminApp()));
+export const adminAuth = lazy(() => getAuth(getAdminApp()));
 
 /**
  * Verifies the session cookie and returns the decoded user or null.
