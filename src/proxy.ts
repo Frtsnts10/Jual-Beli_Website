@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { cleanHost, storeKeyForHost } from "@/lib/host";
 
 // Multi-tenant routing (plan-storefront.md §7).
 //
@@ -14,23 +15,10 @@ import { NextResponse, type NextRequest } from "next/server";
 // lib/stores.ts. A rewritten request carries x-store-routing: host so pages know to
 // build links without the slug prefix.
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.toLowerCase();
 const REF_RE = /^[a-zA-Z0-9_-]{2,32}$/;
 
-function storeKeyForHost(host: string): string | null {
-  // The platform's own hosts — dev, IPs and *.vercel.app — use path-based routing.
-  if (!host || host === "localhost" || /^[\d.]+$/.test(host) || host.endsWith(".vercel.app")) return null;
-  if (ROOT_DOMAIN) {
-    if (host === ROOT_DOMAIN || host === `www.${ROOT_DOMAIN}`) return null;
-    if (host.endsWith(`.${ROOT_DOMAIN}`)) return host.slice(0, -(ROOT_DOMAIN.length + 1));
-  }
-  // Any other host pointed at this deployment is a store's custom domain — with or without
-  // a platform root domain. (Unknown domains get the "store not found" page, not the landing.)
-  return host;
-}
-
 export function proxy(request: NextRequest) {
-  const host = (request.headers.get("host") ?? "").toLowerCase().replace(/:\d+$/, "");
+  const host = cleanHost(request.headers.get("host"));
   const key = storeKeyForHost(host);
   const { pathname, searchParams } = request.nextUrl;
 

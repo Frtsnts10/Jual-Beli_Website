@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getStore } from "@/lib/stores";
+import { getStore, storeLinker, type PublicStore } from "@/lib/stores";
+import { StoreFooter, StoreNav, WhatsAppButton, type ChromeVariant, type NavLink } from "@/components/store-chrome";
 import { readableOn } from "@/lib/color";
 
 type Params = Promise<{ storeSlug: string }>;
@@ -18,9 +19,21 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
+/** Info pages exist only when the seller filled them in (dashboard → Pengaturan → Info toko). */
+function infoLinks(store: PublicStore, link: (path: string) => string): NavLink[] {
+  const { about, faq, warranty_policy } = store.store_info;
+  return [
+    ...(about ? [{ href: link("/tentang"), label: "Tentang" }] : []),
+    ...(faq.length ? [{ href: link("/faq"), label: "FAQ" }] : []),
+    ...(warranty_policy ? [{ href: link("/garansi"), label: "Garansi" }] : []),
+  ];
+}
+
 export default async function StoreLayout({ children, params }: { children: React.ReactNode; params: Params }) {
-  const store = await getStore((await params).storeSlug);
+  const { storeSlug } = await params;
+  const store = await getStore(storeSlug);
   if (!store) notFound();
+  const link = await storeLinker(storeSlug);
 
   const accent = store.storefront_config.accent_color;
   const style = { "--accent": accent, "--accent-fg": readableOn(accent) } as React.CSSProperties;
@@ -33,5 +46,21 @@ export default async function StoreLayout({ children, params }: { children: Reac
       </main>
     );
   }
-  return <div style={style}>{children}</div>;
+  const variant: ChromeVariant = store.template === "template_e_brutalist" ? "brutalist" : "clean";
+  const info = infoLinks(store, link);
+  const track = { href: link("/track"), label: "Lacak pesanan" };
+  return (
+    <div style={style} className="flex min-h-svh flex-col">
+      <StoreNav
+        storeName={store.store_name}
+        logoUrl={store.storefront_config.logo_url}
+        homeHref={link("")}
+        links={[{ href: `${link("")}#produk`, label: "Produk" }, track, ...info]}
+        variant={variant}
+      />
+      <div className="flex-1">{children}</div>
+      <StoreFooter storeName={store.store_name} links={[track, ...info]} variant={variant} />
+      {store.store_info.whatsapp && <WhatsAppButton phone={store.store_info.whatsapp} storeName={store.store_name} />}
+    </div>
+  );
 }

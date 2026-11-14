@@ -10,5 +10,4 @@ export type StoreProduct = StoreProductData & {
 export interface TemplateProps {
   store: PublicStore;
   products: StoreProduct[];
-  trackHref: string;
 }

@@ -1,16 +1,16 @@
 import { Sparkles } from "lucide-react";
 import { Lift, Reveal } from "@/components/motion";
 import { cn } from "@/lib/utils";
-import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter, isSoldOut } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, isSoldOut } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { TemplateProps } from "./types";
 
 // Template A — asymmetric bento grid, rounded and premium.
 const SPANS = ["md:col-span-2 md:row-span-2", "md:col-span-2", "", "", "md:col-span-2", "", "md:row-span-2", ""];
 
-export function BentoTemplate({ store, products, trackHref }: TemplateProps) {
+export function BentoTemplate({ store, products }: TemplateProps) {
   return (
-    <div className="min-h-svh bg-neutral-100 text-neutral-900">
+    <div className="min-h-[calc(100svh-3.5rem)] bg-neutral-100 text-neutral-900">
       <header className="mx-auto flex max-w-6xl items-center gap-4 px-6 pt-12 pb-8">
         <StoreLogo src={store.storefront_config.logo_url} name={store.store_name} className="size-12" />
         <div>
@@ -18,7 +18,7 @@ export function BentoTemplate({ store, products, trackHref }: TemplateProps) {
           {store.storefront_config.tagline && <p className="mt-1 text-neutral-500">{store.storefront_config.tagline}</p>}
         </div>
       </header>
-      <main className="mx-auto grid max-w-6xl auto-rows-[200px] grid-cols-1 gap-4 px-6 md:grid-cols-4">
+      <main id="produk" className="mx-auto grid max-w-6xl scroll-mt-20 auto-rows-[200px] grid-cols-1 gap-4 px-6 pb-12 md:grid-cols-4">
         {products.length === 0 && <EmptyCatalog className="col-span-full text-neutral-500" />}
         {products.map((p, i) => {
           const big = i % SPANS.length === 0;
@@ -58,7 +58,6 @@ export function BentoTemplate({ store, products, trackHref }: TemplateProps) {
           );
         })}
       </main>
-      <StoreFooter storeName={store.store_name} trackHref={trackHref} className="text-neutral-500" />
     </div>
   );
 }

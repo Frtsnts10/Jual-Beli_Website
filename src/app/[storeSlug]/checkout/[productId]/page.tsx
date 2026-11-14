@@ -29,7 +29,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
   const sale = priceFor(product, store.tier);
 
   return (
-    <main className="min-h-svh bg-neutral-50 px-4 py-10">
+    <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-10">
       <div className="mx-auto max-w-md">
         <Link href={link("/")} className="mb-6 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900">
           <ArrowLeft className="size-4" /> {store.store_name}

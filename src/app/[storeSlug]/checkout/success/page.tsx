@@ -29,7 +29,7 @@ export default async function CheckoutSuccessPage({
   const auto = TIERS[store.tier].autoFulfillment;
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-neutral-50 p-4">
+    <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center bg-neutral-50 p-4">
       <div className="w-full max-w-md rounded-2xl border bg-white p-8 text-center shadow-sm">
         {status === "PAID" ? (
           <>
