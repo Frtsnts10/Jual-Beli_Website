@@ -1,26 +1,51 @@
-# Shop Website
+# Shop Website — Dynamic Storefront & Checkout (B2C)
 
-A premium digital commerce frontend application built with Next.js App Router, Tailwind CSS, and HeroUI.
+Buyer-facing storefront for every store created in **Shop-Dashboard**. Renders one of
+five templates per store, runs a cart-less two-field checkout (email + WhatsApp) through
+Xendit, and offers an order-tracking / warranty portal.
 
-## Features
+Spec: `plan-storefront.md` (phase 1 implemented).
 
-- Modern, sleek UI with HeroUI
-- Fully responsive design
-- Next.js Server Components
-- Supabase Integration
+## Routing
 
-## Getting Started
+`src/proxy.ts` maps the request host to a store:
 
-First, run the development server:
+| Host | Served from |
+| --- | --- |
+| `toko.<ROOT_DOMAIN>/…` | `/toko/…` (subdomain) |
+| `namatoko.com/…` | `/namatoko.com/…` (custom domain, Ultimate only) |
+| `<ROOT_DOMAIN>/toko/…`, `localhost`, `*.vercel.app` | path-based, as-is |
+
+It also stores `?ref=<username>` in a 30-day cookie; checkout copies it to the order.
+
+| Route (inside a store) | |
+| --- | --- |
+| `/` | Storefront in the store's template |
+| `/checkout/[productId]` | Instant checkout (no cart) |
+| `/checkout?item=<productId>` | Deep link for WhatsApp catalogue bots |
+| `/checkout/success?order=` | Payment status, auto-refreshes until the webhook lands |
+| `/track` | Order lookup (invoice ID + email) and warranty claim |
+
+## Templates
+
+`src/components/templates/`: Bento Grid, List Minimalist (with search), Hero Catalog,
+App Store Hub, Neo-Brutalist. The template comes from
+`stores.storefront_config.layout_template`; templates outside the owner's plan fall back
+to Hero Catalog.
+
+## Data access
+
+Server-side Admin SDK only. The storefront reads `stores` (via `store_slugs` /
+`store_domains`) and published `products`, and creates `orders` with
+`payment_status: "PENDING"` — price and title always come from the database. It never
+reads `credentials_vault` or store secrets; stock is shown from the denormalised
+`products.stock_available` counter maintained by the dashboard. Orders become PAID only
+through the dashboard's verified Xendit webhook.
+
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local
+npm run dev -- -p 3001     # then open http://localhost:3001/<store-slug>
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

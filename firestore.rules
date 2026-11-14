@@ -1,20 +1,61 @@
 rules_version = '2';
 
-// Both the dashboard and the storefront reach Firestore exclusively through the
-// Firebase Admin SDK (src/lib/firebase/server.ts), which runs server-side and
-// bypasses these rules entirely. No browser code in either app reads or writes
-// Firestore — the client SDK is used only for Firebase Auth.
+// Data model: see src/types/schema.ts (plan-dashboard.md §5).
 //
-// The web API key and project id are public (they ship in every browser bundle),
-// so anything these rules allow is reachable by anyone on the internet, not just
-// by the app. Since no legitimate client request exists, the correct policy is to
-// deny every direct client request and let the server actions — which check the
-// session cookie and store ownership before touching data — be the only way in.
+// Both apps read and write Firestore through the Firebase Admin SDK on the server,
+// which bypasses these rules. The rules below are the second line of defence: they
+// define what a signed-in browser could do with the public web config if it talked to
+// Firestore directly.
 //
-// If you ever add a client-side Firestore read, it will fail until you add an
-// explicit match block for that collection here.
+// - Writes are server-only everywhere. Server actions enforce things rules cannot see
+//   cleanly (tier limits, unique slugs, prices taken from the product, PAID only via the
+//   verified Xendit webhook), so allowing client writes would let a tenant bypass them.
+// - Dashboard tenants can read only their own stores, products, vault and orders.
+// - The public can read active stores and published products (storefront catalogue).
+//   Store secrets (WA token, Xendit sub-account) live in stores/{id}/private/*, which is
+//   never readable by clients.
+// - Orders are created by the storefront's server route, never directly by browsers:
+//   a public `create` rule would let anyone write orders with an arbitrary amount.
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function ownsStore(storeId) {
+      return signedIn() && get(/databases/$(database)/documents/stores/$(storeId)).data.owner_uid == request.auth.uid;
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false; // subscription_tier must never be client-writable
+    }
+
+    match /stores/{storeId} {
+      allow read: if resource.data.is_active == true
+                  || (signedIn() && resource.data.owner_uid == request.auth.uid);
+      allow write: if false;
+
+      match /private/{doc} {
+        allow read, write: if false;
+      }
+    }
+
+    match /products/{productId} {
+      allow read: if resource.data.is_published == true || ownsStore(resource.data.store_id);
+      allow write: if false;
+    }
+
+    match /credentials_vault/{credentialId} {
+      allow read: if ownsStore(resource.data.store_id);
+      allow write: if false;
+    }
+
+    match /orders/{orderId} {
+      allow read: if ownsStore(resource.data.store_id);
+      allow write: if false;
+    }
+
+    // store_slugs, store_domains and anything else: server-only.
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,41 +1,129 @@
-export type Category = {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  created_at: string;
-};
+// Firestore data model — see plan-dashboard.md §5. Copied from the dashboard
+// repo (Shop-Dashboard/src/types/schema.ts); keep both in sync.
+//
+// Timestamps are stored as Firestore Timestamps and converted to ISO strings
+// at the server boundary (lib/firestore-mappers.ts) so they can cross into
+// Client Components.
 
-// Mapped from Dashboard InventoryItem
-export type Product = {
+export type SubscriptionTier = "starter" | "pro" | "ultimate";
+
+export type LayoutTemplate =
+  | "template_a_bento"
+  | "template_b_list"
+  | "template_c_hero"
+  | "template_d_appstore"
+  | "template_e_brutalist";
+
+export type PlatformType = "Media" | "AI" | "VPN" | "Music" | "Productivity" | "Other";
+
+/** users/{uid} */
+export interface UserDoc {
+  uid: string;
+  email: string;
+  full_name: string;
+  subscription_tier: SubscriptionTier;
+  subscription_expiry: string | null;
+  created_at: string;
+}
+
+export interface StorefrontConfig {
+  layout_template: LayoutTemplate;
+  accent_color: string;
+  tagline?: string;
+  banner_url?: string;
+  logo_url?: string;
+}
+
+/**
+ * stores/{storeId} — everything here is safe to show on the public storefront.
+ * Secrets (WA token, Xendit sub-account) live in stores/{storeId}/private/integrations
+ * so a public read of the store document can never leak them.
+ */
+export interface Store {
+  id: string;
+  owner_uid: string;
+  store_name: string;
+  slug: string;
+  custom_domain: string | null;
+  storefront_config: StorefrontConfig;
+  is_active: boolean;
+  created_at: string;
+}
+
+export type WaProvider = "fonnte" | "wablas" | "meta";
+
+/** stores/{storeId}/private/integrations — server-only */
+export interface StoreIntegrations {
+  xendit_sub_account_id: string | null;
+  wa_api_provider: WaProvider | null;
+  wa_api_token: string | null;
+  wa_message_template: string;
+}
+
+/** products/{productId} */
+export interface Product {
   id: string;
   store_id: string;
-  name: string;
-  slug: string; // Dashboard doesn't enforce slug, we'll generate or use id
+  title: string;
   description: string;
-  price: number; // mapped from selling_price
-  currency: string;
-  images: string[];
-  category_id: string;
-  stock: number;
+  image_url: string | null;
+  platform_type: PlatformType;
+  price: number;
+  /** How long a sold account stays active, used when a credential has no expiry of its own. */
+  duration_days: number;
+  is_flash_sale: boolean;
+  is_published: boolean;
+  /**
+   * Denormalised count of AVAILABLE credentials, maintained by the dashboard on every
+   * vault change, so the storefront can show stock without ever touching the vault.
+   */
+  stock_available: number;
   created_at: string;
   updated_at: string;
-  
-  // Custom dashboard fields
-  profile_tier?: string | null;
-  category?: string | null;
-  group_name?: string | null;
-};
+}
 
-export type Store = {
+export type CredentialStatus = "AVAILABLE" | "SOLD" | "EXPIRED";
+
+/** credentials_vault/{credentialId} — server-only, never sent to the storefront */
+export interface Credential {
   id: string;
-  owner_id: string;
-  name: string;
-  slug: string;
-  logo_url: string | null;
-  currency: string;
-  email: string;
-  instagram: string;
-  whatsapp: string;
+  store_id: string;
+  product_id: string;
+  account_email: string;
+  account_password: string;
+  profile_pin: string;
+  status: CredentialStatus;
+  expiry_date: string | null;
+  order_id: string | null;
   created_at: string;
-};
+  sold_at: string | null;
+}
+
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED";
+export type DeliveryStatus = "PENDING" | "SENT_VIA_WA";
+export type WarrantyStatus = "VALID" | "CLAIMED" | "REPLACED";
+
+/** orders/{orderId} — orderId has the form ORD-XXXXXXXX */
+export interface Order {
+  id: string;
+  store_id: string;
+  product_id: string;
+  /** Snapshot at checkout time so later product edits don't rewrite history. */
+  product_title: string;
+  amount: number;
+  credential_id: string | null;
+  customer_contact: { email: string; phone: string };
+  payment_status: PaymentStatus;
+  xendit_invoice_id: string | null;
+  xendit_invoice_url: string | null;
+  delivery_status: DeliveryStatus;
+  warranty_status: WarrantyStatus;
+  warranty_claim: { reason: string; claimed_at: string } | null;
+  /** Set when the order was paid but the vault had no AVAILABLE credential for it. */
+  needs_stock: boolean;
+  renewal_notified: boolean;
+  referral_code: string | null;
+  created_at: string;
+  paid_at: string | null;
+  access_expires_at: string | null;
+}
