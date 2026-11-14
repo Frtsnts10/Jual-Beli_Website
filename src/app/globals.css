@@ -1,67 +1,25 @@
 @import "tailwindcss";
-@import "../../node_modules/@heroui/react/dist/styles.css";
-
-@plugin "../hero.ts";
-@source "../**/*.{js,ts,jsx,tsx}";
-@source "../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: var(--bg);
-  --color-foreground: var(--fg);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Each store sets --accent (and --accent-fg) on its root element from storefront_config.accent_color. */
 :root {
-  --bg: #faf9f6;
-  --fg: #1c1917;
+  --accent: #10b981;
+  --accent-fg: #ffffff;
 }
 
-.dark {
-  --bg: #0b0f19;
-  --fg: #f8fafc;
+body {
+  background: #ffffff;
+  color: #0a0a0a;
 }
 
-html, body {
-  background-color: var(--bg);
-  color: var(--fg);
-  scroll-behavior: smooth;
-}
-
-/* Custom subtle scrollbar styling for high-end feel */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.2);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.4);
-}
-
-@keyframes bounceOnce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-3px) scale(1.01); }
-}
-
-@keyframes shakeSoft {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-3px); }
-  40%, 80% { transform: translateX(3px); }
-}
-
-.animate-bounce-once {
-  animation: bounceOnce 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-shake-soft {
-  animation: shakeSoft 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+/* Tailwind v4 defaults borders to currentColor; use a neutral hairline unless a class says otherwise. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-neutral-200);
+  }
 }
