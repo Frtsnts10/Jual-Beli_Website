@@ -31,17 +31,22 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
           {products.length === 0 && <EmptyCatalog className="text-neutral-500" />}
           {products.length > 0 && visible.length === 0 && <li className="py-10 text-center text-sm text-neutral-500">Tidak ada hasil.</li>}
           {visible.map((p) => (
-            <li key={p.id} className="flex items-center gap-4 py-3">
-              <span className="w-24 shrink-0 rounded bg-neutral-100 px-2 py-0.5 text-center text-xs text-neutral-600">{p.platform_type}</span>
+            <li key={p.id} className="flex items-center gap-3 py-3 sm:gap-4">
+              <span className="hidden w-24 shrink-0 rounded bg-neutral-100 px-2 py-0.5 text-center text-xs text-neutral-600 sm:block">{p.platform_type}</span>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium">
                   {p.title}
                   {p.is_flash_sale && <span className="ml-2 text-xs text-[var(--accent)]">● flash sale</span>}
                 </div>
-                <div className="text-xs text-neutral-400">{p.bundle_titles ? `Paket: ${p.bundle_titles.join(" + ")}` : `${p.duration_days} hari`}</div>
+                <div className="truncate text-xs text-neutral-400">
+                  <span className="sm:hidden">{p.platform_type} · </span>
+                  {p.bundle_titles ? `Paket: ${p.bundle_titles.join(" + ")}` : `${p.duration_days} hari`}
+                </div>
+                {/* Phone: the price (and flash-sale timer) goes under the name so the row never overflows. */}
+                <Price product={p} className="mt-1 block text-sm tabular-nums sm:hidden" />
               </div>
-              <Price product={p} className="text-right text-sm tabular-nums" />
-              <BuyButton product={p} className="rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
+              <Price product={p} className="hidden shrink-0 text-right text-sm tabular-nums sm:block" />
+              <BuyButton product={p} className="shrink-0 rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                 Beli
               </BuyButton>
             </li>

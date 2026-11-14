@@ -25,7 +25,12 @@ export function BentoTemplate({ store, products, trackHref }: TemplateProps) {
           return (
             <Reveal key={p.id} index={i} className={cn(SPANS[i % SPANS.length])}>
               <Lift className="group relative h-full overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
-                <ProductImage src={p.image_url} alt={p.title} className="absolute inset-0 size-full opacity-90 transition duration-500 group-hover:scale-105" />
+                {/* Without an image the initial sits top-right, clear of the title at the bottom. */}
+                <ProductImage
+                  src={p.image_url}
+                  alt={p.title}
+                  className="absolute inset-0 size-full items-start justify-end p-5 text-5xl opacity-90 transition duration-500 group-hover:scale-105"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 text-white">
                   <div className="min-w-0">
