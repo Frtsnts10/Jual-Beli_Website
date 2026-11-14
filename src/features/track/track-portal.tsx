@@ -15,7 +15,7 @@ const LABELS: Record<string, string> = {
   REPLACED: "Akun sudah diganti",
 };
 
-const inputCls = "rounded-lg border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
+const inputCls = "w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
 
 export function TrackPortal({ storeKey }: { storeKey: string }) {
   const [state, action, pending] = useActionState<TrackState, FormData>(trackOrder.bind(null, storeKey), undefined);
@@ -58,7 +58,7 @@ function OrderCard({ storeKey, order: initial, email }: { storeKey: string; orde
         {rows.map(([k, v]) => (
           <div key={k} className="flex justify-between gap-4">
             <dt className="text-neutral-500">{k}</dt>
-            <dd className="text-right font-medium">{v}</dd>
+            <dd className="min-w-0 text-right font-medium [overflow-wrap:anywhere]">{v}</dd>
           </div>
         ))}
       </dl>

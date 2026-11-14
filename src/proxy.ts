@@ -5,7 +5,10 @@ import { NextResponse, type NextRequest } from "next/server";
 //   toko.<ROOT_DOMAIN>/…   → rewritten to /toko/…            (subdomain)
 //   namatoko.com/…         → rewritten to /namatoko.com/…    (custom domain)
 //   <ROOT_DOMAIN>/toko/…   → served as-is                    (path-based; also localhost
-//                                                             and *.vercel.app previews)
+//                                                             and *.vercel.app)
+//
+// Custom domains work even without NEXT_PUBLIC_ROOT_DOMAIN: until the platform has its own
+// domain it lives on *.vercel.app and every other host is a store's domain.
 //
 // The [storeSlug] segment therefore holds either a slug or a custom domain; see
 // lib/stores.ts. A rewritten request carries x-store-routing: host so pages know to
@@ -15,14 +18,15 @@ const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.toLowerCase();
 const REF_RE = /^[a-zA-Z0-9_-]{2,32}$/;
 
 function storeKeyForHost(host: string): string | null {
-  // Development and preview hosts always use path-based routing.
-  if (host === "localhost" || /^[\d.]+$/.test(host) || host.endsWith(".vercel.app")) return null;
+  // The platform's own hosts — dev, IPs and *.vercel.app — use path-based routing.
+  if (!host || host === "localhost" || /^[\d.]+$/.test(host) || host.endsWith(".vercel.app")) return null;
   if (ROOT_DOMAIN) {
     if (host === ROOT_DOMAIN || host === `www.${ROOT_DOMAIN}`) return null;
     if (host.endsWith(`.${ROOT_DOMAIN}`)) return host.slice(0, -(ROOT_DOMAIN.length + 1));
-    return host; // any other host pointed at this deployment is a custom domain
   }
-  return null;
+  // Any other host pointed at this deployment is a store's custom domain — with or without
+  // a platform root domain. (Unknown domains get the "store not found" page, not the landing.)
+  return host;
 }
 
 export function proxy(request: NextRequest) {

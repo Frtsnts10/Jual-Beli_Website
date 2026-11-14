@@ -11,13 +11,13 @@ export function BrutalistTemplate({ store, products, trackHref }: TemplateProps)
     <div className="min-h-svh bg-[#f4f4f0] font-mono text-black">
       <header className="border-b-4 border-black bg-[var(--accent)] text-[var(--accent-fg)]">
         <div className="mx-auto max-w-6xl px-6 py-14">
-          <h1 className="text-5xl font-black tracking-tighter uppercase md:text-7xl">{store.store_name}</h1>
+          <h1 className="text-4xl font-black tracking-tighter uppercase [overflow-wrap:anywhere] sm:text-5xl md:text-7xl">{store.store_name}</h1>
           {store.storefront_config.tagline && (
             <p className="mt-4 inline-block border-2 border-black bg-white px-3 py-1 text-black shadow-[4px_4px_0_#000]">{store.storefront_config.tagline}</p>
           )}
         </div>
       </header>
-      <main className="mx-auto grid max-w-6xl gap-6 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3">
+      <main className="mx-auto grid max-w-6xl gap-6 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
         {products.length === 0 && <EmptyCatalog className="col-span-full" />}
         {products.map((p, i) => (
           <Reveal key={p.id} index={i}>
@@ -30,7 +30,7 @@ export function BrutalistTemplate({ store, products, trackHref }: TemplateProps)
                 </div>
                 <h2 className="text-xl leading-tight font-black">{p.title}</h2>
                 <BundleContents product={p} />
-                <div className="mt-auto flex items-center justify-between pt-3">
+                <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
                   <Price product={p} className="border-2 border-black bg-white px-2 py-1 text-lg font-black" />
                   <BuyButton
                     product={p}
