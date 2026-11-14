@@ -1,5 +1,5 @@
 import { Lift, Reveal } from "@/components/motion";
-import { BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
 import { ProductImage } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -29,6 +29,7 @@ export function BrutalistTemplate({ store, products, trackHref }: TemplateProps)
                   {p.is_flash_sale && <span className="rotate-3 bg-black px-2 text-xs font-bold text-white">SALE!</span>}
                 </div>
                 <h2 className="text-xl leading-tight font-black">{p.title}</h2>
+                <BundleContents product={p} />
                 <div className="mt-auto flex items-center justify-between pt-3">
                   <Price product={p} className="border-2 border-black bg-white px-2 py-1 text-lg font-black" />
                   <BuyButton

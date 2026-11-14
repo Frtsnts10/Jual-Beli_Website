@@ -17,6 +17,12 @@ export function Price({ product, className }: { product: StoreProduct; className
   );
 }
 
+/** "Netflix + Spotify" line under a bundle's title. */
+export function BundleContents({ product, className = "" }: { product: StoreProduct; className?: string }) {
+  if (!product.bundle_titles) return null;
+  return <p className={`text-xs opacity-70 ${className}`}>Paket: {product.bundle_titles.join(" + ")}</p>;
+}
+
 export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
   if (isSoldOut(product)) {
     return <span className={`${className} pointer-events-none opacity-40`}>Stok habis</span>;

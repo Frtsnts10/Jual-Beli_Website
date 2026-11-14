@@ -1,5 +1,5 @@
 import { Lift } from "@/components/motion";
-import { BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { StoreProduct, TemplateProps } from "./types";
 
@@ -39,6 +39,7 @@ function Shelf({ title, items, featured }: { title: string; items: StoreProduct[
               <ProductImage src={p.image_url} alt={p.title} className={featured ? "aspect-video w-full" : "aspect-square w-full"} />
             </div>
             <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-medium">{p.title}</h3>
+            <BundleContents product={p} className="line-clamp-1" />
             <div className="mt-1 flex items-center justify-between gap-2">
               <Price product={p} className="text-xs text-neutral-500" />
               <BuyButton product={p} className="shrink-0 rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-[var(--accent)] uppercase">

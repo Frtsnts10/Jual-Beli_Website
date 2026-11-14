@@ -19,6 +19,7 @@ export interface TierConfig {
   autoFulfillment: boolean;
   customDomain: boolean;
   marketing: boolean;
+  multiAdmin: boolean;
 }
 
 const ALL_TEMPLATES = TEMPLATES.map((t) => t.id);
@@ -35,6 +36,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     autoFulfillment: false,
     customDomain: false,
     marketing: false,
+    multiAdmin: false,
   },
   pro: {
     name: "Pro",
@@ -47,6 +49,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     autoFulfillment: true,
     customDomain: false,
     marketing: false,
+    multiAdmin: false,
   },
   ultimate: {
     name: "Ultimate",
@@ -59,6 +62,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     autoFulfillment: true,
     customDomain: true,
     marketing: true,
+    multiAdmin: true,
   },
 };
 

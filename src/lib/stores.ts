@@ -68,6 +68,9 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
   };
 });
 
+/** A published product as the storefront sees it; bundles carry their contents. */
+export type StoreProductData = Product & { bundle_titles: string[] | null };
+
 function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
   return {
     id,
@@ -78,6 +81,7 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     platform_type: d.platform_type ?? "Other",
     price: d.price ?? 0,
     duration_days: d.duration_days ?? 30,
+    bundle_items: d.bundle_items ?? null,
     is_flash_sale: d.is_flash_sale ?? false,
     flash_sale_price: d.flash_sale_price ?? null,
     flash_sale_ends_at: iso(d.flash_sale_ends_at) || null,
@@ -88,23 +92,43 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
   };
 }
 
-export const getPublishedProducts = cache(async (storeId: string): Promise<Product[]> => {
+/**
+ * Bundles have no stock of their own: available = the scarcest component's
+ * stock_available. Components may be unpublished (sold only inside the bundle).
+ */
+async function resolveBundles(products: Product[]): Promise<StoreProductData[]> {
+  const ids = [...new Set(products.flatMap((p) => p.bundle_items ?? []))];
+  const parts = ids.length ? await adminDb.getAll(...ids.map((id) => adminDb.collection("products").doc(id))) : [];
+  const byId = new Map(parts.filter((s) => s.exists).map((s) => [s.id, mapProduct(s.id, s.data()!)]));
+  return products.map((p) => {
+    if (!p.bundle_items?.length) return { ...p, bundle_titles: null };
+    const comps = p.bundle_items.map((id) => byId.get(id));
+    const complete = comps.every((c) => c && c.store_id === p.store_id);
+    return {
+      ...p,
+      stock_available: complete ? Math.min(...comps.map((c) => c!.stock_available)) : 0,
+      bundle_titles: comps.map((c) => c?.title ?? "?"),
+    };
+  });
+}
+
+export const getPublishedProducts = cache(async (storeId: string): Promise<StoreProductData[]> => {
   const snap = await adminDb
     .collection("products")
     .where("store_id", "==", storeId)
     .where("is_published", "==", true)
     .get();
-  return snap.docs
-    .map((doc) => mapProduct(doc.id, doc.data()))
+  return (await resolveBundles(snap.docs.map((doc) => mapProduct(doc.id, doc.data()))))
     .sort((a, b) => Number(b.is_flash_sale) - Number(a.is_flash_sale) || a.price - b.price);
 });
 
-export const getPublishedProduct = cache(async (storeId: string, productId: string): Promise<Product | null> => {
+export const getPublishedProduct = cache(async (storeId: string, productId: string): Promise<StoreProductData | null> => {
   if (!/^[A-Za-z0-9]{1,64}$/.test(productId)) return null;
   const snap = await adminDb.collection("products").doc(productId).get();
   if (!snap.exists) return null;
   const product = mapProduct(snap.id, snap.data()!);
-  return product.store_id === storeId && product.is_published ? product : null;
+  if (product.store_id !== storeId || !product.is_published) return null;
+  return (await resolveBundles([product]))[0];
 });
 
 /**
