@@ -3,7 +3,8 @@
 import { useActionState } from "react";
 import { Loader2, Search, ShieldAlert } from "lucide-react";
 import { formatDate, formatIDR } from "@/lib/utils";
-import { claimWarranty, trackOrder, type TrackState, type TrackedOrder } from "./actions";
+import { claimWarranty, trackOrder, type TrackState } from "./actions";
+import type { TrackedOrder } from "@/lib/orders";
 
 const LABELS: Record<string, string> = {
   PENDING: "Menunggu",
