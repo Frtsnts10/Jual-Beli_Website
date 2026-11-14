@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- seller-supplied banner URL */
 import { Lift, Reveal } from "@/components/motion";
-import { BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -34,6 +34,7 @@ export function HeroTemplate({ store, products, trackHref }: TemplateProps) {
                 <div className="flex flex-1 flex-col gap-1 p-4">
                   <span className="text-xs text-neutral-500">{p.platform_type}</span>
                   <h3 className="line-clamp-2 font-medium">{p.title}</h3>
+                  <BundleContents product={p} />
                   <Price product={p} className="mt-auto pt-2 font-semibold" />
                   <BuyButton product={p} className="mt-2 rounded-lg bg-[var(--accent)] py-2 text-center text-sm font-medium text-[var(--accent-fg)]" />
                 </div>

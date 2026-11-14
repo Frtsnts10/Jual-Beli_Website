@@ -38,7 +38,7 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
                   {p.title}
                   {p.is_flash_sale && <span className="ml-2 text-xs text-[var(--accent)]">● flash sale</span>}
                 </div>
-                <div className="text-xs text-neutral-400">{p.duration_days} hari</div>
+                <div className="text-xs text-neutral-400">{p.bundle_titles ? `Paket: ${p.bundle_titles.join(" + ")}` : `${p.duration_days} hari`}</div>
               </div>
               <Price product={p} className="text-right text-sm tabular-nums" />
               <BuyButton product={p} className="rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">

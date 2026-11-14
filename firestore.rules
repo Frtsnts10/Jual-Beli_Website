@@ -21,8 +21,10 @@ service cloud.firestore {
     function signedIn() {
       return request.auth != null;
     }
-    function ownsStore(storeId) {
-      return signedIn() && get(/databases/$(database)/documents/stores/$(storeId)).data.owner_uid == request.auth.uid;
+    // Owner or an admin the owner added (stores/{id}.admin_uids).
+    function managesStore(storeId) {
+      let store = get(/databases/$(database)/documents/stores/$(storeId)).data;
+      return signedIn() && (store.owner_uid == request.auth.uid || request.auth.uid in store.get('admin_uids', []));
     }
 
     match /users/{uid} {
@@ -32,7 +34,8 @@ service cloud.firestore {
 
     match /stores/{storeId} {
       allow read: if resource.data.is_active == true
-                  || (signedIn() && resource.data.owner_uid == request.auth.uid);
+                  || (signedIn() && (resource.data.owner_uid == request.auth.uid
+                                     || request.auth.uid in resource.data.get('admin_uids', [])));
       allow write: if false;
 
       match /private/{doc} {
@@ -41,17 +44,17 @@ service cloud.firestore {
     }
 
     match /products/{productId} {
-      allow read: if resource.data.is_published == true || ownsStore(resource.data.store_id);
+      allow read: if resource.data.is_published == true || managesStore(resource.data.store_id);
       allow write: if false;
     }
 
     match /credentials_vault/{credentialId} {
-      allow read: if ownsStore(resource.data.store_id);
+      allow read: if managesStore(resource.data.store_id);
       allow write: if false;
     }
 
     match /orders/{orderId} {
-      allow read: if ownsStore(resource.data.store_id);
+      allow read: if managesStore(resource.data.store_id);
       allow write: if false;
     }
 

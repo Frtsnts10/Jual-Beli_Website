@@ -1,7 +1,7 @@
-import type { Product } from "@/types/schema";
+import type { StoreProductData } from "@/lib/stores";
 import type { PublicStore } from "@/lib/stores";
 
-export type StoreProduct = Product & {
+export type StoreProduct = StoreProductData & {
   href: string;
   /** Current selling price (flash sale applied) and the crossed-out normal price, if any. */
   sale: { price: number; original: number | null; endsAt: string | null };

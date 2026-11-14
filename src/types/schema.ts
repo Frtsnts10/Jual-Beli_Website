@@ -84,6 +84,11 @@ export interface Product {
   /** How long a sold account stays active, used when a credential has no expiry of its own. */
   duration_days: number;
   is_flash_sale: boolean;
+  /**
+   * Ultimate bundling: ids of the component products (same store). A bundle has no vault
+   * stock of its own; each sale allocates one credential from every component.
+   */
+  bundle_items: string[] | null;
   /** Ultimate "Growth Engine": discounted price while flash_sale_ends_at is in the future. */
   flash_sale_price: number | null;
   flash_sale_ends_at: string | null;
@@ -126,7 +131,10 @@ export interface Order {
   /** Snapshot at checkout time so later product edits don't rewrite history. */
   product_title: string;
   amount: number;
+  /** First allocated credential (kept for single-product orders and older code paths). */
   credential_id: string | null;
+  /** All allocated credentials — one per bundle component. */
+  credential_ids: string[];
   customer_contact: { email: string; phone: string };
   payment_status: PaymentStatus;
   xendit_invoice_id: string | null;

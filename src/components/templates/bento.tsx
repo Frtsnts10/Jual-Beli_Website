@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { Lift, Reveal } from "@/components/motion";
 import { cn } from "@/lib/utils";
-import { BuyButton, EmptyCatalog, Price, StoreFooter, isSoldOut } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter, isSoldOut } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -35,6 +35,7 @@ export function BentoTemplate({ store, products, trackHref }: TemplateProps) {
                       </span>
                     )}
                     <h2 className={cn("font-semibold", big ? "text-2xl" : "text-base")}>{p.title}</h2>
+                    <BundleContents product={p} />
                     <Price product={p} className="text-sm text-white/80" />
                   </div>
                   <BuyButton
