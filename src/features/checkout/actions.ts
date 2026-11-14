@@ -8,6 +8,7 @@ import { newOrderId } from "@/lib/order-id";
 import { createInvoice, paymentMode } from "@/lib/xendit";
 import { TIERS } from "@/config/tiers";
 import { priceFor } from "@/lib/pricing";
+import { allow } from "@/lib/rate-limit";
 
 export type CheckoutState = { error?: string; email?: string; phone?: string; redirect?: string } | undefined;
 
@@ -26,6 +27,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   const echo = { email, phone: phoneRaw };
 
   if (!EMAIL_RE.test(email)) return { ...echo, error: "Email tidak valid." };
+  if (!(await allow("checkout"))) return { ...echo, error: "Terlalu banyak percobaan checkout. Coba lagi dalam beberapa menit." };
   const phone = normalisePhone(phoneRaw);
   if (!phone) return { ...echo, error: "Nomor WhatsApp tidak valid (contoh: 0812xxxxxxx)." };
 

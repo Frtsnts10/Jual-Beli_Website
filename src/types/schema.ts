@@ -57,6 +57,8 @@ export interface Store {
   custom_domain_status?: CustomDomainStatus | null;
   storefront_config: StorefrontConfig;
   is_active: boolean;
+  /** Set by a platform admin; the storefront and bots treat it like a closed store. */
+  suspended: boolean;
   created_at: string;
 }
 
@@ -155,6 +157,8 @@ export interface Order {
    */
   settlement: "SPLIT" | "PLATFORM" | "MANUAL";
   platform_fee: number;
+  /** For PLATFORM-settled orders: whether the platform has transferred amount − fee to the seller. */
+  payout_status: "OWED" | "PAID_OUT" | null;
   created_at: string;
   paid_at: string | null;
   access_expires_at: string | null;

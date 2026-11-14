@@ -51,3 +51,10 @@ npm install
 cp .env.example .env.local
 npm run dev -- -p 3001     # then open http://localhost:3001/<store-slug>
 ```
+
+## Abuse protection
+
+Checkout (10 / 10 min), order lookup (20 / 10 min) and warranty claims (5 / hour) are
+rate-limited per client IP (`src/lib/rate-limit.ts`, stored hashed in `rate_limits`).
+Enable a Firestore TTL policy on `rate_limits.expire_at` so old windows are deleted.
+CI (`.github/workflows/ci.yml`) runs typecheck, lint and build on every PR.

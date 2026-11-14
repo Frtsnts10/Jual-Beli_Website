@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getStore } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
+import { allow } from "@/lib/rate-limit";
 
 export interface TrackedOrder {
   id: string;
@@ -52,6 +53,8 @@ function toTracked(snap: FirebaseFirestore.DocumentSnapshot): TrackedOrder {
 export async function trackOrder(storeKey: string, _prev: TrackState, form: FormData): Promise<TrackState> {
   const orderId = String(form.get("order_id") ?? "");
   const email = String(form.get("email") ?? "");
+  // Limits guessing invoice IDs / emails.
+  if (!(await allow("track"))) return { orderId, email, error: "Terlalu banyak percobaan. Coba lagi dalam beberapa menit." };
   const snap = await findOrder(storeKey, orderId, email);
   if (!snap) return { orderId, email, error: "Pesanan tidak ditemukan. Periksa ID invoice dan email Anda." };
   return { orderId: snap.id, email, order: toTracked(snap) };
@@ -61,6 +64,7 @@ export async function claimWarranty(storeKey: string, _prev: TrackState, form: F
   const orderId = String(form.get("order_id") ?? "");
   const email = String(form.get("email") ?? "");
   const reason = String(form.get("reason") ?? "").trim();
+  if (!(await allow("claim"))) return { orderId, email, error: "Terlalu banyak klaim. Coba lagi nanti." };
 
   const snap = await findOrder(storeKey, orderId, email);
   if (!snap) return { orderId, email, error: "Pesanan tidak ditemukan." };
