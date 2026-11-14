@@ -1,16 +1,16 @@
 import { Lift } from "@/components/motion";
-import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { StoreProduct, TemplateProps } from "./types";
 
 // Template D — App Store / Netflix style: one horizontally scrolling shelf per category.
-export function AppStoreTemplate({ store, products, trackHref }: TemplateProps) {
+export function AppStoreTemplate({ store, products }: TemplateProps) {
   const shelves = new Map<string, StoreProduct[]>();
   for (const p of products) shelves.set(p.platform_type, [...(shelves.get(p.platform_type) ?? []), p]);
   const flash = products.filter((p) => p.is_flash_sale);
 
   return (
-    <div className="min-h-svh bg-white text-neutral-900">
+    <div className="min-h-[calc(100svh-3.5rem)] bg-white text-neutral-900">
       <header className="mx-auto flex max-w-6xl items-center gap-3 px-6 pt-10 pb-6">
         <StoreLogo src={store.storefront_config.logo_url} name={store.store_name} className="size-10" />
         <div>
@@ -18,12 +18,12 @@ export function AppStoreTemplate({ store, products, trackHref }: TemplateProps) 
           {store.storefront_config.tagline && <p className="text-sm text-neutral-500">{store.storefront_config.tagline}</p>}
         </div>
       </header>
+      <div id="produk" className="scroll-mt-20" />
       {products.length === 0 && <EmptyCatalog className="text-neutral-500" />}
       {flash.length > 0 && <Shelf title="🔥 Flash sale" items={flash} featured />}
       {[...shelves].map(([category, items]) => (
         <Shelf key={category} title={category} items={items} />
       ))}
-      <StoreFooter storeName={store.store_name} trackHref={trackHref} className="text-neutral-500" />
     </div>
   );
 }

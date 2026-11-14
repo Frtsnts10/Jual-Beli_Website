@@ -2,11 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BuyButton, EmptyCatalog, Price } from "./shared";
 import type { TemplateProps } from "./types";
 
 // Template B — Notion-like rows, no big images; built for catalogues with hundreds of items.
-export function ListTemplate({ store, products, trackHref }: TemplateProps) {
+export function ListTemplate({ store, products }: TemplateProps) {
   const [query, setQuery] = useState("");
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -14,7 +14,7 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
   }, [products, query]);
 
   return (
-    <div className="min-h-svh bg-white text-neutral-900">
+    <div className="min-h-[calc(100svh-3.5rem)] bg-white text-neutral-900">
       <div className="mx-auto max-w-3xl px-6 pt-16">
         <h1 className="text-3xl font-bold tracking-tight">{store.store_name}</h1>
         {store.storefront_config.tagline && <p className="mt-2 text-neutral-500">{store.storefront_config.tagline}</p>}
@@ -27,7 +27,7 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
             className="w-full bg-transparent text-sm outline-none"
           />
         </label>
-        <ul className="mt-4 divide-y divide-neutral-100">
+        <ul id="produk" className="mt-4 scroll-mt-20 divide-y divide-neutral-100 pb-12">
           {products.length === 0 && <EmptyCatalog className="text-neutral-500" />}
           {products.length > 0 && visible.length === 0 && <li className="py-10 text-center text-sm text-neutral-500">Tidak ada hasil.</li>}
           {visible.map((p) => (
@@ -53,7 +53,6 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
           ))}
         </ul>
       </div>
-      <StoreFooter storeName={store.store_name} trackHref={trackHref} className="max-w-3xl text-neutral-500" />
     </div>
   );
 }

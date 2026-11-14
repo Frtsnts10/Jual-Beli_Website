@@ -14,7 +14,6 @@ export default async function StorefrontPage({ params }: { params: Promise<{ sto
     <Template
       store={store}
       products={products.map((p) => ({ ...p, href: link(`/checkout/${p.id}`), sale: priceFor(p, store.tier) }))}
-      trackHref={link("/track")}
     />
   );
 }

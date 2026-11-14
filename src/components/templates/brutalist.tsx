@@ -1,14 +1,14 @@
 import { Lift, Reveal } from "@/components/motion";
-import { BundleContents, BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price } from "./shared";
 import { ProductImage } from "./product-image";
 import type { TemplateProps } from "./types";
 
 // Template E — Gumroad-style neo-brutalism: thick borders, solid shadows, loud colours.
 const CARD_BG = ["bg-[#ffc900]", "bg-[#ff90e8]", "bg-[#90a8ed]", "bg-[#23a094]", "bg-[#f1f333]"];
 
-export function BrutalistTemplate({ store, products, trackHref }: TemplateProps) {
+export function BrutalistTemplate({ store, products }: TemplateProps) {
   return (
-    <div className="min-h-svh bg-[#f4f4f0] font-mono text-black">
+    <div className="min-h-[calc(100svh-3.5rem)] bg-[#f4f4f0] font-mono text-black">
       <header className="border-b-4 border-black bg-[var(--accent)] text-[var(--accent-fg)]">
         <div className="mx-auto max-w-6xl px-6 py-14">
           <h1 className="text-4xl font-black tracking-tighter uppercase [overflow-wrap:anywhere] sm:text-5xl md:text-7xl">{store.store_name}</h1>
@@ -17,7 +17,7 @@ export function BrutalistTemplate({ store, products, trackHref }: TemplateProps)
           )}
         </div>
       </header>
-      <main className="mx-auto grid max-w-6xl gap-6 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
+      <main id="produk" className="mx-auto grid max-w-6xl scroll-mt-20 gap-6 px-6 py-12 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
         {products.length === 0 && <EmptyCatalog className="col-span-full" />}
         {products.map((p, i) => (
           <Reveal key={p.id} index={i}>
@@ -44,7 +44,6 @@ export function BrutalistTemplate({ store, products, trackHref }: TemplateProps)
           </Reveal>
         ))}
       </main>
-      <StoreFooter storeName={store.store_name} trackHref={trackHref} className="font-bold" />
     </div>
   );
 }

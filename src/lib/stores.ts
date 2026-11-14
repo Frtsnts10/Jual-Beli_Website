@@ -15,6 +15,8 @@ function effectiveTier(tier: SubscriptionTier | undefined, expiry: unknown): Sub
   return end && new Date(end) < new Date() ? "starter" : tier;
 }
 
+const str = (v: unknown) => (typeof v === "string" ? v : "");
+
 function iso(v: unknown): string {
   if (v && typeof v === "object" && "toDate" in v) return (v as { toDate(): Date }).toDate().toISOString();
   return typeof v === "string" ? v : "";
@@ -60,6 +62,14 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
       tagline: config.tagline ?? "",
       banner_url: config.banner_url ?? "",
       logo_url: config.logo_url ?? "",
+    },
+    store_info: {
+      about: str(d.store_info?.about),
+      faq: Array.isArray(d.store_info?.faq)
+        ? d.store_info.faq.filter((f: unknown) => f && typeof f === "object").map((f: { q?: unknown; a?: unknown }) => ({ q: str(f.q), a: str(f.a) }))
+        : [],
+      warranty_policy: str(d.store_info?.warranty_policy),
+      whatsapp: str(d.store_info?.whatsapp),
     },
     // A store suspended by a platform admin is shown (and sells) like a closed store.
     is_active: (d.is_active ?? true) && !d.suspended,
