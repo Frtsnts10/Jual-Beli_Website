@@ -5,21 +5,17 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
 import { newOrderId } from "@/lib/order-id";
-import { createInvoice, paymentMode } from "@/lib/xendit";
+import { createInvoice, isPaymentChannel, paymentMode } from "@/lib/xendit";
+import { getCustomer } from "@/lib/customer";
 import { TIERS } from "@/config/tiers";
 import { priceFor } from "@/lib/pricing";
 import { allow } from "@/lib/rate-limit";
+import { normalisePhone } from "@/lib/phone";
 
 export type CheckoutState = { error?: string; email?: string; phone?: string; redirect?: string } | undefined;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Normalises 08xx / 628xx / +628xx to +628xx; returns null when it isn't an Indonesian mobile number. */
-function normalisePhone(raw: string) {
-  const digits = raw.replace(/[^\d+]/g, "").replace(/^\+/, "");
-  const local = digits.startsWith("62") ? digits.slice(2) : digits.startsWith("0") ? digits.slice(1) : digits;
-  return /^8\d{8,12}$/.test(local) ? `+62${local}` : null;
-}
 
 export async function startCheckout(storeKey: string, productId: string, _prev: CheckoutState, form: FormData): Promise<CheckoutState> {
   const email = String(form.get("email") ?? "").trim().toLowerCase();
@@ -46,6 +42,10 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   // Flash-sale price if a sale is running right now; always computed on the server.
   const amount = priceFor(product, store.tier).price;
   const ref = (await cookies()).get("ref")?.value ?? null;
+  // Signed-in buyers: the order joins their history, and their WhatsApp is remembered.
+  const customer = await getCustomer();
+  const channelRaw = form.get("channel");
+  const channel = isPaymentChannel(channelRaw) ? channelRaw : null;
   const orderId = newOrderId();
   const orderRef = adminDb.collection("orders").doc(orderId);
   // Price, title and store come from the database, never from the form.
@@ -56,6 +56,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     amount,
     credential_id: null,
     customer_contact: { email, phone },
+    ...(customer ? { customer_uid: customer.uid } : {}),
     payment_status: "PENDING",
     xendit_invoice_id: null,
     xendit_invoice_url: null,
@@ -71,6 +72,10 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     paid_at: null,
     access_expires_at: null,
   });
+
+  if (customer && customer.phone !== phone) {
+    await adminDb.collection("customers").doc(customer.uid).update({ phone });
+  }
 
   // Pay into the seller's XenPlatform sub-account once it is LIVE; until then the platform collects.
   const integrations = await adminDb.collection("stores").doc(store.id).collection("private").doc("integrations").get();
@@ -93,6 +98,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
       failureUrl: `${origin}${link(`/checkout/${product.id}`)}`,
       subAccountId,
       tier: store.tier,
+      channel,
     });
     await orderRef.update({ xendit_invoice_id: invoice.id, xendit_invoice_url: invoice.invoice_url, settlement: invoice.settlement });
     return { redirect: invoice.invoice_url };

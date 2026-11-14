@@ -57,6 +57,11 @@ async function splitRuleFor(tier: SubscriptionTier): Promise<string> {
   return rule.id;
 }
 
+/** Channels the invoice offers; the buyer's last one can be preselected for one-tap checkout. */
+export const PAYMENT_CHANNELS = ["QRIS", "OVO", "DANA", "SHOPEEPAY", "LINKAJA", "ASTRAPAY"] as const;
+export type PaymentChannel = (typeof PAYMENT_CHANNELS)[number];
+export const isPaymentChannel = (v: unknown): v is PaymentChannel => PAYMENT_CHANNELS.includes(v as PaymentChannel);
+
 export interface InvoiceRequest {
   orderId: string;
   amount: number;
@@ -67,6 +72,8 @@ export interface InvoiceRequest {
   /** Seller's LIVE XenPlatform sub-account; without it the platform account collects. */
   subAccountId: string | null;
   tier: SubscriptionTier;
+  /** Offer only this channel (buyer chose "pay the same way again"). */
+  channel?: PaymentChannel | null;
 }
 
 export async function createInvoice(req: InvoiceRequest) {
@@ -84,7 +91,7 @@ export async function createInvoice(req: InvoiceRequest) {
       description: req.description,
       payer_email: req.customer.email,
       customer: { email: req.customer.email, mobile_number: req.customer.phone },
-      payment_methods: ["QRIS", "OVO", "DANA", "SHOPEEPAY", "LINKAJA", "ASTRAPAY"],
+      payment_methods: req.channel ? [req.channel] : [...PAYMENT_CHANNELS],
       invoice_duration: 60 * 60,
       success_redirect_url: req.successUrl,
       failure_redirect_url: req.failureUrl,

@@ -4,6 +4,7 @@ import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { adminDb } from "@/lib/firebase/admin";
 import { getStore, storeLinker } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
+import { getCustomer } from "@/lib/customer";
 import { formatIDR } from "@/lib/utils";
 import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
@@ -27,6 +28,8 @@ export default async function CheckoutSuccessPage({
   const status = snap.get("payment_status") as string;
   const link = await storeLinker(storeSlug);
   const auto = TIERS[store.tier].autoFulfillment;
+  const linked = !!snap.get("customer_uid");
+  const signedIn = !!(await getCustomer());
 
   return (
     <main className="flex min-h-[calc(100svh-3.5rem)] items-center justify-center bg-neutral-50 p-4">
@@ -65,10 +68,22 @@ export default async function CheckoutSuccessPage({
           <div className="mt-1 flex justify-between"><span className="text-neutral-500">Produk</span><span>{snap.get("product_title")}</span></div>
           <div className="mt-1 flex justify-between"><span className="text-neutral-500">Total</span><span>{formatIDR(snap.get("amount"))}</span></div>
         </div>
-        <p className="mt-4 text-xs text-neutral-500">Simpan ID invoice ini untuk melacak pesanan & klaim garansi.</p>
+        {linked ? (
+          <p className="mt-4 text-xs text-neutral-500">Pesanan ini tersimpan di akun Anda.</p>
+        ) : (
+          <p className="mt-4 text-xs text-neutral-500">Simpan ID invoice ini untuk melacak pesanan & klaim garansi.</p>
+        )}
+        {!signedIn && (
+          <Link
+            href={link(`/daftar?email=${encodeURIComponent(snap.get("customer_contact.email") ?? "")}`)}
+            className="mt-4 block rounded-lg border border-dashed border-neutral-300 px-4 py-3 text-sm hover:bg-neutral-50"
+          >
+            <b>Buat akun gratis</b> — pesanan ini otomatis masuk riwayat Anda, checkout berikutnya lebih cepat.
+          </Link>
+        )}
         <div className="mt-6 flex justify-center gap-4 text-sm">
-          <Link href={link("/track")} className="font-medium underline underline-offset-4">Lacak pesanan</Link>
-          <Link href={link("/")} className="text-neutral-500 underline underline-offset-4">Kembali ke toko</Link>
+          <Link href={link(linked ? "/akun" : "/track")} className="font-medium underline underline-offset-4">{linked ? "Lihat pesanan saya" : "Lacak pesanan"}</Link>
+          <Link href={link("")} className="text-neutral-500 underline underline-offset-4">Kembali ke toko</Link>
         </div>
       </div>
     </main>

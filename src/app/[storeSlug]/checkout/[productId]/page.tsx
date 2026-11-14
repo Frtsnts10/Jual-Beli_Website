@@ -8,6 +8,7 @@ import { ProductImage } from "@/components/templates/product-image";
 import { CheckoutForm } from "@/features/checkout/checkout-form";
 import { Countdown } from "@/components/countdown";
 import { priceFor } from "@/lib/pricing";
+import { getCustomer } from "@/lib/customer";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -27,6 +28,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
   if (!product) notFound();
   const link = await storeLinker(storeSlug);
   const sale = priceFor(product, store.tier);
+  const customer = await getCustomer();
 
   return (
     <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-10">
@@ -50,7 +52,13 @@ export default async function CheckoutPage({ params }: { params: Params }) {
           </div>
           {product.description && <p className="border-b px-5 py-4 text-sm whitespace-pre-line text-neutral-600">{product.description}</p>}
           <div className="p-5">
-            <CheckoutForm storeKey={storeSlug} productId={product.id} soldOut={product.stock_available < 1} />
+            <CheckoutForm
+              storeKey={storeSlug}
+              productId={product.id}
+              soldOut={product.stock_available < 1}
+              buyer={customer && { email: customer.email, phone: customer.phone, lastChannel: customer.last_channel }}
+              signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}
+            />
           </div>
         </div>
         <div className="mt-4 flex justify-center gap-6 text-xs text-neutral-500">

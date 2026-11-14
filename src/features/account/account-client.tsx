@@ -1,0 +1,220 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Loader2, LogOut } from "lucide-react";
+import { sendEmailVerification, signInWithEmailAndPassword, signOut, verifyBeforeUpdateEmail, sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/lib/firebase/client";
+import { cn } from "@/lib/utils";
+import { authError, inputCls } from "./auth-forms";
+import { claimFromAccount, deleteAccount, updateProfile, type FormState } from "./actions";
+
+const btn = "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50";
+const primary = `${btn} bg-[var(--accent)] text-[var(--accent-fg)]`;
+const outline = `${btn} border border-neutral-300 bg-white hover:bg-neutral-50`;
+
+export function AccountTabs({ tabs }: { tabs: { href: string; label: string }[] }) {
+  const pathname = usePathname();
+  return (
+    <nav className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 sm:mx-0 sm:px-0">
+      {tabs.map((t, i) => {
+        // The first tab (Pesanan) is the section root, so match it exactly.
+        const active = i === 0 ? pathname === t.href : pathname.startsWith(t.href);
+        return (
+          <Link
+            key={t.href}
+            href={t.href}
+            className={cn(
+              "-mb-px shrink-0 border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap",
+              active ? "border-[var(--accent)] text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-900"
+            )}
+          >
+            {t.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+export function SignOutButton({ homeHref }: { homeHref: string }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      className={outline}
+      onClick={async () => {
+        setBusy(true);
+        await fetch("/api/auth/session", { method: "DELETE" });
+        await signOut(auth).catch(() => {});
+        window.location.assign(homeHref);
+      }}
+    >
+      <LogOut className="size-4" /> Keluar
+    </button>
+  );
+}
+
+export function VerifyEmailBanner() {
+  const [state, setState] = useState<"idle" | "sent" | "error">("idle");
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+      Email Anda belum diverifikasi. Verifikasi agar pesanan lama dengan email ini ikut tampil.{" "}
+      {state === "sent" ? (
+        <span className="font-medium">Link verifikasi terkirim — cek email Anda, lalu muat ulang halaman ini.</span>
+      ) : (
+        <button
+          type="button"
+          className="font-semibold underline underline-offset-4"
+          onClick={async () => {
+            const user = auth.currentUser;
+            if (!user) return setState("error");
+            await sendEmailVerification(user).then(() => setState("sent"), () => setState("error"));
+          }}
+        >
+          Kirim ulang link verifikasi
+        </button>
+      )}
+      {state === "error" && <span className="block pt-1">Gagal mengirim. Keluar lalu masuk lagi, kemudian coba kembali.</span>}
+    </div>
+  );
+}
+
+function Feedback({ state, ok }: { state: FormState; ok: string }) {
+  if (state?.error) return <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>;
+  if (state?.ok) return <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{ok}</p>;
+  return null;
+}
+
+export function ProfileForm({ name, phone }: { name: string; phone: string }) {
+  const [state, action, pending] = useActionState(updateProfile, undefined);
+  return (
+    <form action={action} className="grid gap-3">
+      <label className="grid gap-1.5 text-sm font-medium">
+        Nama
+        <input name="name" required minLength={2} defaultValue={name} autoComplete="name" className={inputCls} />
+      </label>
+      <label className="grid gap-1.5 text-sm font-medium">
+        Nomor WhatsApp
+        <input name="phone" type="tel" inputMode="tel" defaultValue={phone} placeholder="0812xxxxxxxx" autoComplete="tel" className={inputCls} />
+        <span className="text-xs font-normal text-neutral-500">Dipakai otomatis saat checkout; akun premium dikirim ke nomor ini.</span>
+      </label>
+      <Feedback state={state} ok="Profil disimpan." />
+      <button disabled={pending} className={cn(primary, "w-fit")}>
+        {pending && <Loader2 className="size-4 animate-spin" />} Simpan profil
+      </button>
+    </form>
+  );
+}
+
+export function ClaimForm({ storeKey, orderId }: { storeKey: string; orderId: string }) {
+  const [open, setOpen] = useState(false);
+  const [state, action, pending] = useActionState(claimFromAccount.bind(null, storeKey), undefined);
+  if (state?.ok) return <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>;
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="text-sm font-semibold text-red-600 hover:underline">
+        Klaim garansi / lapor masalah
+      </button>
+    );
+  }
+  return (
+    <form action={action} className="grid gap-2">
+      <input type="hidden" name="order_id" value={orderId} />
+      <textarea name="reason" required minLength={10} rows={3} placeholder="Contoh: password tidak bisa dipakai login sejak tadi pagi" className={inputCls} />
+      <Feedback state={state} ok="" />
+      <div className="flex flex-wrap gap-2">
+        <button disabled={pending} className={cn(btn, "border-2 border-red-500 text-red-600")}>
+          {pending && <Loader2 className="size-4 animate-spin" />} Kirim klaim
+        </button>
+        <button type="button" onClick={() => setOpen(false)} className={outline}>
+          Batal
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export function PasswordReset({ email }: { email: string }) {
+  const [state, setState] = useState<{ sent?: boolean; error?: string; busy?: boolean }>({});
+  return (
+    <div className="grid gap-2">
+      <button
+        type="button"
+        disabled={state.busy || state.sent}
+        className={cn(outline, "w-fit")}
+        onClick={async () => {
+          setState({ busy: true });
+          await sendPasswordResetEmail(auth, email).then(
+            () => setState({ sent: true }),
+            (err) => setState({ error: authError(err) })
+          );
+        }}
+      >
+        {state.busy && <Loader2 className="size-4 animate-spin" />} Kirim link ganti password
+      </button>
+      {state.sent && <p className="text-sm text-emerald-700">Link terkirim ke {email}.</p>}
+      {state.error && <p className="text-sm text-red-700">{state.error}</p>}
+    </div>
+  );
+}
+
+/** Password accounts: re-enter the password, then Firebase emails a confirmation link to the new address. */
+export function ChangeEmailForm({ email }: { email: string }) {
+  const [state, setState] = useState<{ sent?: string; error?: string; busy?: boolean }>({});
+  if (state.sent) {
+    return (
+      <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+        Link konfirmasi dikirim ke <b>{state.sent}</b>. Email baru aktif setelah link diklik; setelah itu masuk lagi dengan email baru.
+      </p>
+    );
+  }
+  return (
+    <form
+      className="grid gap-3"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const f = new FormData(e.currentTarget);
+        const newEmail = String(f.get("new_email")).trim();
+        setState({ busy: true });
+        try {
+          const cred = await signInWithEmailAndPassword(auth, email, String(f.get("password")));
+          await verifyBeforeUpdateEmail(cred.user, newEmail);
+          setState({ sent: newEmail });
+        } catch (err) {
+          setState({ error: authError(err) });
+        }
+      }}
+    >
+      <input name="new_email" type="email" required placeholder="Email baru" autoComplete="email" className={inputCls} />
+      <input name="password" type="password" required placeholder="Password saat ini" autoComplete="current-password" className={inputCls} />
+      {state.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      <button disabled={state.busy} className={cn(outline, "w-fit")}>
+        {state.busy && <Loader2 className="size-4 animate-spin" />} Ganti email
+      </button>
+    </form>
+  );
+}
+
+export function DeleteAccountForm({ homeHref }: { homeHref: string }) {
+  const [state, action, pending] = useActionState(deleteAccount.bind(null, homeHref), undefined);
+  return (
+    <form
+      action={action}
+      // The login is about to be deleted; drop the browser's Firebase sign-in too.
+      onSubmit={() => void signOut(auth).catch(() => {})}
+      className="grid gap-3"
+    >
+      <p className="text-sm text-neutral-600">
+        Login dan profil Anda dihapus permanen di semua toko. Riwayat pesanan tetap disimpan penjual untuk keperluan garansi, tapi tidak lagi terhubung ke akun Anda.
+      </p>
+      <input name="confirm" required placeholder='Ketik "HAPUS"' autoComplete="off" className={cn(inputCls, "sm:w-60")} />
+      <Feedback state={state} ok="Akun dihapus." />
+      <button disabled={pending || !!state?.ok} className={cn(btn, "w-fit bg-red-600 text-white")}>
+        {pending && <Loader2 className="size-4 animate-spin" />} Hapus akun saya
+      </button>
+    </form>
+  );
+}

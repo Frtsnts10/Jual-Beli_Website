@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getStore, storeLinker, type PublicStore } from "@/lib/stores";
 import { StoreFooter, StoreNav, WhatsAppButton, type ChromeVariant, type NavLink } from "@/components/store-chrome";
 import { readableOn } from "@/lib/color";
+import Link from "next/link";
+import { UserRound } from "lucide-react";
+import { getCustomer } from "@/lib/customer";
 
 type Params = Promise<{ storeSlug: string }>;
 
@@ -49,6 +52,17 @@ export default async function StoreLayout({ children, params }: { children: Reac
   const variant: ChromeVariant = store.template === "template_e_brutalist" ? "brutalist" : "clean";
   const info = infoLinks(store, link);
   const track = { href: link("/track"), label: "Lacak pesanan" };
+  const customer = await getCustomer();
+  const account = customer ? (
+    <Link href={link("/akun")} className="flex items-center gap-1.5 rounded-full border border-current/15 px-3 py-1.5 text-sm font-medium">
+      <UserRound className="size-4" />
+      <span className="max-w-24 truncate">{customer.name.split(" ")[0] || "Akun"}</span>
+    </Link>
+  ) : (
+    <Link href={link("/masuk")} className="rounded-full bg-[var(--accent)] px-3.5 py-1.5 text-sm font-semibold text-[var(--accent-fg)]">
+      Masuk
+    </Link>
+  );
   return (
     <div style={style} className="flex min-h-svh flex-col">
       <StoreNav
@@ -57,6 +71,7 @@ export default async function StoreLayout({ children, params }: { children: Reac
         homeHref={link("")}
         links={[{ href: `${link("")}#produk`, label: "Produk" }, track, ...info]}
         variant={variant}
+        actions={account}
       />
       <div className="flex-1">{children}</div>
       <StoreFooter storeName={store.store_name} links={[track, ...info]} variant={variant} />

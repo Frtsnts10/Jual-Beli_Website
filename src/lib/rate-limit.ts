@@ -13,6 +13,8 @@ export const LIMITS = {
   checkout: { max: 10, windowSec: 10 * 60 },
   track: { max: 20, windowSec: 10 * 60 },
   claim: { max: 5, windowSec: 60 * 60 },
+  session: { max: 20, windowSec: 10 * 60 },
+  account: { max: 30, windowSec: 10 * 60 },
 } as const;
 
 async function clientIp() {
