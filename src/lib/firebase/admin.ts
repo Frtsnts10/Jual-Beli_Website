@@ -5,7 +5,7 @@ import { getFirestore } from "firebase-admin/firestore";
 
 // Not a secret; pinned so a stale FIREBASE_PROJECT_ID env var can't point the
 // Admin SDK at another project.
-const FIREBASE_PROJECT_ID = "web-store-4cf23";
+const FIREBASE_PROJECT_ID = "web-store-dashboard";
 
 // Hosting dashboards often store the key with escaped newlines, wrapping quotes or a
 // different line width; normalise back to a canonical 64-column PEM block.
