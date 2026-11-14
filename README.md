@@ -44,6 +44,20 @@ XenPlatform account is LIVE, platform account otherwise); stock is shown from th
 `products.stock_available` counter maintained by the dashboard. Orders become PAID only
 through the dashboard's verified Xendit webhook.
 
+## Project layout
+
+```
+src/
+  proxy.ts             host → store routing, ?ref capture
+  app/                 [storeSlug]/ (storefront, checkout, track), .well-known/store-check
+  components/templates the 5 storefront templates
+  features/            checkout and track (UI + server actions)
+  lib/                 store/product reads, pricing, Xendit, rate limiting, Firebase Admin
+  types/schema.ts      copy of the dashboard's data model
+```
+
+Firestore rules and indexes are owned by the **Shop-Dashboard** repo (deployed from there).
+
 ## Development
 
 ```bash
