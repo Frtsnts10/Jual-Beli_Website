@@ -66,6 +66,9 @@ export default async function CheckoutSuccessPage({
         <div className="mt-6 rounded-lg bg-neutral-50 p-4 text-left text-sm">
           <div className="flex justify-between"><span className="text-neutral-500">ID Invoice</span><span className="font-mono font-medium">{orderId}</span></div>
           <div className="mt-1 flex justify-between"><span className="text-neutral-500">Produk</span><span>{snap.get("product_title")}</span></div>
+          {snap.get("discount") > 0 && (
+            <div className="mt-1 flex justify-between"><span className="text-neutral-500">Voucher {snap.get("voucher_code")}</span><span className="text-emerald-700">−{formatIDR(snap.get("discount"))}</span></div>
+          )}
           <div className="mt-1 flex justify-between"><span className="text-neutral-500">Total</span><span>{formatIDR(snap.get("amount"))}</span></div>
         </div>
         {linked ? (

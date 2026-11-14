@@ -9,6 +9,7 @@ import { CheckoutForm } from "@/features/checkout/checkout-form";
 import { Countdown } from "@/components/countdown";
 import { priceFor } from "@/lib/pricing";
 import { getCustomer } from "@/lib/customer";
+import { TIERS } from "@/config/tiers";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -62,6 +63,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
               soldOut={product.stock_available < 1}
               buyer={customer && { email: customer.email, phone: customer.phone, lastChannel: customer.last_channel }}
               signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}
+              vouchers={TIERS[store.tier].vouchers}
             />
           </div>
         </div>
