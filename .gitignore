@@ -45,3 +45,6 @@ next-env.d.ts
 *.swp
 *.swo
 !.env.example
+
+# written by `next dev` (Next.js agent hints); regenerated on every run
+AGENTS.md
