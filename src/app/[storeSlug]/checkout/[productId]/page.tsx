@@ -6,6 +6,8 @@ import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
 import { formatIDR } from "@/lib/utils";
 import { ProductImage } from "@/components/templates/product-image";
 import { CheckoutForm } from "@/features/checkout/checkout-form";
+import { Countdown } from "@/components/countdown";
+import { priceFor } from "@/lib/pricing";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -24,6 +26,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
   const product = await getPublishedProduct(store.id, productId);
   if (!product) notFound();
   const link = await storeLinker(storeSlug);
+  const sale = priceFor(product, store.tier);
 
   return (
     <main className="min-h-svh bg-neutral-50 px-4 py-10">
@@ -37,7 +40,11 @@ export default async function CheckoutPage({ params }: { params: Params }) {
             <div className="min-w-0">
               <p className="text-xs text-neutral-500">{product.platform_type} · {product.duration_days} hari</p>
               <h1 className="font-semibold">{product.title}</h1>
-              <p className="mt-1 text-xl font-bold">{formatIDR(product.price)}</p>
+              <p className="mt-1 text-xl font-bold">
+                {sale.original && <span className="mr-2 text-sm font-normal text-neutral-400 line-through">{formatIDR(sale.original)}</span>}
+                {formatIDR(sale.price)}
+              </p>
+              {sale.endsAt && <Countdown endsAt={sale.endsAt} className="text-xs font-semibold text-red-500" />}
             </div>
           </div>
           {product.description && <p className="border-b px-5 py-4 text-sm whitespace-pre-line text-neutral-600">{product.description}</p>}

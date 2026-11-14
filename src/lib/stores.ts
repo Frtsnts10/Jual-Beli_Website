@@ -75,6 +75,8 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     price: d.price ?? 0,
     duration_days: d.duration_days ?? 30,
     is_flash_sale: d.is_flash_sale ?? false,
+    flash_sale_price: d.flash_sale_price ?? null,
+    flash_sale_ends_at: iso(d.flash_sale_ends_at) || null,
     is_published: d.is_published ?? false,
     stock_available: d.stock_available ?? 0,
     created_at: iso(d.created_at),

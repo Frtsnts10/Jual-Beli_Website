@@ -7,6 +7,7 @@ import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
 import { newOrderId } from "@/lib/order-id";
 import { createInvoice, paymentMode } from "@/lib/xendit";
 import { TIERS } from "@/config/tiers";
+import { priceFor } from "@/lib/pricing";
 
 export type CheckoutState = { error?: string; email?: string; phone?: string; redirect?: string } | undefined;
 
@@ -40,6 +41,8 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     return { ...echo, error: "Pembayaran belum dikonfigurasi oleh toko. Coba lagi nanti." };
   }
 
+  // Flash-sale price if a sale is running right now; always computed on the server.
+  const amount = priceFor(product, store.tier).price;
   const ref = (await cookies()).get("ref")?.value ?? null;
   const orderId = newOrderId();
   const orderRef = adminDb.collection("orders").doc(orderId);
@@ -48,7 +51,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     store_id: store.id,
     product_id: product.id,
     product_title: product.title,
-    amount: product.price,
+    amount,
     credential_id: null,
     customer_contact: { email, phone },
     payment_status: "PENDING",
@@ -61,7 +64,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     renewal_notified: false,
     referral_code: ref,
     settlement: mode === "manual" ? "MANUAL" : "PLATFORM",
-    platform_fee: Math.round((product.price * TIERS[store.tier].feePercent) / 100),
+    platform_fee: Math.round((amount * TIERS[store.tier].feePercent) / 100),
     created_at: FieldValue.serverTimestamp(),
     paid_at: null,
     access_expires_at: null,
@@ -81,7 +84,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   try {
     const invoice = await createInvoice({
       orderId,
-      amount: product.price,
+      amount,
       description: `${product.title} — ${store.store_name}`,
       customer: { email, phone },
       successUrl,

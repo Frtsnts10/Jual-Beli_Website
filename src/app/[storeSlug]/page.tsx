@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getPublishedProducts, getStore, storeLinker } from "@/lib/stores";
 import { TEMPLATE_COMPONENTS } from "@/components/templates";
+import { priceFor } from "@/lib/pricing";
 
 export default async function StorefrontPage({ params }: { params: Promise<{ storeSlug: string }> }) {
   const { storeSlug } = await params;
@@ -12,7 +13,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ sto
   return (
     <Template
       store={store}
-      products={products.map((p) => ({ ...p, href: link(`/checkout/${p.id}`) }))}
+      products={products.map((p) => ({ ...p, href: link(`/checkout/${p.id}`), sale: priceFor(p, store.tier) }))}
       trackHref={link("/track")}
     />
   );

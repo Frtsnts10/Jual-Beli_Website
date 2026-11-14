@@ -1,11 +1,20 @@
 import Link from "next/link";
 import { formatIDR } from "@/lib/utils";
+import { Countdown } from "@/components/countdown";
 import type { StoreProduct } from "./types";
 
 export const isSoldOut = (p: StoreProduct) => p.stock_available < 1;
 
 export function Price({ product, className }: { product: StoreProduct; className?: string }) {
-  return <span className={className}>{formatIDR(product.price)}</span>;
+  const { price, original, endsAt } = product.sale;
+  if (!original) return <span className={className}>{formatIDR(price)}</span>;
+  return (
+    <span className={className}>
+      <span className="mr-1 text-[0.85em] line-through opacity-60">{formatIDR(original)}</span>
+      {formatIDR(price)}
+      {endsAt && <Countdown endsAt={endsAt} className="ml-2 text-[0.8em] font-semibold whitespace-nowrap text-red-500" />}
+    </span>
+  );
 }
 
 export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
