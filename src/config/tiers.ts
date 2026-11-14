@@ -20,6 +20,8 @@ export interface TierConfig {
   customDomain: boolean;
   marketing: boolean;
   multiAdmin: boolean;
+  /** Discount codes at checkout. */
+  vouchers: boolean;
 }
 
 const ALL_TEMPLATES = TEMPLATES.map((t) => t.id);
@@ -37,6 +39,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     customDomain: false,
     marketing: false,
     multiAdmin: false,
+    vouchers: false,
   },
   pro: {
     name: "Pro",
@@ -50,6 +53,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     customDomain: false,
     marketing: false,
     multiAdmin: false,
+    vouchers: true,
   },
   ultimate: {
     name: "Ultimate",
@@ -63,6 +67,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     customDomain: true,
     marketing: true,
     multiAdmin: true,
+    vouchers: true,
   },
 };
 
