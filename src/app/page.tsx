@@ -1,6 +1,8 @@
 import { Zap, ShieldCheck, MessageCircle } from "lucide-react";
 
-const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL ?? "#";
+const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL?.replace(/\/+$/, "");
+// Sellers land straight on the dashboard's sign-up form.
+const SIGN_UP_URL = DASHBOARD_URL ? `${DASHBOARD_URL}/sign-up` : "#";
 
 export default function PlatformLanding() {
   return (
@@ -22,7 +24,7 @@ export default function PlatformLanding() {
           </div>
         ))}
       </div>
-      <a href={DASHBOARD_URL} className="mt-10 w-fit rounded-lg bg-neutral-900 px-5 py-3 text-sm font-medium text-white">
+      <a href={SIGN_UP_URL} className="mt-10 w-fit rounded-lg bg-neutral-900 px-5 py-3 text-sm font-medium text-white">
         Buka toko Anda gratis →
       </a>
     </main>
