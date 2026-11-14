@@ -1,6 +1,7 @@
 import "server-only";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
+import { getOwnReviews, type OwnReview } from "@/lib/reviews";
 
 export interface TrackedOrder {
   id: string;
@@ -64,7 +65,7 @@ async function linkGuestOrders(storeId: string, uid: string, email: string) {
   }
 }
 
-export type AccountOrder = TrackedOrder & { claim_reason: string | null };
+export type AccountOrder = TrackedOrder & { claim_reason: string | null; review: OwnReview | null };
 
 /** The buyer's orders on one store, newest first (history is per store by design). */
 export async function listCustomerOrders(storeId: string, customer: { uid: string; email: string; email_verified: boolean }): Promise<AccountOrder[]> {
@@ -76,5 +77,13 @@ export async function listCustomerOrders(storeId: string, customer: { uid: strin
     .orderBy("created_at", "desc")
     .limit(100)
     .get();
-  return snap.docs.map((d) => ({ ...toTracked(d), claim_reason: (d.get("warranty_claim.reason") as string) ?? null }));
+  const reviews = await getOwnReviews(
+    snap.docs.filter((d) => d.get("payment_status") === "PAID").map((d) => d.id),
+    customer.uid
+  );
+  return snap.docs.map((d) => ({
+    ...toTracked(d),
+    claim_reason: (d.get("warranty_claim.reason") as string) ?? null,
+    review: reviews.get(d.id) ?? null,
+  }));
 }

@@ -13,7 +13,7 @@ export default async function StorefrontPage({ params }: { params: Promise<{ sto
   return (
     <Template
       store={store}
-      products={products.map((p) => ({ ...p, href: link(`/checkout/${p.id}`), sale: priceFor(p, store.tier) }))}
+      products={products.map((p) => ({ ...p, href: link(`/checkout/${p.id}`), detailHref: link(`/p/${p.id}`), sale: priceFor(p, store.tier) }))}
     />
   );
 }

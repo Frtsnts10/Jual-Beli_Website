@@ -15,6 +15,7 @@ export const LIMITS = {
   claim: { max: 5, windowSec: 60 * 60 },
   session: { max: 20, windowSec: 10 * 60 },
   account: { max: 30, windowSec: 10 * 60 },
+  review: { max: 20, windowSec: 10 * 60 },
 } as const;
 
 async function clientIp() {

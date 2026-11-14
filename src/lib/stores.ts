@@ -3,6 +3,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { adminDb } from "@/lib/firebase/admin";
 import { TIERS } from "@/config/tiers";
+import { ratingCounts } from "@/lib/rating";
 import type { LayoutTemplate, Product, Store, SubscriptionTier } from "@/types/schema";
 
 // Storefront reads only `stores` and published `products` (plan-storefront.md §6).
@@ -99,6 +100,7 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     flash_sale_ends_at: iso(d.flash_sale_ends_at) || null,
     is_published: d.is_published ?? false,
     stock_available: d.stock_available ?? 0,
+    rating: ratingCounts(d.rating),
     created_at: iso(d.created_at),
     updated_at: iso(d.updated_at),
   };

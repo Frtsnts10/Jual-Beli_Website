@@ -4,7 +4,7 @@ import { getCustomer } from "@/lib/customer";
 import { getStore, storeLinker } from "@/lib/stores";
 import { listCustomerOrders, type AccountOrder } from "@/lib/orders";
 import { formatDate, formatIDR } from "@/lib/utils";
-import { ClaimForm } from "@/features/account/account-client";
+import { ClaimForm, ReviewForm } from "@/features/account/account-client";
 
 const PAY: Record<string, [string, string]> = {
   PAID: ["Lunas", "bg-emerald-50 text-emerald-700"],
@@ -53,6 +53,11 @@ function OrderCard({ order, storeKey, buyHref }: { order: AccountOrder; storeKey
         </Link>
         {canClaim && <ClaimForm storeKey={storeKey} orderId={order.id} />}
       </div>
+      {order.payment_status === "PAID" && (
+        <div className="mt-3 border-t pt-3">
+          <ReviewForm storeKey={storeKey} orderId={order.id} review={order.review} />
+        </div>
+      )}
     </li>
   );
 }

@@ -41,7 +41,11 @@ export default async function CheckoutPage({ params }: { params: Params }) {
             <ProductImage src={product.image_url} alt={product.title} className="size-20 shrink-0 rounded-xl" />
             <div className="min-w-0">
               <p className="text-xs text-neutral-500">{product.platform_type} · {product.duration_days} hari</p>
-              <h1 className="font-semibold">{product.title}</h1>
+              <h1 className="font-semibold">
+                <Link href={link(`/p/${product.id}`)} className="hover:underline">
+                  {product.title}
+                </Link>
+              </h1>
               {product.bundle_titles && <p className="text-xs text-neutral-500">Paket: {product.bundle_titles.join(" + ")}</p>}
               <p className="mt-1 text-xl font-bold">
                 {sale.original && <span className="mr-2 text-sm font-normal text-neutral-400 line-through">{formatIDR(sale.original)}</span>}

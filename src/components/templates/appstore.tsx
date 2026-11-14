@@ -1,5 +1,5 @@
 import { Lift } from "@/components/motion";
-import { BundleContents, BuyButton, EmptyCatalog, Price } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, ProductLink, RatingBadge } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { StoreProduct, TemplateProps } from "./types";
 
@@ -34,11 +34,14 @@ function Shelf({ title, items, featured }: { title: string; items: StoreProduct[
       <h2 className="mb-3 px-6 text-lg font-semibold">{title}</h2>
       <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 [scrollbar-width:none]">
         {items.map((p) => (
-          <Lift key={p.id} className={`shrink-0 snap-start ${featured ? "w-72" : "w-44"}`}>
+          <Lift key={p.id} className={`relative shrink-0 snap-start ${featured ? "w-72" : "w-44"}`}>
             <div className="overflow-hidden rounded-2xl bg-neutral-100">
               <ProductImage src={p.image_url} alt={p.title} className={featured ? "aspect-video w-full" : "aspect-square w-full"} />
             </div>
-            <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-medium">{p.title}</h3>
+            <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-medium">
+              <ProductLink product={p} />
+            </h3>
+            <RatingBadge product={p} />
             <BundleContents product={p} className="line-clamp-1" />
             <div className="mt-1 flex items-center justify-between gap-2">
               <Price product={p} className="text-xs text-neutral-500" />

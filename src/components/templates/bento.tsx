@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { Lift, Reveal } from "@/components/motion";
 import { cn } from "@/lib/utils";
-import { BundleContents, BuyButton, EmptyCatalog, Price, isSoldOut } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, CardLink, Price, ProductLink, RatingBadge, isSoldOut } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -32,6 +32,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                   className="absolute inset-0 size-full items-start justify-end p-5 text-5xl opacity-90 transition duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                <CardLink product={p} />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 text-white">
                   <div className="min-w-0">
                     {p.is_flash_sale && (
@@ -39,7 +40,10 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                         <Sparkles className="size-3" /> Flash sale
                       </span>
                     )}
-                    <h2 className={cn("font-semibold", big ? "text-2xl" : "text-base")}>{p.title}</h2>
+                    <h2 className={cn("font-semibold", big ? "text-2xl" : "text-base")}>
+                      <ProductLink product={p} />
+                    </h2>
+                    <RatingBadge product={p} className="text-white" />
                     <BundleContents product={p} />
                     <Price product={p} className="text-sm text-white/80" />
                   </div>

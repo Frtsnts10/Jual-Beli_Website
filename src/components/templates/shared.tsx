@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { formatIDR } from "@/lib/utils";
+import { Star } from "lucide-react";
 import { Countdown } from "@/components/countdown";
+import { ratingSummary } from "@/lib/rating";
+import { cn } from "@/lib/utils";
 import type { StoreProduct } from "./types";
 
 export const isSoldOut = (p: StoreProduct) => p.stock_available < 1;
@@ -23,12 +26,42 @@ export function BundleContents({ product, className = "" }: { product: StoreProd
   return <p className={`text-xs opacity-70 ${className}`}>Paket: {product.bundle_titles.join(" + ")}</p>;
 }
 
+/**
+ * The product name as a stretched link: its ::after covers the nearest `relative` card, so
+ * the whole card opens the detail page. BuyButton is lifted above it with z-10.
+ */
+export function ProductLink({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
+  return (
+    <Link href={product.detailHref} className={cn("after:absolute after:inset-0 after:z-[1] after:content-[''] focus-visible:underline focus-visible:outline-none", className)}>
+      {children ?? product.title}
+    </Link>
+  );
+}
+
+/** A whole-card link layer for cards whose title sits inside another positioned box (Bento). */
+export function CardLink({ product }: { product: StoreProduct }) {
+  return <Link href={product.detailHref} aria-hidden tabIndex={-1} className="absolute inset-0 z-[1]" />;
+}
+
+/** "★ 4.8 (12)" — nothing until the product has a visible review. */
+export function RatingBadge({ product, className = "" }: { product: StoreProduct; className?: string }) {
+  const { avg, count } = ratingSummary(product.rating);
+  if (!count) return null;
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-xs", className)} aria-label={`Rating ${avg} dari ${count} ulasan`}>
+      <Star className="size-3.5 fill-amber-400 text-amber-400" />
+      <b>{avg.toFixed(1)}</b>
+      <span className="opacity-60">({count})</span>
+    </span>
+  );
+}
+
 export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
   if (isSoldOut(product)) {
-    return <span className={`${className} pointer-events-none opacity-40`}>Stok habis</span>;
+    return <span className={`${className} pointer-events-none relative z-[2] opacity-40`}>Stok habis</span>;
   }
   return (
-    <Link href={product.href} className={className}>
+    <Link href={product.href} className={`${className} relative z-[2]`}>
       {children ?? "Beli Langsung"}
     </Link>
   );
