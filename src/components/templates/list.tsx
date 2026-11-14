@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { BuyButton, EmptyCatalog, Price } from "./shared";
+import { BuyButton, EmptyCatalog, Price, ProductLink, RatingBadge } from "./shared";
 import type { TemplateProps } from "./types";
 
 // Template B — Notion-like rows, no big images; built for catalogues with hundreds of items.
@@ -31,17 +31,18 @@ export function ListTemplate({ store, products }: TemplateProps) {
           {products.length === 0 && <EmptyCatalog className="text-neutral-500" />}
           {products.length > 0 && visible.length === 0 && <li className="py-10 text-center text-sm text-neutral-500">Tidak ada hasil.</li>}
           {visible.map((p) => (
-            <li key={p.id} className="flex items-center gap-3 py-3 sm:gap-4">
+            <li key={p.id} className="relative flex items-center gap-3 py-3 sm:gap-4">
               <span className="hidden w-24 shrink-0 rounded bg-neutral-100 px-2 py-0.5 text-center text-xs text-neutral-600 sm:block">{p.platform_type}</span>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium">
-                  {p.title}
+                  <ProductLink product={p} />
                   {p.is_flash_sale && <span className="ml-2 text-xs text-[var(--accent)]">● flash sale</span>}
                 </div>
                 <div className="truncate text-xs text-neutral-400">
                   <span className="sm:hidden">{p.platform_type} · </span>
                   {p.bundle_titles ? `Paket: ${p.bundle_titles.join(" + ")}` : `${p.duration_days} hari`}
                 </div>
+                <RatingBadge product={p} />
                 {/* Phone: the price (and flash-sale timer) goes under the name so the row never overflows. */}
                 <Price product={p} className="mt-1 block text-sm tabular-nums sm:hidden" />
               </div>

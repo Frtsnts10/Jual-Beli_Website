@@ -5,6 +5,8 @@
 // at the server boundary (lib/firestore-mappers.ts) so they can cross into
 // Client Components.
 
+import type { RatingCounts } from "@/lib/rating";
+
 export type SubscriptionTier = "starter" | "pro" | "ultimate";
 
 export type LayoutTemplate =
@@ -110,6 +112,26 @@ export interface Product {
    * vault change, so the storefront can show stock without ever touching the vault.
    */
   stock_available: number;
+  /** Visible review count per star (reviews/{orderId}), maintained in the review transactions. */
+  rating: RatingCounts;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * reviews/{orderId} — one per PAID order, written by the signed-in buyer who owns it.
+ * `hidden` is the seller's moderation switch; hidden reviews don't count in products.rating.
+ */
+export interface Review {
+  id: string;
+  store_id: string;
+  product_id: string;
+  customer_uid: string | null;
+  /** Display name ("Indra B."), frozen at write time. */
+  name: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  text: string;
+  hidden: boolean;
   created_at: string;
   updated_at: string;
 }

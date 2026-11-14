@@ -10,6 +10,7 @@ import { getStore } from "@/lib/stores";
 import { fileClaim } from "@/lib/orders";
 import { normalisePhone } from "@/lib/phone";
 import { allow } from "@/lib/rate-limit";
+import { anonymiseReviews, writeReview } from "@/lib/reviews";
 
 export type FormState = { ok?: boolean; error?: string } | undefined;
 
@@ -45,6 +46,25 @@ export async function claimFromAccount(storeKey: string, _prev: FormState, form:
   return { ok: true };
 }
 
+/** One review per PAID order, by the signed-in buyer who owns it; resubmitting edits it. */
+export async function submitReview(storeKey: string, _prev: FormState, form: FormData): Promise<FormState> {
+  const customer = await getCustomer();
+  if (!customer) return SIGNED_OUT;
+  if (!(await allow("review"))) return { error: "Terlalu banyak percobaan. Coba lagi nanti." };
+  const rating = Number(form.get("rating"));
+  const text = String(form.get("text") ?? "").trim().slice(0, 1000);
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return { error: "Pilih jumlah bintang (1–5)." };
+  const store = await getStore(storeKey);
+  const order = await adminDb.collection("orders").doc(String(form.get("order_id") ?? "")).get();
+  if (!store || !order.exists || order.get("store_id") !== store.id || order.get("customer_uid") !== customer.uid) {
+    return { error: "Pesanan tidak ditemukan." };
+  }
+  if (order.get("payment_status") !== "PAID") return { error: "Ulasan bisa ditulis setelah pesanan lunas." };
+  await writeReview(order, customer.name, rating, text);
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 /**
  * Deletes the buyer's login and profile. Orders stay (the seller needs them for records and
  * warranty) but are unlinked from the account. Accounts that are also a seller's dashboard
@@ -65,6 +85,7 @@ export async function deleteAccount(homeHref: string, _prev: FormState, form: Fo
     orders.docs.slice(i, i + 400).forEach((d) => batch.update(d.ref, { customer_uid: FieldValue.delete() }));
     await batch.commit();
   }
+  await anonymiseReviews(customer.uid);
   await adminDb.collection("customers").doc(customer.uid).delete();
   await adminAuth.deleteUser(customer.uid).catch((err) => {
     if ((err as { code?: string }).code !== "auth/user-not-found") throw err;

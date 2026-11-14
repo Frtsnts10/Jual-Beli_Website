@@ -1,5 +1,5 @@
 import { Lift, Reveal } from "@/components/motion";
-import { BundleContents, BuyButton, EmptyCatalog, Price } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, Price, ProductLink, RatingBadge } from "./shared";
 import { ProductImage } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -21,14 +21,17 @@ export function BrutalistTemplate({ store, products }: TemplateProps) {
         {products.length === 0 && <EmptyCatalog className="col-span-full" />}
         {products.map((p, i) => (
           <Reveal key={p.id} index={i}>
-            <Lift className={`flex h-full flex-col border-4 border-black shadow-[8px_8px_0_#000] ${CARD_BG[i % CARD_BG.length]}`}>
+            <Lift className={`relative flex h-full flex-col border-4 border-black shadow-[8px_8px_0_#000] ${CARD_BG[i % CARD_BG.length]}`}>
               <ProductImage src={p.image_url} alt={p.title} className="aspect-video w-full border-b-4 border-black" />
               <div className="flex flex-1 flex-col gap-2 p-4">
                 <div className="flex items-center justify-between">
                   <span className="border-2 border-black bg-white px-2 text-xs font-bold uppercase">{p.platform_type}</span>
                   {p.is_flash_sale && <span className="rotate-3 bg-black px-2 text-xs font-bold text-white">SALE!</span>}
                 </div>
-                <h2 className="text-xl leading-tight font-black">{p.title}</h2>
+                <h2 className="text-xl leading-tight font-black">
+                  <ProductLink product={p} />
+                </h2>
+                <RatingBadge product={p} className="font-bold" />
                 <BundleContents product={p} />
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-3">
                   <Price product={p} className="border-2 border-black bg-white px-2 py-1 text-lg font-black" />

@@ -3,12 +3,13 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, Star } from "lucide-react";
 import { sendEmailVerification, signInWithEmailAndPassword, signOut, verifyBeforeUpdateEmail, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
 import { cn } from "@/lib/utils";
+import { Stars } from "@/components/stars";
 import { authError, inputCls } from "./auth-forms";
-import { claimFromAccount, deleteAccount, updateProfile, type FormState } from "./actions";
+import { claimFromAccount, deleteAccount, submitReview, updateProfile, type FormState } from "./actions";
 
 const btn = "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50";
 const primary = `${btn} bg-[var(--accent)] text-[var(--accent-fg)]`;
@@ -137,6 +138,70 @@ export function ClaimForm({ storeKey, orderId }: { storeKey: string; orderId: st
   );
 }
 
+const STAR_LABEL = ["", "Buruk", "Kurang", "Cukup", "Bagus", "Sangat bagus"];
+
+/** "Tulis ulasan" on a paid order; with an existing review it shows it and offers "Ubah". */
+export function ReviewForm({ storeKey, orderId, review }: { storeKey: string; orderId: string; review: { rating: number; text: string; hidden: boolean } | null }) {
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState(review?.rating ?? 0);
+  const [state, action, pending] = useActionState(submitReview.bind(null, storeKey), undefined);
+  if (!open) {
+    if (!review) {
+      return (
+        <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1 text-sm font-semibold text-neutral-700 hover:underline">
+          <Star className="size-4" /> Tulis ulasan
+        </button>
+      );
+    }
+    return (
+      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <span className="text-neutral-500">Ulasan Anda:</span>
+        <Stars value={review.rating} />
+        {review.hidden && <span className="text-xs text-neutral-400">(disembunyikan penjual)</span>}
+        <button type="button" onClick={() => setOpen(true)} className="font-semibold text-neutral-700 hover:underline">
+          Ubah
+        </button>
+      </div>
+    );
+  }
+  return (
+    <form action={action} className="grid w-full gap-2">
+      <input type="hidden" name="order_id" value={orderId} />
+      <input type="hidden" name="rating" value={rating || ""} />
+      <div className="flex items-center gap-1" role="radiogroup" aria-label="Rating">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            role="radio"
+            aria-checked={rating === n}
+            aria-label={`${n} bintang`}
+            onClick={() => setRating(n)}
+            className="rounded p-0.5"
+          >
+            <Star className={cn("size-7", n <= rating ? "fill-amber-400 text-amber-400" : "text-neutral-300")} />
+          </button>
+        ))}
+        <span className="ml-2 text-sm text-neutral-500">{STAR_LABEL[rating]}</span>
+      </div>
+      <textarea name="text" rows={3} maxLength={1000} defaultValue={review?.text} placeholder="Ceritakan pengalaman Anda (opsional)" className={inputCls} />
+      {state?.ok ? (
+        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Terima kasih! Ulasan Anda tersimpan.</p>
+      ) : (
+        <Feedback state={state} ok="" />
+      )}
+      <div className="flex flex-wrap gap-2">
+        <button disabled={pending || !rating} className={primary}>
+          {pending && <Loader2 className="size-4 animate-spin" />} Kirim ulasan
+        </button>
+        <button type="button" onClick={() => setOpen(false)} className={outline}>
+          {state?.ok ? "Tutup" : "Batal"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function PasswordReset({ email }: { email: string }) {
   const [state, setState] = useState<{ sent?: boolean; error?: string; busy?: boolean }>({});
   return (
@@ -208,7 +273,7 @@ export function DeleteAccountForm({ homeHref }: { homeHref: string }) {
       className="grid gap-3"
     >
       <p className="text-sm text-neutral-600">
-        Login dan profil Anda dihapus permanen di semua toko. Riwayat pesanan tetap disimpan penjual untuk keperluan garansi, tapi tidak lagi terhubung ke akun Anda.
+        Login dan profil Anda dihapus permanen di semua toko. Riwayat pesanan tetap disimpan penjual untuk keperluan garansi, tapi tidak lagi terhubung ke akun Anda. Ulasan Anda tetap tampil sebagai “Pembeli”.
       </p>
       <input name="confirm" required placeholder='Ketik "HAPUS"' autoComplete="off" className={cn(inputCls, "sm:w-60")} />
       <Feedback state={state} ok="Akun dihapus." />
