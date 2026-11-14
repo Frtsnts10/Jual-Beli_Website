@@ -38,7 +38,9 @@ to Hero Catalog.
 Server-side Admin SDK only. The storefront reads `stores` (via `store_slugs` /
 `store_domains`) and published `products`, and creates `orders` with
 `payment_status: "PENDING"` — price and title always come from the database. It never
-reads `credentials_vault` or store secrets; stock is shown from the denormalised
+reads `credentials_vault`; of the store's private integrations it reads only the
+Xendit sub-account id/status, to route payment (split payment when the seller's
+XenPlatform account is LIVE, platform account otherwise); stock is shown from the denormalised
 `products.stock_available` counter maintained by the dashboard. Orders become PAID only
 through the dashboard's verified Xendit webhook.
 

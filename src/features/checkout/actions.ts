@@ -6,6 +6,7 @@ import { adminDb } from "@/lib/firebase/admin";
 import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
 import { newOrderId } from "@/lib/order-id";
 import { createInvoice, paymentMode } from "@/lib/xendit";
+import { TIERS } from "@/config/tiers";
 
 export type CheckoutState = { error?: string; email?: string; phone?: string; redirect?: string } | undefined;
 
@@ -59,10 +60,16 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     needs_stock: false,
     renewal_notified: false,
     referral_code: ref,
+    settlement: mode === "manual" ? "MANUAL" : "PLATFORM",
+    platform_fee: Math.round((product.price * TIERS[store.tier].feePercent) / 100),
     created_at: FieldValue.serverTimestamp(),
     paid_at: null,
     access_expires_at: null,
   });
+
+  // Pay into the seller's XenPlatform sub-account once it is LIVE; until then the platform collects.
+  const integrations = await adminDb.collection("stores").doc(store.id).collection("private").doc("integrations").get();
+  const subAccountId = integrations.get("xendit_account_status") === "LIVE" ? (integrations.get("xendit_sub_account_id") as string) : null;
 
   const link = await storeLinker(storeKey);
   const h = await headers();
@@ -79,8 +86,10 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
       customer: { email, phone },
       successUrl,
       failureUrl: `${origin}${link(`/checkout/${product.id}`)}`,
+      subAccountId,
+      tier: store.tier,
     });
-    await orderRef.update({ xendit_invoice_id: invoice.id, xendit_invoice_url: invoice.invoice_url });
+    await orderRef.update({ xendit_invoice_id: invoice.id, xendit_invoice_url: invoice.invoice_url, settlement: invoice.settlement });
     return { redirect: invoice.invoice_url };
   } catch (err) {
     console.error(err);

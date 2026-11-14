@@ -55,6 +55,8 @@ export type WaProvider = "fonnte" | "wablas" | "meta";
 /** stores/{storeId}/private/integrations — server-only */
 export interface StoreIntegrations {
   xendit_sub_account_id: string | null;
+  /** Mirrors the XenPlatform account status; split payments are used only when LIVE. */
+  xendit_account_status: "INVITED" | "REGISTERED" | "AWAITING_DOCS" | "LIVE" | "SUSPENDED" | null;
   wa_api_provider: WaProvider | null;
   wa_api_token: string | null;
   wa_message_template: string;
@@ -123,7 +125,30 @@ export interface Order {
   needs_stock: boolean;
   renewal_notified: boolean;
   referral_code: string | null;
+  /**
+   * SPLIT: paid into the seller's Xendit sub-account with the platform fee split off.
+   * PLATFORM: paid into the platform's master account (seller not connected yet);
+   * the platform owes the seller amount − platform_fee.
+   */
+  settlement: "SPLIT" | "PLATFORM" | "MANUAL";
+  platform_fee: number;
   created_at: string;
   paid_at: string | null;
   access_expires_at: string | null;
+}
+
+export type BillingPeriod = "monthly" | "yearly";
+
+/** subscription_payments/{SUB-XXXXXXXX} — plan purchases, paid to the platform's master account */
+export interface SubscriptionPayment {
+  id: string;
+  uid: string;
+  tier: Exclude<SubscriptionTier, "starter">;
+  period: BillingPeriod;
+  amount: number;
+  status: "PENDING" | "PAID" | "EXPIRED";
+  xendit_invoice_id: string | null;
+  xendit_invoice_url: string | null;
+  created_at: string;
+  paid_at: string | null;
 }

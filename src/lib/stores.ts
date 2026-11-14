@@ -8,6 +8,13 @@ import type { LayoutTemplate, Product, Store, SubscriptionTier } from "@/types/s
 // Storefront reads only `stores` and published `products` (plan-storefront.md §6).
 // It never touches credentials_vault or stores/{id}/private.
 
+/** Paid plans past subscription_expiry act as Starter (same rule as the dashboard's mappers). */
+function effectiveTier(tier: SubscriptionTier | undefined, expiry: unknown): SubscriptionTier {
+  if (!tier || tier === "starter") return "starter";
+  const end = iso(expiry);
+  return end && new Date(end) < new Date() ? "starter" : tier;
+}
+
 function iso(v: unknown): string {
   if (v && typeof v === "object" && "toDate" in v) return (v as { toDate(): Date }).toDate().toISOString();
   return typeof v === "string" ? v : "";
@@ -31,7 +38,7 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
   const d = snap.data()!;
 
   const owner = await adminDb.collection("users").doc(d.owner_uid).get();
-  const tier: SubscriptionTier = owner.get("subscription_tier") ?? "starter";
+  const tier = effectiveTier(owner.get("subscription_tier"), owner.get("subscription_expiry"));
   // A custom domain only works while the owner's plan includes it.
   if (isDomain && !TIERS[tier].customDomain) return null;
 
