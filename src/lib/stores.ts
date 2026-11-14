@@ -30,7 +30,11 @@ export interface PublicStore extends Store {
 export const getStore = cache(async (key: string): Promise<PublicStore | null> => {
   const decoded = decodeURIComponent(key).toLowerCase();
   const isDomain = decoded.includes(".");
-  const index = await adminDb.collection(isDomain ? "store_domains" : "store_slugs").doc(decoded).get();
+  let index = await adminDb.collection(isDomain ? "store_domains" : "store_slugs").doc(decoded).get();
+  // www.tokoku.com serves the same store as tokoku.com (Vercel also redirects www → apex).
+  if (!index.exists && isDomain && decoded.startsWith("www.")) {
+    index = await adminDb.collection("store_domains").doc(decoded.slice(4)).get();
+  }
   if (!index.exists) return null;
 
   const snap = await adminDb.collection("stores").doc(index.get("store_id")).get();
@@ -75,6 +79,8 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     price: d.price ?? 0,
     duration_days: d.duration_days ?? 30,
     is_flash_sale: d.is_flash_sale ?? false,
+    flash_sale_price: d.flash_sale_price ?? null,
+    flash_sale_ends_at: iso(d.flash_sale_ends_at) || null,
     is_published: d.is_published ?? false,
     stock_available: d.stock_available ?? 0,
     created_at: iso(d.created_at),

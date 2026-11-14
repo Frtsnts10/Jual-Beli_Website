@@ -34,6 +34,14 @@ export interface StorefrontConfig {
   logo_url?: string;
 }
 
+export interface CustomDomainStatus {
+  state: "pending" | "active";
+  /** attached: on the storefront's Vercel project · dns: points at it · live: https://domain serves this store */
+  checks: { attached: boolean; dns: boolean; live: boolean };
+  message: string | null;
+  checked_at: string | null;
+}
+
 /**
  * stores/{storeId} — everything here is safe to show on the public storefront.
  * Secrets (WA token, Xendit sub-account) live in stores/{storeId}/private/integrations
@@ -45,6 +53,8 @@ export interface Store {
   store_name: string;
   slug: string;
   custom_domain: string | null;
+  /** Result of the last "Cek sekarang" run for custom_domain (dashboard only). */
+  custom_domain_status?: CustomDomainStatus | null;
   storefront_config: StorefrontConfig;
   is_active: boolean;
   created_at: string;
@@ -74,6 +84,9 @@ export interface Product {
   /** How long a sold account stays active, used when a credential has no expiry of its own. */
   duration_days: number;
   is_flash_sale: boolean;
+  /** Ultimate "Growth Engine": discounted price while flash_sale_ends_at is in the future. */
+  flash_sale_price: number | null;
+  flash_sale_ends_at: string | null;
   is_published: boolean;
   /**
    * Denormalised count of AVAILABLE credentials, maintained by the dashboard on every
@@ -119,6 +132,8 @@ export interface Order {
   xendit_invoice_id: string | null;
   xendit_invoice_url: string | null;
   delivery_status: DeliveryStatus;
+  /** Last automatic-delivery failure (n8n unreachable, WA not configured…), cleared on success. */
+  delivery_error: string | null;
   warranty_status: WarrantyStatus;
   warranty_claim: { reason: string; claimed_at: string } | null;
   /** Set when the order was paid but the vault had no AVAILABLE credential for it. */
@@ -151,4 +166,24 @@ export interface SubscriptionPayment {
   xendit_invoice_url: string | null;
   created_at: string;
   paid_at: string | null;
+}
+
+/** broadcasts/{id} — Ultimate WhatsApp broadcast CRM */
+export interface Broadcast {
+  id: string;
+  store_id: string;
+  message: string;
+  audience: "all" | "product";
+  product_id: string | null;
+  recipients: number;
+  status: "SENT" | "FAILED";
+  error: string | null;
+  created_at: string;
+}
+
+/** Price a buyer pays right now. Flash-sale pricing applies only while the timer runs. */
+export function effectivePrice(p: Pick<Product, "price" | "is_flash_sale" | "flash_sale_price" | "flash_sale_ends_at">, now = new Date()) {
+  const active =
+    p.is_flash_sale && p.flash_sale_price != null && p.flash_sale_price < p.price && !!p.flash_sale_ends_at && new Date(p.flash_sale_ends_at) > now;
+  return active ? { price: p.flash_sale_price!, original: p.price, endsAt: p.flash_sale_ends_at } : { price: p.price, original: null, endsAt: null };
 }

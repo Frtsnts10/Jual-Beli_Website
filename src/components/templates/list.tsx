@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { formatIDR } from "@/lib/utils";
-import { BuyButton, EmptyCatalog, StoreFooter } from "./shared";
+import { BuyButton, EmptyCatalog, Price, StoreFooter } from "./shared";
 import type { TemplateProps } from "./types";
 
 // Template B — Notion-like rows, no big images; built for catalogues with hundreds of items.
@@ -41,7 +40,7 @@ export function ListTemplate({ store, products, trackHref }: TemplateProps) {
                 </div>
                 <div className="text-xs text-neutral-400">{p.duration_days} hari</div>
               </div>
-              <span className="text-sm tabular-nums">{formatIDR(p.price)}</span>
+              <Price product={p} className="text-right text-sm tabular-nums" />
               <BuyButton product={p} className="rounded-md bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                 Beli
               </BuyButton>
