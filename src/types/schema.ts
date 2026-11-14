@@ -34,6 +34,14 @@ export interface StorefrontConfig {
   logo_url?: string;
 }
 
+export interface CustomDomainStatus {
+  state: "pending" | "active";
+  /** attached: on the storefront's Vercel project · dns: points at it · live: https://domain serves this store */
+  checks: { attached: boolean; dns: boolean; live: boolean };
+  message: string | null;
+  checked_at: string | null;
+}
+
 /**
  * stores/{storeId} — everything here is safe to show on the public storefront.
  * Secrets (WA token, Xendit sub-account) live in stores/{storeId}/private/integrations
@@ -45,6 +53,8 @@ export interface Store {
   store_name: string;
   slug: string;
   custom_domain: string | null;
+  /** Result of the last "Cek sekarang" run for custom_domain (dashboard only). */
+  custom_domain_status?: CustomDomainStatus | null;
   storefront_config: StorefrontConfig;
   is_active: boolean;
   created_at: string;
