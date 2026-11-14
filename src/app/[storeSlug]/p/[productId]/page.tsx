@@ -11,6 +11,8 @@ import { requestStore } from "@/lib/request-store";
 import { ProductImage } from "@/components/templates/product-image";
 import { Countdown } from "@/components/countdown";
 import { Stars } from "@/components/stars";
+import { RestockForm } from "@/features/restock/restock-form";
+import { getCustomer } from "@/lib/customer";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -33,7 +35,12 @@ export default async function ProductPage({ params }: { params: Params }) {
   if (!store) notFound();
   const product = await getPublishedProduct(store.id, productId);
   if (!product) notFound();
-  const [link, reviews, { origin }] = await Promise.all([storeLinker(storeSlug), getProductReviews(store.id, product.id), requestStore()]);
+  const [link, reviews, { origin }, customer] = await Promise.all([
+    storeLinker(storeSlug),
+    getProductReviews(store.id, product.id),
+    requestStore(),
+    getCustomer(),
+  ]);
   const sale = priceFor(product, store.tier);
   const rating = ratingSummary(product.rating);
   const soldOut = product.stock_available < 1 || !store.is_active;
@@ -107,8 +114,10 @@ export default async function ProductPage({ params }: { params: Params }) {
               </div>
             )}
 
-            {soldOut ? (
-              <span className="rounded-xl bg-neutral-200 py-3.5 text-center font-semibold text-neutral-500">{store.is_active ? "Stok habis" : "Toko sedang tutup"}</span>
+            {!store.is_active ? (
+              <span className="rounded-xl bg-neutral-200 py-3.5 text-center font-semibold text-neutral-500">Toko sedang tutup</span>
+            ) : soldOut ? (
+              <RestockForm storeKey={storeSlug} productId={product.id} phone={customer?.phone} />
             ) : (
               <Link
                 href={link(`/checkout/${product.id}`)}

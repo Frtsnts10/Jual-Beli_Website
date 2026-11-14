@@ -10,6 +10,7 @@ import { Countdown } from "@/components/countdown";
 import { priceFor } from "@/lib/pricing";
 import { getCustomer } from "@/lib/customer";
 import { TIERS } from "@/config/tiers";
+import { RestockForm } from "@/features/restock/restock-form";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -56,7 +57,8 @@ export default async function CheckoutPage({ params }: { params: Params }) {
             </div>
           </div>
           {product.description && <p className="border-b px-5 py-4 text-sm whitespace-pre-line text-neutral-600">{product.description}</p>}
-          <div className="p-5">
+          <div className="grid gap-4 p-5">
+            {product.stock_available < 1 && <RestockForm storeKey={storeSlug} productId={product.id} phone={customer?.phone} />}
             <CheckoutForm
               storeKey={storeSlug}
               productId={product.id}

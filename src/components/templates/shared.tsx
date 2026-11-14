@@ -58,7 +58,11 @@ export function RatingBadge({ product, className = "" }: { product: StoreProduct
 
 export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
   if (isSoldOut(product)) {
-    return <span className={`${className} pointer-events-none relative z-[2] opacity-40`}>Stok habis</span>;
+    return (
+      <Link href={`${product.detailHref}#kabari`} className={`${className} relative z-[2] opacity-60`} title="Stok habis — minta dikabari saat tersedia">
+        Kabari saya
+      </Link>
+    );
   }
   return (
     <Link href={product.href} className={`${className} relative z-[2]`}>
