@@ -17,6 +17,7 @@ export const LIMITS = {
   account: { max: 30, windowSec: 10 * 60 },
   review: { max: 20, windowSec: 10 * 60 },
   voucher: { max: 30, windowSec: 10 * 60 },
+  restock: { max: 10, windowSec: 10 * 60 },
 } as const;
 
 async function clientIp() {
