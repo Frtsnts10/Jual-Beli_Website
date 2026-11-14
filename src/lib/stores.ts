@@ -61,7 +61,9 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
       banner_url: config.banner_url ?? "",
       logo_url: config.logo_url ?? "",
     },
-    is_active: d.is_active ?? true,
+    // A store suspended by a platform admin is shown (and sells) like a closed store.
+    is_active: (d.is_active ?? true) && !d.suspended,
+    suspended: d.suspended ?? false,
     created_at: iso(d.created_at),
     tier,
     template: TIERS[tier].templates.includes(wanted) ? wanted : "template_c_hero",
