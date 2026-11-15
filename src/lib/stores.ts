@@ -72,6 +72,9 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
       warranty_policy: str(d.store_info?.warranty_policy),
       whatsapp: str(d.store_info?.whatsapp),
     },
+    payment: d.payment?.qris_payload
+      ? { qris_payload: str(d.payment.qris_payload), merchant_name: str(d.payment.merchant_name), nmid: d.payment.nmid ?? null, updated_at: iso(d.payment.updated_at) }
+      : null,
     // A store suspended by a platform admin is shown (and sells) like a closed store.
     is_active: (d.is_active ?? true) && !d.suspended,
     suspended: d.suspended ?? false,

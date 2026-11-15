@@ -15,8 +15,6 @@ export interface Customer {
   google: boolean;
   name: string;
   phone: string;
-  /** Last QRIS / e-wallet channel used, offered as one-tap "pay the same way" at checkout. */
-  last_channel: string | null;
 }
 
 /** The signed-in buyer on this domain, or null. */
@@ -37,7 +35,6 @@ export const getCustomer = cache(async (): Promise<Customer | null> => {
       google: decoded.firebase?.sign_in_provider === "google.com",
       name: (snap.get("name") as string) ?? "",
       phone: (snap.get("phone") as string) ?? "",
-      last_channel: (snap.get("saved_checkout.last_channel") as string) ?? null,
     };
   } catch {
     return null; // expired, revoked (password change, account deleted) or malformed

@@ -20,7 +20,7 @@ export default async function TrackPage({ params }: { params: Promise<{ storeSlu
         </Link>
         <h1 className="text-2xl font-semibold">Lacak pesanan</h1>
         <p className="mt-1 mb-6 text-sm text-neutral-500">Masukkan ID invoice dan email untuk melihat status, masa aktif dan klaim garansi.</p>
-        <TrackPortal storeKey={storeSlug} />
+        <TrackPortal storeKey={storeSlug} payBase={link("/bayar/")} />
       </div>
     </main>
   );

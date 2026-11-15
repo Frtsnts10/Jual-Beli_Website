@@ -1,11 +1,10 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
-import { FieldValue } from "firebase-admin/firestore";
+import { cookies } from "next/headers";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
 import { newOrderId } from "@/lib/order-id";
-import { createInvoice, isPaymentChannel, paymentMode } from "@/lib/xendit";
 import { getCustomer } from "@/lib/customer";
 import { TIERS } from "@/config/tiers";
 import { priceFor } from "@/lib/pricing";
@@ -55,11 +54,8 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   if (!product) return { ...echo, error: "Produk tidak ditemukan." };
   if (product.stock_available < 1) return { ...echo, error: "Maaf, stok produk ini sedang habis." };
 
-  const mode = paymentMode();
-  if (mode === "unconfigured") {
-    console.error("Checkout blocked: set XENDIT_SECRET_KEY (or PAYMENT_MODE=manual).");
-    return { ...echo, error: "Pembayaran belum dikonfigurasi oleh toko. Coba lagi nanti." };
-  }
+  // Payment goes straight to the seller's own QRIS; without one there is nothing to pay into.
+  if (!store.payment) return { ...echo, error: "Toko ini belum mengatur pembayaran QRIS. Hubungi penjual." };
 
   // Flash-sale price if a sale is running right now; always computed on the server.
   const price = priceFor(product, store.tier).price;
@@ -67,44 +63,51 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   const ref = (await cookies()).get("ref")?.value ?? null;
   // Signed-in buyers: the order joins their history, and their WhatsApp is remembered.
   const customer = await getCustomer();
-  const channelRaw = form.get("channel");
-  const channel = isPaymentChannel(channelRaw) ? channelRaw : null;
   const orderId = newOrderId();
   const orderRef = adminDb.collection("orders").doc(orderId);
+
   // Price, title and store come from the database, never from the form. The voucher's quota
   // is claimed in the same transaction that creates the order, so two buyers can't take the
   // last use, and a refused voucher creates no order.
   const outcome = await adminDb.runTransaction(async (tx) => {
+    // All reads first (Firestore transactions require it), then the writes.
+    const vRef = useVoucher ? voucherRef(store.id, voucherCode) : null;
+    const [voucherSnap, open] = await Promise.all([
+      vRef ? tx.get(vRef) : null,
+      tx.get(adminDb.collection("orders").where("store_id", "==", store.id).where("payment_status", "==", "PENDING").select("amount")),
+    ]);
     let discount = 0;
-    if (useVoucher) {
-      const vRef = voucherRef(store.id, voucherCode);
-      const check = evaluateVoucher(toVoucher(await tx.get(vRef)), { storeId: store.id, productId: product.id, amount: price });
+    if (vRef) {
+      const check = evaluateVoucher(toVoucher(voucherSnap!), { storeId: store.id, productId: product.id, amount: price });
       if (!check.ok) return { error: check.error };
       discount = check.discount;
       tx.update(vRef, { used_count: FieldValue.increment(1) });
     }
-    const amount = price - discount;
+    // Kode unik: a few rupiah on top so the seller can match each QRIS transfer to its order.
+    const uniqueCode = pickUniqueCode(price - discount, new Set(open.docs.map((d) => d.get("amount") as number)));
+    const amount = price - discount + uniqueCode;
     tx.create(orderRef, {
       store_id: store.id,
       product_id: product.id,
       product_title: product.title,
       amount,
+      unique_code: uniqueCode,
       voucher_code: useVoucher ? voucherCode : null,
       discount,
       credential_id: null,
       customer_contact: { email, phone },
       ...(customer ? { customer_uid: customer.uid } : {}),
       payment_status: "PENDING",
-      xendit_invoice_id: null,
-      xendit_invoice_url: null,
+      payment_method: "QRIS",
+      pay_by: Timestamp.fromMillis(Date.now() + PAY_WINDOW_MS),
+      proof_uploaded_at: null,
+      rejected_reason: null,
       delivery_status: "PENDING",
       warranty_status: "VALID",
       warranty_claim: null,
       needs_stock: false,
       renewal_notified: false,
       referral_code: ref,
-      settlement: mode === "manual" ? "MANUAL" : "PLATFORM",
-      platform_fee: Math.round((amount * TIERS[store.tier].feePercent) / 100),
       created_at: FieldValue.serverTimestamp(),
       paid_at: null,
       access_expires_at: null,
@@ -112,53 +115,22 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     return { amount };
   });
   if ("error" in outcome) return { ...echo, error: outcome.error };
-  const { amount } = outcome;
 
   if (customer && customer.phone !== phone) {
     await adminDb.collection("customers").doc(customer.uid).update({ phone });
   }
-
-  // Pay into the seller's XenPlatform sub-account once it is LIVE; until then the platform collects.
-  const integrations = await adminDb.collection("stores").doc(store.id).collection("private").doc("integrations").get();
-  const subAccountId = integrations.get("xendit_account_status") === "LIVE" ? (integrations.get("xendit_sub_account_id") as string) : null;
-
   const link = await storeLinker(storeKey);
-  const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-  const successUrl = `${origin}${link(`/checkout/success?order=${orderId}`)}`;
-
-  if (mode === "manual") return { redirect: successUrl };
-
-  try {
-    const invoice = await createInvoice({
-      orderId,
-      amount,
-      description: `${product.title} — ${store.store_name}`,
-      customer: { email, phone },
-      successUrl,
-      failureUrl: `${origin}${link(`/checkout/${product.id}`)}`,
-      subAccountId,
-      tier: store.tier,
-      channel,
-    });
-    await orderRef.update({ xendit_invoice_id: invoice.id, xendit_invoice_url: invoice.invoice_url, settlement: invoice.settlement });
-    return { redirect: invoice.invoice_url };
-  } catch (err) {
-    console.error(err);
-    await failAndReleaseVoucher(orderRef);
-    return { ...echo, error: "Gagal membuat tagihan pembayaran. Silakan coba lagi." };
-  }
+  return { redirect: link(`/bayar/${orderId}`) };
 }
 
-/** No invoice, no sale: the order fails and its voucher use goes back to the quota. */
-async function failAndReleaseVoucher(orderRef: FirebaseFirestore.DocumentReference) {
-  await adminDb.runTransaction(async (tx) => {
-    const order = await tx.get(orderRef);
-    if (order.get("payment_status") !== "PENDING") return;
-    const code = order.get("voucher_code") as string | null;
-    const vRef = code ? voucherRef(order.get("store_id"), code) : null;
-    const voucher = vRef ? await tx.get(vRef) : null;
-    tx.update(orderRef, { payment_status: "FAILED" });
-    if (vRef && voucher?.exists && (voucher.get("used_count") ?? 0) > 0) tx.update(vRef, { used_count: FieldValue.increment(-1) });
-  });
+/** Buyers have this long to pay and upload the proof before the order is cancelled. */
+const PAY_WINDOW_MS = 60 * 60 * 1000;
+
+/** 1–499 rupiah, avoiding totals already waiting for payment in this store. */
+function pickUniqueCode(base: number, taken: Set<number>) {
+  for (let i = 0; i < 50; i++) {
+    const code = 1 + Math.floor(Math.random() * 499);
+    if (!taken.has(base + code)) return code;
+  }
+  return 1 + Math.floor(Math.random() * 499);
 }

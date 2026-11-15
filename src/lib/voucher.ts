@@ -26,7 +26,7 @@ export interface Voucher {
   active: boolean;
 }
 
-/** Xendit refuses invoices below this, so a discount never takes an order under it. */
+/** A discount never takes an order below this (keeps every order a real, payable QRIS amount). */
 export const MIN_PAYABLE = 1_000;
 
 export const CODE_RE = /^[A-Z0-9]{3,20}$/;

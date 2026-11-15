@@ -15,7 +15,6 @@ export interface TierConfig {
   maxStores: number;
   maxCredentials: number;
   templates: LayoutTemplate[];
-  feePercent: number;
   autoFulfillment: boolean;
   customDomain: boolean;
   marketing: boolean;
@@ -34,7 +33,6 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     maxStores: 1,
     maxCredentials: 50,
     templates: ["template_b_list", "template_c_hero"],
-    feePercent: 5,
     autoFulfillment: false,
     customDomain: false,
     marketing: false,
@@ -48,7 +46,6 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     maxStores: 3,
     maxCredentials: Infinity,
     templates: ALL_TEMPLATES,
-    feePercent: 3,
     autoFulfillment: true,
     customDomain: false,
     marketing: false,
@@ -62,7 +59,6 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     maxStores: Infinity,
     maxCredentials: Infinity,
     templates: ALL_TEMPLATES,
-    feePercent: 1,
     autoFulfillment: true,
     customDomain: true,
     marketing: true,

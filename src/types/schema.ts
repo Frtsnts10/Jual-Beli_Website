@@ -36,12 +36,12 @@ export interface StorefrontConfig {
   logo_url?: string;
 }
 
-/** Public "about this store" content: info pages, footer and the WhatsApp chat button. */
+/** Public "about this store" content shown on the storefront's info pages and footer. */
 export interface StoreInfo {
   about: string;
   faq: { q: string; a: string }[];
   warranty_policy: string;
-  /** +62… or empty. */
+  /** Seller's WhatsApp for the floating chat button, normalised to +62… (empty = hidden). */
   whatsapp: string;
 }
 
@@ -55,7 +55,7 @@ export interface CustomDomainStatus {
 
 /**
  * stores/{storeId} — everything here is safe to show on the public storefront.
- * Secrets (WA token, Xendit sub-account) live in stores/{storeId}/private/integrations
+ * Secrets (WA token, bot tokens) live in stores/{storeId}/private/integrations
  * so a public read of the store document can never leak them.
  */
 export interface Store {
@@ -66,21 +66,30 @@ export interface Store {
   custom_domain: string | null;
   /** Result of the last "Cek sekarang" run for custom_domain (dashboard only). */
   custom_domain_status?: CustomDomainStatus | null;
-  storefront_config: StorefrontConfig;
   store_info: StoreInfo;
+  /** The seller's own QRIS; buyers pay it directly and the seller confirms. null = not set up. */
+  payment: StorePayment | null;
+  storefront_config: StorefrontConfig;
   is_active: boolean;
   /** Set by a platform admin; the storefront and bots treat it like a closed store. */
   suspended: boolean;
   created_at: string;
 }
 
+/** stores/{storeId}.payment — public: it is the same QR the seller prints at the counter. */
+export interface StorePayment {
+  /** Decoded static QRIS string (tag 00…63), validated on save. */
+  qris_payload: string;
+  /** Tag 59 of the QRIS, shown to buyers so they recognise the payee. */
+  merchant_name: string;
+  nmid: string | null;
+  updated_at: string;
+}
+
 export type WaProvider = "fonnte" | "wablas" | "meta";
 
 /** stores/{storeId}/private/integrations — server-only */
 export interface StoreIntegrations {
-  xendit_sub_account_id: string | null;
-  /** Mirrors the XenPlatform account status; split payments are used only when LIVE. */
-  xendit_account_status: "INVITED" | "REGISTERED" | "AWAITING_DOCS" | "LIVE" | "SUSPENDED" | null;
   wa_api_provider: WaProvider | null;
   wa_api_token: string | null;
   wa_message_template: string;
@@ -112,14 +121,14 @@ export interface Product {
    * vault change, so the storefront can show stock without ever touching the vault.
    */
   stock_available: number;
-  /** Visible review count per star (reviews/{orderId}), maintained in the review transactions. */
+  /** Visible review count per star (reviews/{orderId}); written with every review change. */
   rating: RatingCounts;
   created_at: string;
   updated_at: string;
 }
 
 /**
- * reviews/{orderId} — one per PAID order, written by the signed-in buyer who owns it.
+ * reviews/{orderId} — written by the storefront (signed-in buyer of a PAID order).
  * `hidden` is the seller's moderation switch; hidden reviews don't count in products.rating.
  */
 export interface Review {
@@ -170,9 +179,20 @@ export interface Order {
   /** All allocated credentials — one per bundle component. */
   credential_ids: string[];
   customer_contact: { email: string; phone: string };
+  /** Buyer account (customers/{uid}) when the order was placed signed in, or linked after email verification. */
+  customer_uid: string | null;
   payment_status: PaymentStatus;
-  xendit_invoice_id: string | null;
-  xendit_invoice_url: string | null;
+  /**
+   * Rupiah added to the price so the seller can tell transfers apart (Rp 45.000 → Rp 45.023).
+   * Already included in `amount`.
+   */
+  unique_code: number;
+  /** The buyer must pay and upload proof before this; afterwards an unpaid order fails. */
+  pay_by: string | null;
+  /** Buyer's screenshot (payment_proofs/{orderId}); required before the seller can confirm. */
+  proof_uploaded_at: string | null;
+  /** Why the seller rejected the payment (FAILED orders only). */
+  rejected_reason: string | null;
   delivery_status: DeliveryStatus;
   /** Last automatic-delivery failure (n8n unreachable, WA not configured…), cleared on success. */
   delivery_error: string | null;
@@ -182,21 +202,23 @@ export interface Order {
   needs_stock: boolean;
   renewal_notified: boolean;
   referral_code: string | null;
-  /**
-   * SPLIT: paid into the seller's Xendit sub-account with the platform fee split off.
-   * PLATFORM: paid into the platform's master account (seller not connected yet);
-   * the platform owes the seller amount − platform_fee.
-   */
-  settlement: "SPLIT" | "PLATFORM" | "MANUAL";
-  platform_fee: number;
-  /** For PLATFORM-settled orders: whether the platform has transferred amount − fee to the seller. */
-  payout_status: "OWED" | "PAID_OUT" | null;
+  /** Voucher used at checkout; `amount` is already after `discount`. */
+  voucher_code: string | null;
+  discount: number;
   created_at: string;
   paid_at: string | null;
   access_expires_at: string | null;
 }
 
 export type BillingPeriod = "monthly" | "yearly";
+
+/** customers/{uid} — a buyer account, shared by every storefront on the platform. */
+export interface CustomerProfile {
+  uid: string;
+  email: string;
+  name: string;
+  phone: string;
+}
 
 /** subscription_payments/{SUB-XXXXXXXX} — plan purchases, paid to the platform's master account */
 export interface SubscriptionPayment {
