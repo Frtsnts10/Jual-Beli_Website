@@ -24,7 +24,7 @@ export function TrackPortal({ storeKey, payBase, email }: { storeKey: string; pa
 
   return (
     <div className="grid gap-6">
-      <form action={action} className="grid gap-3 rounded-2xl border bg-white p-5 shadow-sm">
+      <form action={action} className="grid gap-3 t-card p-5">
         <input name="order_id" required placeholder="ID Invoice (ORD-XXXXXXXX)" defaultValue={state?.orderId} className={`${inputCls} font-mono uppercase`} />
         <input name="email" type="email" required placeholder="Email saat checkout" defaultValue={state?.email ?? email} className={inputCls} />
         {state?.error && !state.order && <p className="text-sm text-red-600">{state.error}</p>}
@@ -55,7 +55,7 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
   ];
 
   return (
-    <div className="rounded-2xl border bg-white p-5 shadow-sm">
+    <div className="t-card p-5">
       <dl className="grid gap-2 text-sm">
         {rows.map(([k, v]) => (
           <div key={k} className="flex justify-between gap-4">
@@ -69,7 +69,7 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
           Lanjutkan pembayaran / cek status
         </a>
       )}
-      {claim?.claimed && <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>}
+      {claim?.claimed && <p className="mt-4 rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>}
       {canClaim && (
         <form action={claimAction} className="mt-5 grid gap-3 border-t pt-5">
           <input type="hidden" name="order_id" value={order.id} />

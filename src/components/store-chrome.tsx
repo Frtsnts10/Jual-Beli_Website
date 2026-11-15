@@ -58,7 +58,7 @@ export function StoreNav({
           {actions}
           <button
             type="button"
-            className={cn(navControl, "w-9 border border-current/15 md:hidden")}
+            className={cn(navControl, "t-btn-line w-9 bg-white md:hidden")}
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
@@ -109,7 +109,7 @@ export function WhatsAppButton({ phone, storeName }: { phone: string; storeName:
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat penjual di WhatsApp"
-      className="fixed right-4 bottom-4 z-30 flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-105 sm:right-6 sm:bottom-6"
+      className="t-pill t-btn fixed right-4 bottom-4 z-30 flex items-center gap-2 bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-105 sm:right-6 sm:bottom-6"
     >
       <MessageCircle className="size-5" />
       <span className="hidden sm:inline">Chat penjual</span>

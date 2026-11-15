@@ -36,7 +36,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   const auto = TIERS[store.tier].autoFulfillment;
 
   const summary = (
-    <div className="rounded-xl bg-neutral-50 p-4 text-left text-sm">
+    <div className="t-soft p-4 text-left text-sm">
       <Row label="ID pesanan" value={<span className="font-mono font-medium">{orderId}</span>} />
       <Row label="Produk" value={snap.get("product_title")} />
       {discount > 0 && <Row label={`Voucher ${snap.get("voucher_code")}`} value={<span className="text-emerald-700">−{formatIDR(discount)}</span>} />}
@@ -50,7 +50,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
     body = (
       <div className="grid gap-4 text-center">
         <CheckCircle2 className="mx-auto size-14 text-emerald-500" />
-        <h1 className="text-xl font-semibold">Pembayaran dikonfirmasi!</h1>
+        <h1 className="t-heading text-xl font-semibold">Pembayaran dikonfirmasi!</h1>
         <p className="text-neutral-600">
           {auto ? "Akun Anda sedang dikirim ke WhatsApp secara otomatis." : "Penjual akan segera mengirim akun ke WhatsApp Anda."}
         </p>
@@ -62,7 +62,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
     body = (
       <div className="grid gap-4 text-center">
         <XCircle className="mx-auto size-14 text-red-500" />
-        <h1 className="text-xl font-semibold">Pesanan dibatalkan</h1>
+        <h1 className="t-heading text-xl font-semibold">Pesanan dibatalkan</h1>
         {reason && <p className="text-neutral-600">{reason}</p>}
         <p className="text-sm text-neutral-500">Jika Anda sudah terlanjur membayar, hubungi penjual dengan menyebutkan ID pesanan.</p>
         {summary}
@@ -76,7 +76,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
       <div className="grid gap-4 text-center">
         <AutoRefresh everyMs={8000} maxTries={225} />
         <Hourglass className="mx-auto size-14 animate-pulse text-amber-500" />
-        <h1 className="text-xl font-semibold">Menunggu konfirmasi penjual</h1>
+        <h1 className="t-heading text-xl font-semibold">Menunggu konfirmasi penjual</h1>
         <p className="text-neutral-600">
           Bukti pembayaran terkirim {formatDate(proofAt, true)}. Penjual sedang mengecek dana masuk; halaman ini diperbarui otomatis.
         </p>
@@ -93,10 +93,10 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
       <div className="grid gap-5">
         <div className="text-center">
           <p className="text-sm text-neutral-500">Scan & bayar ke</p>
-          <h1 className="text-lg font-semibold break-words">{store.payment.merchant_name || store.store_name}</h1>
+          <h1 className="t-heading text-lg font-semibold break-words">{store.payment.merchant_name || store.store_name}</h1>
         </div>
         <div
-          className="mx-auto w-full max-w-64 rounded-2xl border bg-white p-3 [&_svg]:h-auto [&_svg]:w-full"
+          className="t-media mx-auto w-full max-w-64 bg-white p-3 [&_svg]:h-auto [&_svg]:w-full"
           role="img"
           aria-label={`QRIS ${formatIDR(amount)}`}
           dangerouslySetInnerHTML={{ __html: svg }}
@@ -113,7 +113,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
             </p>
           )}
         </div>
-        <ol className="grid gap-1.5 rounded-xl bg-neutral-50 p-4 text-sm text-neutral-700">
+        <ol className="grid gap-1.5 t-soft p-4 text-sm text-neutral-700">
           <li>1. Buka aplikasi e-wallet / m-banking (GoPay, OVO, DANA, ShopeePay, BCA, dll).</li>
           <li>2. Scan QR di atas — nominal sudah terisi otomatis. Pastikan {formatIDR(amount)}.</li>
           <li>3. Screenshot bukti berhasil, lalu unggah di bawah.</li>
@@ -128,8 +128,8 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   }
 
   return (
-    <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-8">
-      <div className="mx-auto w-full max-w-md rounded-2xl border bg-white p-5 shadow-sm sm:p-8">{body}</div>
+    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8">
+      <div className="mx-auto w-full max-w-md t-card p-5 sm:p-8">{body}</div>
       <div className="mt-6 flex justify-center gap-5 text-sm">
         <Link href={link(linked ? "/akun" : "/track")} className="font-medium underline underline-offset-4">
           {linked ? "Pesanan saya" : "Lacak pesanan"}

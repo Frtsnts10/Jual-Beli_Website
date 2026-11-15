@@ -47,7 +47,7 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
       <input ref={input} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       {preview ? (
         <div className="grid gap-3">
-          <img src={preview} alt="Pratinjau bukti pembayaran" className="mx-auto max-h-72 rounded-lg border object-contain" />
+          <img src={preview} alt="Pratinjau bukti pembayaran" className="mx-auto t-media max-h-72 object-contain" />
           <div className="grid grid-cols-2 gap-2">
             <button type="button" onClick={() => input.current?.click()} disabled={pending} className={btnOutline}>
               Ganti gambar
@@ -82,7 +82,7 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
           {!replacing && <ImageUp className="size-4" />} {replacing ? "Salah gambar? Unggah ulang bukti" : "Sudah bayar? Unggah bukti"}
         </button>
       )}
-      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
     </div>
   );
 }

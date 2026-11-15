@@ -11,14 +11,14 @@ export function RestockForm({ storeKey, productId, phone }: { storeKey: string; 
 
   if (state?.ok) {
     return (
-      <div id="kabari" className="flex scroll-mt-24 items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+      <div id="kabari" className="flex scroll-mt-24 items-start gap-2 rounded-[var(--r-inner)] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
         <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
         <span>Siap! Kami kirim WhatsApp ke {state.phone} begitu stok tersedia lagi.</span>
       </div>
     );
   }
   return (
-    <form id="kabari" action={action} className="grid scroll-mt-24 gap-2 rounded-xl border bg-white p-4 text-sm">
+    <form id="kabari" action={action} className="grid scroll-mt-24 gap-2 t-card p-4 text-sm">
       <p className="flex items-center gap-2 font-semibold">
         <BellRing className="size-4 text-[var(--accent)]" /> Stok habis — kabari saya
       </p>

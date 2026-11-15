@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   };
 
   return (
-    <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-8 sm:py-12">
+    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8 sm:py-12">
       {/* JSON.stringify output can't close the script tag once "<" is escaped. */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="mx-auto max-w-5xl">
@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
         <div className="grid gap-6 md:grid-cols-2 md:gap-10">
           <div className="relative">
-            <ProductImage src={product.image_url} alt={product.title} className="aspect-square w-full rounded-2xl border bg-white" />
+            <ProductImage src={product.image_url} alt={product.title} className="t-media aspect-square w-full" />
             {product.is_flash_sale && sale.original && (
               <span className="absolute top-3 left-3 rounded bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">FLASH SALE</span>
             )}
@@ -84,7 +84,7 @@ export default async function ProductPage({ params }: { params: Params }) {
           <div className="flex min-w-0 flex-col gap-4">
             <div>
               <p className="text-sm text-neutral-500">{product.platform_type}</p>
-              <h1 className="text-2xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-3xl">{product.title}</h1>
+              <h1 className="t-heading text-2xl font-bold tracking-tight [overflow-wrap:anywhere] sm:text-3xl">{product.title}</h1>
               {rating.count > 0 && (
                 <a href="#ulasan" className="mt-2 inline-flex items-center gap-2 text-sm text-neutral-600 hover:underline">
                   <Stars value={rating.avg} /> <b className="text-neutral-900">{rating.avg.toFixed(1)}</b> · {rating.count} ulasan
@@ -107,7 +107,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             </ul>
 
             {product.bundle_titles && (
-              <div className="rounded-xl border bg-white p-4 text-sm">
+              <div className="t-card p-4 text-sm">
                 <p className="mb-2 font-medium">Isi paket</p>
                 <ul className="list-inside list-disc text-neutral-600">
                   {product.bundle_titles.map((t, i) => <li key={i}>{t}</li>)}
@@ -131,13 +131,13 @@ export default async function ProductPage({ params }: { params: Params }) {
 
             {product.description && (
               <section>
-                <h2 className="mb-1 font-semibold">Deskripsi</h2>
+                <h2 className="t-heading mb-1 font-semibold">Deskripsi</h2>
                 <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700 [overflow-wrap:anywhere]">{product.description}</p>
               </section>
             )}
             {policy && (
               <section>
-                <h2 className="mb-1 font-semibold">Garansi</h2>
+                <h2 className="t-heading mb-1 font-semibold">Garansi</h2>
                 <p className="line-clamp-4 text-sm leading-relaxed whitespace-pre-line text-neutral-700 [overflow-wrap:anywhere]">{policy}</p>
                 <Link href={link("/garansi")} className="mt-1 inline-block text-sm font-medium underline underline-offset-4">
                   Baca kebijakan lengkap
@@ -148,14 +148,14 @@ export default async function ProductPage({ params }: { params: Params }) {
         </div>
 
         <section id="ulasan" className="mt-12 scroll-mt-20">
-          <h2 className="mb-4 text-xl font-semibold">Ulasan pembeli</h2>
+          <h2 className="t-heading mb-4 text-xl font-semibold">Ulasan pembeli</h2>
           {rating.count === 0 ? (
-            <p className="rounded-2xl border border-dashed bg-white p-8 text-center text-sm text-neutral-500">
+            <p className="t-card-dashed p-8 text-center text-sm text-neutral-500">
               Belum ada ulasan. Pembeli bisa menulis ulasan dari halaman Akun setelah pesanan lunas.
             </p>
           ) : (
             <div className="grid gap-6 md:grid-cols-[16rem_1fr]">
-              <div className="h-fit rounded-2xl border bg-white p-5">
+              <div className="h-fit t-card p-5">
                 <p className="text-4xl font-bold">{rating.avg.toFixed(1)}</p>
                 <Stars value={rating.avg} className="mt-1" />
                 <p className="mt-1 text-sm text-neutral-500">{rating.count} ulasan</p>
@@ -173,7 +173,7 @@ export default async function ProductPage({ params }: { params: Params }) {
               </div>
               <ul className="grid h-fit gap-3">
                 {reviews.map((r) => (
-                  <li key={r.id} className="rounded-2xl border bg-white p-4">
+                  <li key={r.id} className="t-card p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="flex items-center gap-2">
                         <Stars value={r.rating} />

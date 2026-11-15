@@ -9,11 +9,11 @@ export default async function AccountLayout({ children, params }: { children: Re
   const link = await storeLinker((await params).storeSlug);
   const customer = await requireCustomer(link(`/masuk?next=${encodeURIComponent(link("/akun"))}`));
   return (
-    <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-8 sm:py-12">
+    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8 sm:py-12">
       <div className="mx-auto grid max-w-3xl gap-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight">Halo, {customer.name.split(" ")[0] || "Pembeli"}</h1>
+            <h1 className="t-heading text-2xl font-semibold tracking-tight">Halo, {customer.name.split(" ")[0] || "Pembeli"}</h1>
             <p className="truncate text-sm text-neutral-500">{customer.email}</p>
           </div>
           <SignOutButton homeHref={link("")} />
