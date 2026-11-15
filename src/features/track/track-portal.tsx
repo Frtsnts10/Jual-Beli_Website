@@ -5,6 +5,7 @@ import { Loader2, Search, ShieldAlert } from "lucide-react";
 import { formatDate, formatIDR } from "@/lib/utils";
 import { claimWarranty, trackOrder, type TrackState } from "./actions";
 import type { TrackedOrder } from "@/lib/orders";
+import { btnDangerOutline, btnPrimary, field, textarea } from "@/lib/ui";
 
 const LABELS: Record<string, string> = {
   PENDING: "Menunggu",
@@ -16,7 +17,7 @@ const LABELS: Record<string, string> = {
   REPLACED: "Akun sudah diganti",
 };
 
-const inputCls = "w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
+const inputCls = field;
 
 /** payBase: "/bayar/" link prefix for continuing an unpaid QRIS order. */
 export function TrackPortal({ storeKey, payBase }: { storeKey: string; payBase: string }) {
@@ -28,7 +29,7 @@ export function TrackPortal({ storeKey, payBase }: { storeKey: string; payBase: 
         <input name="order_id" required placeholder="ID Invoice (ORD-XXXXXXXX)" defaultValue={state?.orderId} className={`${inputCls} font-mono uppercase`} />
         <input name="email" type="email" required placeholder="Email saat checkout" defaultValue={state?.email} className={inputCls} />
         {state?.error && !state.order && <p className="text-sm text-red-600">{state.error}</p>}
-        <button disabled={pending} className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent)] py-2.5 text-sm font-semibold text-[var(--accent-fg)] disabled:opacity-50">
+        <button disabled={pending} className={btnPrimary}>
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Lacak pesanan
         </button>
       </form>
@@ -65,7 +66,7 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
         ))}
       </dl>
       {order.payment_status === "PENDING" && (
-        <a href={payHref} className="mt-4 block rounded-lg bg-[var(--accent)] py-2.5 text-center text-sm font-semibold text-[var(--accent-fg)]">
+        <a href={payHref} className={`${btnPrimary} mt-4 w-full`}>
           Lanjutkan pembayaran / cek status
         </a>
       )}
@@ -76,10 +77,10 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
           <input type="hidden" name="email" value={email} />
           <label className="grid gap-1.5 text-sm font-medium">
             Ada masalah dengan akun?
-            <textarea name="reason" required minLength={10} rows={3} placeholder="Contoh: password tidak bisa dipakai login sejak tadi pagi" className={`${inputCls} font-normal`} />
+            <textarea name="reason" required minLength={10} rows={3} placeholder="Contoh: password tidak bisa dipakai login sejak tadi pagi" className={textarea} />
           </label>
           {claim?.error && <p className="text-sm text-red-600">{claim.error}</p>}
-          <button disabled={claiming} className="flex items-center justify-center gap-2 rounded-lg border-2 border-red-500 py-2.5 text-sm font-semibold text-red-600 disabled:opacity-50">
+          <button disabled={claiming} className={btnDangerOutline}>
             {claiming ? <Loader2 className="size-4 animate-spin" /> : <ShieldAlert className="size-4" />} Klaim Garansi / Lapor Masalah
           </button>
         </form>

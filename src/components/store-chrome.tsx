@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { navControl } from "@/lib/ui";
 
 export interface NavLink {
   href: string;
@@ -57,12 +58,12 @@ export function StoreNav({
           {actions}
           <button
             type="button"
-            className="-mr-2 rounded-md p-2 md:hidden"
+            className={cn(navControl, "w-9 border border-current/15 md:hidden")}
             aria-label={open ? "Tutup menu" : "Buka menu"}
             aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
           >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
         </div>
       </div>

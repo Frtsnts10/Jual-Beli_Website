@@ -13,6 +13,7 @@ import { Countdown } from "@/components/countdown";
 import { Stars } from "@/components/stars";
 import { RestockForm } from "@/features/restock/restock-form";
 import { getCustomer } from "@/lib/customer";
+import { btnMuted, btnPrimary } from "@/lib/ui";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -115,13 +116,13 @@ export default async function ProductPage({ params }: { params: Params }) {
             )}
 
             {!store.is_active ? (
-              <span className="rounded-xl bg-neutral-200 py-3.5 text-center font-semibold text-neutral-500">Toko sedang tutup</span>
+              <span className={`${btnMuted} w-full`}>Toko sedang tutup</span>
             ) : soldOut ? (
               <RestockForm storeKey={storeSlug} productId={product.id} phone={customer?.phone} />
             ) : (
               <Link
                 href={link(`/checkout/${product.id}`)}
-                className="rounded-xl bg-[var(--accent)] py-3.5 text-center font-semibold text-[var(--accent-fg)] shadow-sm transition active:scale-[0.99]"
+                className={`${btnPrimary} w-full`}
               >
                 Beli sekarang
               </Link>

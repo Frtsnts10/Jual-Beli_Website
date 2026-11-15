@@ -9,11 +9,11 @@ import { auth } from "@/lib/firebase/client";
 import { cn } from "@/lib/utils";
 import { Stars } from "@/components/stars";
 import { authError, inputCls } from "./auth-forms";
-import { claimFromAccount, deleteAccount, submitReview, updateProfile, type FormState } from "./actions";
+import { cancelAccountDeletion, claimFromAccount, requestAccountDeletion, submitReview, updateProfile, type FormState } from "./actions";
+import { btnDanger, btnDangerOutline, btnOutline, btnPrimary, textarea } from "@/lib/ui";
 
-const btn = "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50";
-const primary = `${btn} bg-[var(--accent)] text-[var(--accent-fg)]`;
-const outline = `${btn} border border-neutral-300 bg-white hover:bg-neutral-50`;
+const primary = btnPrimary;
+const outline = btnOutline;
 
 export function AccountTabs({ tabs }: { tabs: { href: string; label: string }[] }) {
   const pathname = usePathname();
@@ -99,7 +99,7 @@ export function ProfileForm({ name, phone }: { name: string; phone: string }) {
       </label>
       <label className="grid gap-1.5 text-sm font-medium">
         Nomor WhatsApp
-        <input name="phone" type="tel" inputMode="tel" defaultValue={phone} placeholder="0812xxxxxxxx" autoComplete="tel" className={inputCls} />
+        <input name="phone" type="tel" inputMode="tel" defaultValue={phone.replace(/^\+?62/, "0")} placeholder="0812xxxxxxxx" autoComplete="tel" className={inputCls} />
         <span className="text-xs font-normal text-neutral-500">Dipakai otomatis saat checkout; akun premium dikirim ke nomor ini.</span>
       </label>
       <Feedback state={state} ok="Profil disimpan." />
@@ -124,10 +124,10 @@ export function ClaimForm({ storeKey, orderId }: { storeKey: string; orderId: st
   return (
     <form action={action} className="grid gap-2">
       <input type="hidden" name="order_id" value={orderId} />
-      <textarea name="reason" required minLength={10} rows={3} placeholder="Contoh: password tidak bisa dipakai login sejak tadi pagi" className={inputCls} />
+      <textarea name="reason" required minLength={10} rows={3} placeholder="Contoh: password tidak bisa dipakai login sejak tadi pagi" className={textarea} />
       <Feedback state={state} ok="" />
       <div className="flex flex-wrap gap-2">
-        <button disabled={pending} className={cn(btn, "border-2 border-red-500 text-red-600")}>
+        <button disabled={pending} className={btnDangerOutline}>
           {pending && <Loader2 className="size-4 animate-spin" />} Kirim klaim
         </button>
         <button type="button" onClick={() => setOpen(false)} className={outline}>
@@ -184,7 +184,7 @@ export function ReviewForm({ storeKey, orderId, review }: { storeKey: string; or
         ))}
         <span className="ml-2 text-sm text-neutral-500">{STAR_LABEL[rating]}</span>
       </div>
-      <textarea name="text" rows={3} maxLength={1000} defaultValue={review?.text} placeholder="Ceritakan pengalaman Anda (opsional)" className={inputCls} />
+      <textarea name="text" rows={3} maxLength={1000} defaultValue={review?.text} placeholder="Ceritakan pengalaman Anda (opsional)" className={textarea} />
       {state?.ok ? (
         <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Terima kasih! Ulasan Anda tersimpan.</p>
       ) : (
@@ -263,22 +263,32 @@ export function ChangeEmailForm({ email }: { email: string }) {
   );
 }
 
-export function DeleteAccountForm({ homeHref }: { homeHref: string }) {
-  const [state, action, pending] = useActionState(deleteAccount.bind(null, homeHref), undefined);
+export function DeletionRequestForm({ storeKey, rejectedReason }: { storeKey: string; rejectedReason?: string | null }) {
+  const [state, action, pending] = useActionState(requestAccountDeletion.bind(null, storeKey), undefined);
   return (
-    <form
-      action={action}
-      // The login is about to be deleted; drop the browser's Firebase sign-in too.
-      onSubmit={() => void signOut(auth).catch(() => {})}
-      className="grid gap-3"
-    >
-      <p className="text-sm text-neutral-600">
-        Login dan profil Anda dihapus permanen di semua toko. Riwayat pesanan tetap disimpan penjual untuk keperluan garansi, tapi tidak lagi terhubung ke akun Anda. Ulasan Anda tetap tampil sebagai “Pembeli”.
-      </p>
-      <input name="confirm" required placeholder='Ketik "HAPUS"' autoComplete="off" className={cn(inputCls, "sm:w-60")} />
-      <Feedback state={state} ok="Akun dihapus." />
-      <button disabled={pending || !!state?.ok} className={cn(btn, "w-fit bg-red-600 text-white")}>
-        {pending && <Loader2 className="size-4 animate-spin" />} Hapus akun saya
+    <form action={action} className="grid gap-3">
+      {rejectedReason && (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Pengajuan sebelumnya ditolak: {rejectedReason}. Anda bisa mengajukan lagi.
+        </p>
+      )}
+      <textarea name="reason" rows={2} maxLength={500} placeholder="Alasan (opsional)" className={textarea} />
+      <input name="confirm" required placeholder='Ketik "HAPUS"' autoComplete="off" className={inputCls} />
+      <Feedback state={state} ok="Pengajuan terkirim." />
+      <button disabled={pending} className={cn(btnDanger, "w-fit")}>
+        {pending && <Loader2 className="size-4 animate-spin" />} Ajukan hapus akun
+      </button>
+    </form>
+  );
+}
+
+export function CancelDeletionButton() {
+  const [state, action, pending] = useActionState(cancelAccountDeletion, undefined);
+  return (
+    <form action={action} className="grid gap-3">
+      {state?.error && <Feedback state={state} ok="" />}
+      <button disabled={pending} className={cn(outline, "w-fit")}>
+        {pending && <Loader2 className="size-4 animate-spin" />} Batalkan pengajuan
       </button>
     </form>
   );

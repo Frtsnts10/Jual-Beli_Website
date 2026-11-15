@@ -6,6 +6,7 @@ import { Loader2, Lock, TicketPercent, X } from "lucide-react";
 import { formatIDR } from "@/lib/utils";
 import { normaliseCode } from "@/lib/voucher";
 import { checkVoucher, startCheckout, type CheckoutState, type VoucherPreview } from "./actions";
+import { btnOutline, btnPrimary, field } from "@/lib/ui";
 
 export interface CheckoutBuyer {
   email: string;
@@ -48,7 +49,7 @@ export function CheckoutForm({
           autoComplete="email"
           defaultValue={state?.email ?? buyer?.email}
           placeholder="nama@email.com"
-          className="rounded-lg border border-neutral-300 px-3 py-2.5 font-normal outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
+          className={field}
         />
       </label>
       <label className="grid gap-1.5 text-sm font-medium">
@@ -59,9 +60,9 @@ export function CheckoutForm({
           required
           autoComplete="tel"
           inputMode="tel"
-          defaultValue={state?.phone ?? (buyer?.phone ? buyer.phone.replace(/^\+62/, "0") : undefined)}
+          defaultValue={state?.phone ?? (buyer?.phone ? buyer.phone.replace(/^\+?62/, "0") : undefined)}
           placeholder="0812xxxxxxxx"
-          className="rounded-lg border border-neutral-300 px-3 py-2.5 font-normal outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
+          className={field}
         />
         <span className="text-xs font-normal text-neutral-500">Akun akan dikirim ke nomor ini.</span>
       </label>
@@ -70,7 +71,7 @@ export function CheckoutForm({
       <button
         type="submit"
         disabled={busy || soldOut}
-        className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent)] py-3 text-sm font-semibold text-[var(--accent-fg)] transition active:scale-[0.99] disabled:opacity-50"
+        className={`${btnPrimary} w-full`}
       >
         {busy ? <Loader2 className="size-4 animate-spin" /> : <Lock className="size-4" />}
         {soldOut
@@ -134,9 +135,9 @@ function VoucherField({ storeKey, productId, initial }: { storeKey: string; prod
             maxLength={20}
             placeholder="Kode voucher"
             aria-label="Kode voucher"
-            className="w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 font-mono uppercase outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
+            className={`${field} font-mono uppercase`}
           />
-          <button type="button" disabled={!code || checking} onClick={apply} className="flex shrink-0 items-center gap-1 rounded-lg border border-neutral-300 px-4 font-semibold disabled:opacity-50">
+          <button type="button" disabled={!code || checking} onClick={apply} className={btnOutline}>
             {checking && <Loader2 className="size-4 animate-spin" />} Pakai
           </button>
         </div>

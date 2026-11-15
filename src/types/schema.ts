@@ -221,6 +221,23 @@ export interface CustomerProfile {
 }
 
 /**
+ * account_deletion_requests/{uid} — a buyer asks (from Akun → Keamanan on any storefront) for
+ * their login and profile to be deleted; a platform admin approves (the account is deleted and
+ * the doc removed) or rejects with a reason (status REJECTED; the buyer may ask again).
+ */
+export interface AccountDeletionRequest {
+  uid: string;
+  email: string;
+  name: string;
+  reason: string;
+  store_id: string | null; // storefront the request came from
+  status: "PENDING" | "REJECTED";
+  requested_at: string;
+  reviewed_at: string | null;
+  rejected_reason: string | null;
+}
+
+/**
  * subscription_payments/{SUB-XXXXXXXX} — plan purchases, paid to the platform's own QRIS
  * (platform/settings) and confirmed by a platform admin from the uploaded proof.
  */
