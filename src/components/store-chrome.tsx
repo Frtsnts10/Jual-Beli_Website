@@ -80,10 +80,11 @@ export function StoreNav({
   );
 }
 
-export function StoreFooter({ storeName, links, variant }: { storeName: string; links: NavLink[]; variant: ChromeVariant }) {
+export function StoreFooter({ storeName, links, variant, chatButton = false }: { storeName: string; links: NavLink[]; variant: ChromeVariant; chatButton?: boolean }) {
   return (
     <footer className={cn(variant === "brutalist" ? "border-t-4 border-black bg-white font-mono font-bold" : "border-t border-neutral-200 bg-white text-neutral-500")}>
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      {/* With the floating chat button, extra room at the bottom so it never covers the links. */}
+      <div className={cn("mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6", chatButton && "pb-24 sm:pb-8 sm:pr-48")}>
         <span>
           © {new Date().getFullYear()} {storeName}
         </span>

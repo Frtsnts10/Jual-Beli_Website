@@ -74,8 +74,9 @@ export default async function StoreLayout({ children, params }: { children: Reac
         variant={variant}
         actions={account}
       />
-      <div className="flex-1">{children}</div>
-      <StoreFooter storeName={store.store_name} links={[track, ...info]} variant={variant} />
+      {/* Phones: keep the end of every page clear of the floating chat button. */}
+      <div className={store.store_info.whatsapp ? "flex-1 pb-16 sm:pb-0" : "flex-1"}>{children}</div>
+      <StoreFooter storeName={store.store_name} links={[track, ...info]} variant={variant} chatButton={!!store.store_info.whatsapp} />
       {store.store_info.whatsapp && <WhatsAppButton phone={store.store_info.whatsapp} storeName={store.store_name} />}
     </div>
   );

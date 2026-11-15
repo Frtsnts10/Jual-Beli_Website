@@ -5,12 +5,11 @@ import { Loader2, Search, ShieldAlert } from "lucide-react";
 import { formatDate, formatIDR } from "@/lib/utils";
 import { claimWarranty, trackOrder, type TrackState } from "./actions";
 import type { TrackedOrder } from "@/lib/orders";
+import { canOpenPayPage, PAY_STATE } from "@/lib/order-status";
 import { btnDangerOutline, btnPrimary, field, textarea } from "@/lib/ui";
 
 const LABELS: Record<string, string> = {
   PENDING: "Menunggu",
-  PAID: "Lunas",
-  FAILED: "Gagal",
   SENT_VIA_WA: "Terkirim via WhatsApp",
   VALID: "Aktif",
   CLAIMED: "Klaim diproses",
@@ -49,7 +48,7 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
     ["Produk", order.product_title],
     ["Total", formatIDR(order.amount)],
     ["Tanggal", formatDate(order.created_at, true)],
-    ["Pembayaran", LABELS[order.payment_status] ?? order.payment_status],
+    ["Pembayaran", PAY_STATE[order.pay_state].label],
     ["Pengiriman", LABELS[order.delivery_status] ?? order.delivery_status],
     ["Aktif sampai", order.access_expires_at ? `${formatDate(order.access_expires_at)}${expired ? " (habis)" : ""}` : "—"],
     ["Garansi", LABELS[order.warranty_status] ?? order.warranty_status],
@@ -65,7 +64,7 @@ function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: str
           </div>
         ))}
       </dl>
-      {order.payment_status === "PENDING" && (
+      {canOpenPayPage(order.pay_state) && (
         <a href={payHref} className={`${btnPrimary} mt-4 w-full`}>
           Lanjutkan pembayaran / cek status
         </a>

@@ -10,11 +10,12 @@ export const isSoldOut = (p: StoreProduct) => p.stock_available < 1;
 
 export function Price({ product, className }: { product: StoreProduct; className?: string }) {
   const { price, original, endsAt } = product.sale;
-  if (!original) return <span className={className}>{formatIDR(price)}</span>;
+  // nowrap per amount: "Rp" must never end up on a different line than its number.
+  if (!original) return <span className={`whitespace-nowrap ${className ?? ""}`}>{formatIDR(price)}</span>;
   return (
     <span className={className}>
-      <span className="mr-1 text-[0.85em] line-through opacity-60">{formatIDR(original)}</span>
-      {formatIDR(price)}
+      <span className="mr-1 text-[0.85em] whitespace-nowrap line-through opacity-60">{formatIDR(original)}</span>
+      <span className="whitespace-nowrap">{formatIDR(price)}</span>
       {endsAt && <Countdown endsAt={endsAt} className="ml-2 text-[0.8em] font-semibold whitespace-nowrap text-red-500" />}
     </span>
   );
@@ -48,7 +49,7 @@ export function RatingBadge({ product, className = "" }: { product: StoreProduct
   const { avg, count } = ratingSummary(product.rating);
   if (!count) return null;
   return (
-    <span className={cn("inline-flex items-center gap-1 text-xs", className)} aria-label={`Rating ${avg} dari ${count} ulasan`}>
+    <span className={cn("flex w-fit items-center gap-1 text-xs", className)} aria-label={`Rating ${avg} dari ${count} ulasan`}>
       <Star className="size-3.5 fill-amber-400 text-amber-400" />
       <b>{avg.toFixed(1)}</b>
       <span className="opacity-60">({count})</span>
@@ -59,7 +60,13 @@ export function RatingBadge({ product, className = "" }: { product: StoreProduct
 export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
   if (isSoldOut(product)) {
     return (
-      <Link href={`${product.detailHref}#kabari`} className={`${className} relative z-[2] opacity-60`} title="Stok habis — minta dikabari saat tersedia">
+      // Same size as the template's Beli button, in a solid neutral color (a faded accent was
+      // hard to read and looked disabled).
+      <Link
+        href={`${product.detailHref}#kabari`}
+        className={`${className} relative z-[2] border-neutral-300! bg-neutral-200! text-neutral-800! shadow-none!`}
+        title="Stok habis — minta dikabari saat tersedia"
+      >
         Kabari saya
       </Link>
     );

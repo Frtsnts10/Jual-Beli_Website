@@ -4,13 +4,9 @@ import { getCustomer } from "@/lib/customer";
 import { getStore, storeLinker } from "@/lib/stores";
 import { listCustomerOrders, type AccountOrder } from "@/lib/orders";
 import { formatDate, formatIDR } from "@/lib/utils";
+import { canOpenPayPage, PAY_STATE } from "@/lib/order-status";
 import { ClaimForm, ReviewForm } from "@/features/account/account-client";
 
-const PAY: Record<string, [string, string]> = {
-  PAID: ["Lunas", "bg-emerald-50 text-emerald-700"],
-  PENDING: ["Menunggu bayar", "bg-amber-50 text-amber-700"],
-  FAILED: ["Gagal", "bg-red-50 text-red-700"],
-};
 const WARRANTY: Record<string, string> = { CLAIMED: "Klaim diproses", REPLACED: "Akun sudah diganti" };
 
 function Pill({ className, children }: { className: string; children: React.ReactNode }) {
@@ -18,7 +14,7 @@ function Pill({ className, children }: { className: string; children: React.Reac
 }
 
 function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder; storeKey: string; buyHref: string; payHref: string }) {
-  const [payLabel, payCls] = PAY[order.payment_status] ?? [order.payment_status, "bg-neutral-100 text-neutral-600"];
+  const { label: payLabel, tone: payCls } = PAY_STATE[order.pay_state];
   const expired = !!order.access_expires_at && new Date(order.access_expires_at) < new Date();
   const canClaim = order.payment_status === "PAID" && order.warranty_status !== "CLAIMED" && !expired;
   return (
@@ -48,9 +44,9 @@ function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder;
       </div>
       {order.warranty_status === "CLAIMED" && order.claim_reason && <p className="mt-2 text-xs text-neutral-500">“{order.claim_reason}”</p>}
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-3">
-        {order.payment_status === "PENDING" ? (
+        {canOpenPayPage(order.pay_state) ? (
           <Link href={payHref} className="text-sm font-semibold text-[var(--accent)] hover:underline">
-            Lanjutkan pembayaran
+            {order.pay_state === "AWAITING_CONFIRMATION" ? "Lihat status pembayaran" : "Lanjutkan pembayaran"}
           </Link>
         ) : (
           <Link href={buyHref} className="text-sm font-semibold text-[var(--accent)] hover:underline">

@@ -37,7 +37,7 @@ export function BrutalistTemplate({ store, products }: TemplateProps) {
                   <Price product={p} className="border-2 border-black bg-white px-2 py-1 text-lg font-black" />
                   <BuyButton
                     product={p}
-                    className="border-2 border-black bg-black px-4 py-2 text-sm font-bold text-white shadow-[4px_4px_0_#fff] transition hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                    className="ml-auto border-2 border-black bg-black px-4 py-2 text-sm font-bold text-white shadow-[4px_4px_0_#fff] transition hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                   >
                     BELI →
                   </BuyButton>

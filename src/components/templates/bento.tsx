@@ -1,7 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { Lift, Reveal } from "@/components/motion";
 import { cn } from "@/lib/utils";
-import { BundleContents, BuyButton, EmptyCatalog, CardLink, Price, ProductLink, RatingBadge, isSoldOut } from "./shared";
+import { BundleContents, BuyButton, EmptyCatalog, CardLink, Price, ProductLink, RatingBadge } from "./shared";
 import { ProductImage, StoreLogo } from "./product-image";
 import type { TemplateProps } from "./types";
 
@@ -18,7 +18,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
           {store.storefront_config.tagline && <p className="mt-1 text-neutral-500">{store.storefront_config.tagline}</p>}
         </div>
       </header>
-      <main id="produk" className="mx-auto grid max-w-6xl scroll-mt-20 auto-rows-[200px] grid-cols-1 gap-4 px-6 pb-12 md:grid-cols-4">
+      <main id="produk" className="mx-auto grid max-w-6xl scroll-mt-20 auto-rows-[200px] grid-flow-dense grid-cols-1 gap-4 px-6 pb-12 md:grid-cols-4">
         {products.length === 0 && <EmptyCatalog className="col-span-full text-neutral-500" />}
         {products.map((p, i) => {
           const big = i % SPANS.length === 0;
@@ -49,10 +49,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                   </div>
                   <BuyButton
                     product={p}
-                    className={cn(
-                      "shrink-0 rounded-full px-4 py-2 text-sm font-medium",
-                      isSoldOut(p) ? "bg-white/30" : "bg-[var(--accent)] text-[var(--accent-fg)]"
-                    )}
+                    className="shrink-0 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium whitespace-nowrap text-[var(--accent-fg)]"
                   >
                     Beli
                   </BuyButton>

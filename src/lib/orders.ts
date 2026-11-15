@@ -2,6 +2,7 @@ import "server-only";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getOwnReviews, type OwnReview } from "@/lib/reviews";
+import { payState, type PayState } from "@/lib/order-status";
 
 export interface TrackedOrder {
   id: string;
@@ -14,11 +15,13 @@ export interface TrackedOrder {
   created_at: string;
   paid_at: string | null;
   access_expires_at: string | null;
+  pay_state: PayState;
 }
 
 const iso = (v: unknown) => (v && typeof v === "object" && "toDate" in v ? (v as { toDate(): Date }).toDate().toISOString() : null);
 
 export function toTracked(snap: FirebaseFirestore.DocumentSnapshot): TrackedOrder {
+  const pay_state = payState({ payment_status: snap.get("payment_status"), proof_uploaded_at: iso(snap.get("proof_uploaded_at")), pay_by: iso(snap.get("pay_by")) });
   return {
     id: snap.id,
     product_id: snap.get("product_id") ?? "",
@@ -30,6 +33,7 @@ export function toTracked(snap: FirebaseFirestore.DocumentSnapshot): TrackedOrde
     created_at: iso(snap.get("created_at")) ?? "",
     paid_at: iso(snap.get("paid_at")),
     access_expires_at: iso(snap.get("access_expires_at")),
+    pay_state,
   };
 }
 
