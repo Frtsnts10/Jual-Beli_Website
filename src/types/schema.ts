@@ -220,16 +220,23 @@ export interface CustomerProfile {
   phone: string;
 }
 
-/** subscription_payments/{SUB-XXXXXXXX} — plan purchases, paid to the platform's master account */
+/**
+ * subscription_payments/{SUB-XXXXXXXX} — plan purchases, paid to the platform's own QRIS
+ * (platform/settings) and confirmed by a platform admin from the uploaded proof.
+ */
 export interface SubscriptionPayment {
   id: string;
   uid: string;
   tier: Exclude<SubscriptionTier, "starter">;
   period: BillingPeriod;
   amount: number;
-  status: "PENDING" | "PAID" | "EXPIRED";
-  xendit_invoice_id: string | null;
-  xendit_invoice_url: string | null;
+  status: "PENDING" | "PAID" | "EXPIRED" | "REJECTED";
+  /** Rupiah added so the admin can match the transfer; included in `amount`. */
+  unique_code: number;
+  pay_by: string | null;
+  /** Proof screenshot in payment_proofs/{id}. */
+  proof_uploaded_at: string | null;
+  rejected_reason: string | null;
   created_at: string;
   paid_at: string | null;
 }
