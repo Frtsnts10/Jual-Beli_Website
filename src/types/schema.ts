@@ -92,6 +92,10 @@ export type WaProvider = "fonnte" | "wablas" | "meta";
 export interface StoreIntegrations {
   wa_api_provider: WaProvider | null;
   wa_api_token: string | null;
+  /** Meta Cloud API: the sender's Phone Number ID (Meta → WhatsApp → API Setup). */
+  wa_phone_number_id: string | null;
+  /** Wablas: the account's server host, e.g. "tegal.wablas.com". */
+  wa_server: string | null;
   wa_message_template: string;
 }
 
