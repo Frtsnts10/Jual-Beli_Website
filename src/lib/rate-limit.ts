@@ -10,7 +10,10 @@ import { adminDb } from "@/lib/firebase/admin";
 // have them cleaned up automatically.
 
 export const LIMITS = {
+  // Per IP + email, so buyers sharing a carrier IP (CGNAT) don't block each other; the
+  // looser per-IP bucket still caps one machine spraying many emails.
   checkout: { max: 10, windowSec: 10 * 60 },
+  checkoutIp: { max: 60, windowSec: 10 * 60 },
   track: { max: 20, windowSec: 10 * 60 },
   claim: { max: 5, windowSec: 60 * 60 },
   session: { max: 20, windowSec: 10 * 60 },
@@ -27,9 +30,9 @@ async function clientIp() {
 }
 
 /** Counts one attempt; returns false once the caller exceeded the bucket's limit. */
-export async function allow(bucket: keyof typeof LIMITS): Promise<boolean> {
+export async function allow(bucket: keyof typeof LIMITS, extra = ""): Promise<boolean> {
   const { max, windowSec } = LIMITS[bucket];
-  const id = createHash("sha256").update(`${bucket}:${await clientIp()}`).digest("hex");
+  const id = createHash("sha256").update(`${bucket}:${await clientIp()}${extra ? `:${extra}` : ""}`).digest("hex");
   const ref = adminDb.collection("rate_limits").doc(id);
   const now = Date.now();
 

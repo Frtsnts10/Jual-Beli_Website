@@ -6,6 +6,7 @@ import { adminDb } from "@/lib/firebase/admin";
 import { getStore, storeLinker } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
 import { qrisWithAmount } from "@/lib/qris";
+import { payState } from "@/lib/order-status";
 import { formatDate, formatIDR } from "@/lib/utils";
 import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
@@ -30,7 +31,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   const discount = (snap.get("discount") as number) ?? 0;
   const payBy = iso(snap.get("pay_by"));
   const proofAt = iso(snap.get("proof_uploaded_at"));
-  const expired = status === "PENDING" && !proofAt && !!payBy && new Date(payBy) < new Date();
+  const expired = payState({ payment_status: status, proof_uploaded_at: proofAt, pay_by: payBy }) === "EXPIRED";
   const linked = !!snap.get("customer_uid");
   const auto = TIERS[store.tier].autoFulfillment;
 

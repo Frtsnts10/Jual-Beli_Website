@@ -12,6 +12,7 @@ import { allow } from "@/lib/rate-limit";
 import { normalisePhone } from "@/lib/phone";
 import { evaluateVoucher, normaliseCode } from "@/lib/voucher";
 import { toVoucher, voucherRef } from "@/lib/vouchers-server";
+import { expireUnpaidOrders } from "@/lib/expire-orders";
 
 export type CheckoutState = { error?: string; email?: string; phone?: string; voucher?: string; redirect?: string } | undefined;
 
@@ -26,6 +27,7 @@ export async function checkVoucher(storeKey: string, productId: string, rawCode:
   if (!store || !TIERS[store.tier].vouchers) return { ok: false, error: "Kode voucher tidak ditemukan." };
   const product = await getPublishedProduct(store.id, productId);
   if (!product) return { ok: false, error: "Produk tidak ditemukan." };
+  await expireUnpaidOrders(store.id); // frees voucher uses held by abandoned orders
   const res = evaluateVoucher(toVoucher(await voucherRef(store.id, code).get()), {
     storeId: store.id,
     productId: product.id,
@@ -44,7 +46,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
   const echo = { email, phone: phoneRaw, voucher: voucherCode };
 
   if (!EMAIL_RE.test(email)) return { ...echo, error: "Email tidak valid." };
-  if (!(await allow("checkout"))) return { ...echo, error: "Terlalu banyak percobaan checkout. Coba lagi dalam beberapa menit." };
+  if (!(await allow("checkout", email)) || !(await allow("checkoutIp"))) return { ...echo, error: "Terlalu banyak percobaan checkout. Coba lagi dalam beberapa menit." };
   const phone = normalisePhone(phoneRaw);
   if (!phone) return { ...echo, error: "Nomor WhatsApp tidak valid (contoh: 0812xxxxxxx)." };
 
@@ -56,6 +58,7 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
 
   // Payment goes straight to the seller's own QRIS; without one there is nothing to pay into.
   if (!store.payment) return { ...echo, error: "Toko ini belum mengatur pembayaran QRIS. Hubungi penjual." };
+  if (voucherCode) await expireUnpaidOrders(store.id); // frees voucher uses held by abandoned orders
 
   // Flash-sale price if a sale is running right now; always computed on the server.
   const price = priceFor(product, store.tier).price;
