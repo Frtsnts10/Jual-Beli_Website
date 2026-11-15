@@ -14,11 +14,10 @@ import {
   type UserCredential,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/client";
+import { btnOutline, btnPrimary, field } from "@/lib/ui";
 
-export const inputCls =
-  "w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 text-sm font-normal outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
-const primaryBtn =
-  "flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent)] py-2.5 text-sm font-semibold text-[var(--accent-fg)] transition active:scale-[0.99] disabled:opacity-50";
+export const inputCls = field;
+const primaryBtn = `${btnPrimary} w-full`;
 
 const ERRORS: Record<string, string> = {
   "auth/invalid-credential": "Email atau password salah.",
@@ -70,7 +69,7 @@ function GoogleButton({ next, onError }: { next: string; onError: (msg: string) 
           setBusy(false);
         }
       }}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-300 bg-white py-2.5 text-sm font-medium transition hover:bg-neutral-50 disabled:opacity-50"
+      className={`${btnOutline} w-full font-medium`}
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon />} Lanjut dengan Google
     </button>

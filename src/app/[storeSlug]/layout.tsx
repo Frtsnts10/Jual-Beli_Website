@@ -6,6 +6,7 @@ import { readableOn } from "@/lib/color";
 import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { getCustomer } from "@/lib/customer";
+import { navControl } from "@/lib/ui";
 
 type Params = Promise<{ storeSlug: string }>;
 
@@ -54,12 +55,12 @@ export default async function StoreLayout({ children, params }: { children: Reac
   const track = { href: link("/track"), label: "Lacak pesanan" };
   const customer = await getCustomer();
   const account = customer ? (
-    <Link href={link("/akun")} className="flex items-center gap-1.5 rounded-full border border-current/15 px-3 py-1.5 text-sm font-medium">
+    <Link href={link("/akun")} className={`${navControl} border border-current/15 px-3`}>
       <UserRound className="size-4" />
       <span className="max-w-24 truncate">{customer.name.split(" ")[0] || "Akun"}</span>
     </Link>
   ) : (
-    <Link href={link("/masuk")} className="rounded-full bg-[var(--accent)] px-3.5 py-1.5 text-sm font-semibold text-[var(--accent-fg)]">
+    <Link href={link("/masuk")} className={`${navControl} bg-[var(--accent)] px-4 font-semibold text-[var(--accent-fg)]`}>
       Masuk
     </Link>
   );

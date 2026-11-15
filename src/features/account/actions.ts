@@ -1,16 +1,14 @@
 "use server";
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
-import { CUSTOMER_COOKIE, getCustomer } from "@/lib/customer";
+import { adminDb } from "@/lib/firebase/admin";
+import { getCustomer } from "@/lib/customer";
 import { getStore } from "@/lib/stores";
 import { fileClaim } from "@/lib/orders";
 import { normalisePhone } from "@/lib/phone";
 import { allow } from "@/lib/rate-limit";
-import { anonymiseReviews, writeReview } from "@/lib/reviews";
+import { writeReview } from "@/lib/reviews";
 
 export type FormState = { ok?: boolean; error?: string } | undefined;
 
@@ -66,31 +64,37 @@ export async function submitReview(storeKey: string, _prev: FormState, form: For
 }
 
 /**
- * Deletes the buyer's login and profile. Orders stay (the seller needs them for records and
- * warranty) but are unlinked from the account. Accounts that are also a seller's dashboard
- * login are refused here — deleting the shared login would lock the seller out.
+ * Asks the platform to delete this account. Nothing is deleted here: a platform admin reviews
+ * the request in the dashboard (Admin Platform → Hapus akun) and approves or rejects it.
  */
-export async function deleteAccount(homeHref: string, _prev: FormState, form: FormData): Promise<FormState> {
+export async function requestAccountDeletion(storeKey: string, _prev: FormState, form: FormData): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
   if (String(form.get("confirm") ?? "").trim().toUpperCase() !== "HAPUS") return { error: 'Ketik "HAPUS" untuk mengonfirmasi.' };
   if (!(await allow("account"))) return { error: "Terlalu banyak percobaan. Coba lagi nanti." };
-  if ((await adminDb.collection("users").doc(customer.uid).get()).exists) {
-    return { error: "Email ini juga dipakai untuk akun penjual di dashboard. Hubungi admin platform untuk menghapusnya." };
-  }
-
-  const orders = await adminDb.collection("orders").where("customer_uid", "==", customer.uid).get();
-  for (let i = 0; i < orders.docs.length; i += 400) {
-    const batch = adminDb.batch();
-    orders.docs.slice(i, i + 400).forEach((d) => batch.update(d.ref, { customer_uid: FieldValue.delete() }));
-    await batch.commit();
-  }
-  await anonymiseReviews(customer.uid);
-  await adminDb.collection("customers").doc(customer.uid).delete();
-  await adminAuth.deleteUser(customer.uid).catch((err) => {
-    if ((err as { code?: string }).code !== "auth/user-not-found") throw err;
+  const ref = adminDb.collection("account_deletion_requests").doc(customer.uid);
+  if ((await ref.get()).get("status") === "PENDING") return { ok: true };
+  const store = await getStore(storeKey);
+  await ref.set({
+    uid: customer.uid,
+    email: customer.email,
+    name: customer.name,
+    reason: String(form.get("reason") ?? "").trim().slice(0, 500),
+    store_id: store?.id ?? null,
+    status: "PENDING",
+    requested_at: FieldValue.serverTimestamp(),
+    reviewed_at: null,
+    rejected_reason: null,
   });
-  (await cookies()).delete(CUSTOMER_COOKIE);
-  // Straight to the store (the account pages would bounce a signed-out visitor to /masuk).
-  redirect(homeHref.startsWith("/") && !homeHref.startsWith("//") ? homeHref : "/");
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Withdraws a pending deletion request (or clears a rejected one). */
+export async function cancelAccountDeletion(): Promise<FormState> {
+  const customer = await getCustomer();
+  if (!customer) return SIGNED_OUT;
+  await adminDb.collection("account_deletion_requests").doc(customer.uid).delete();
+  revalidatePath("/", "layout");
+  return { ok: true };
 }

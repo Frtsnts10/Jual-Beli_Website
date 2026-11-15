@@ -10,6 +10,7 @@ import { formatDate, formatIDR } from "@/lib/utils";
 import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
 import { CopyAmount, PayTimer, ProofUpload } from "@/features/payment/pay-client";
+import { btnPrimary } from "@/lib/ui";
 
 export const metadata = { title: "Pembayaran", robots: { index: false } };
 
@@ -64,7 +65,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
         {reason && <p className="text-neutral-600">{reason}</p>}
         <p className="text-sm text-neutral-500">Jika Anda sudah terlanjur membayar, hubungi penjual dengan menyebutkan ID pesanan.</p>
         {summary}
-        <Link href={link(`/checkout/${snap.get("product_id")}`)} className="rounded-xl bg-[var(--accent)] py-3 font-semibold text-[var(--accent-fg)]">
+        <Link href={link(`/checkout/${snap.get("product_id")}`)} className={`${btnPrimary} w-full`}>
           Pesan ulang
         </Link>
       </div>

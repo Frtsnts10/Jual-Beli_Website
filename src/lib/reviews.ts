@@ -81,13 +81,3 @@ export async function writeReview(order: FirebaseFirestore.DocumentSnapshot, buy
     );
   });
 }
-
-/** Account deletion: reviews stay (they're the store's social proof) but lose the link and name. */
-export async function anonymiseReviews(uid: string) {
-  const snap = await adminDb.collection("reviews").where("customer_uid", "==", uid).get();
-  for (let i = 0; i < snap.docs.length; i += 400) {
-    const batch = adminDb.batch();
-    snap.docs.slice(i, i + 400).forEach((d) => batch.update(d.ref, { customer_uid: null, name: "Pembeli" }));
-    await batch.commit();
-  }
-}

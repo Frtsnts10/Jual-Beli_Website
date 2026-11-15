@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { BellRing, CheckCircle2, Loader2 } from "lucide-react";
 import { requestRestock, type RestockState } from "./actions";
+import { btnPrimary, field } from "@/lib/ui";
 
 /** Sold-out box: leave a WhatsApp number, get a message when the seller restocks. */
 export function RestockForm({ storeKey, productId, phone }: { storeKey: string; productId: string; phone?: string }) {
@@ -31,10 +32,10 @@ export function RestockForm({ storeKey, productId, phone }: { storeKey: string; 
           autoComplete="tel"
           aria-label="Nomor WhatsApp"
           placeholder="0812xxxxxxxx"
-          defaultValue={state?.phone ?? phone?.replace(/^\+62/, "0")}
-          className="w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20"
+          defaultValue={state?.phone ?? phone?.replace(/^\+?62/, "0")}
+          className={field}
         />
-        <button disabled={pending} className="flex shrink-0 items-center gap-1 rounded-lg bg-[var(--accent)] px-4 font-semibold text-[var(--accent-fg)] disabled:opacity-50">
+        <button disabled={pending} className={btnPrimary}>
           {pending && <Loader2 className="size-4 animate-spin" />} Kabari saya
         </button>
       </div>

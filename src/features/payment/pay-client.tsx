@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Copy, ImageUp, Loader2 } from "lucide-react";
 import { uploadPaymentProof } from "./actions";
+import { btnOutline, btnPrimary } from "@/lib/ui";
 
 /** Screenshots can be several MB: re-encode to a ≤1280px JPEG before sending (keeps text legible). */
 async function compress(file: File): Promise<string> {
@@ -48,7 +49,7 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
         <div className="grid gap-3">
           <img src={preview} alt="Pratinjau bukti pembayaran" className="mx-auto max-h-72 rounded-lg border object-contain" />
           <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={() => input.current?.click()} disabled={pending} className="rounded-lg border border-neutral-300 py-2.5 text-sm font-medium">
+            <button type="button" onClick={() => input.current?.click()} disabled={pending} className={btnOutline}>
               Ganti gambar
             </button>
             <button
@@ -62,7 +63,7 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
                   router.refresh();
                 })
               }
-              className="flex items-center justify-center gap-2 rounded-lg bg-[var(--accent)] py-2.5 text-sm font-semibold text-[var(--accent-fg)] disabled:opacity-50"
+              className={btnPrimary}
             >
               {pending && <Loader2 className="size-4 animate-spin" />} Kirim bukti
             </button>
@@ -75,10 +76,10 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
           className={
             replacing
               ? "text-sm font-medium text-neutral-600 underline underline-offset-4"
-              : "flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] py-3.5 font-semibold text-[var(--accent-fg)] shadow-sm"
+              : `${btnPrimary} w-full`
           }
         >
-          {!replacing && <ImageUp className="size-5" />} {replacing ? "Salah gambar? Unggah ulang bukti" : "Sudah bayar? Unggah bukti"}
+          {!replacing && <ImageUp className="size-4" />} {replacing ? "Salah gambar? Unggah ulang bukti" : "Sudah bayar? Unggah bukti"}
         </button>
       )}
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}

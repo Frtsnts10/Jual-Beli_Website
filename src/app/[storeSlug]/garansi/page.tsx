@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStore, storeLinker } from "@/lib/stores";
 import { InfoPage, Prose } from "@/features/info/info-page";
+import { btnPrimary } from "@/lib/ui";
 
 type Params = Promise<{ storeSlug: string }>;
 
@@ -18,7 +19,7 @@ export default async function WarrantyPage({ params }: { params: Params }) {
       <Prose text={store.store_info.warranty_policy} />
       <Link
         href={link("/track")}
-        className="mt-6 inline-flex rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-fg)]"
+        className={`${btnPrimary} mt-6`}
       >
         Klaim garansi
       </Link>
