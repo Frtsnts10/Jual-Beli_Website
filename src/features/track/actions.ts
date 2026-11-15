@@ -4,6 +4,7 @@ import { adminDb } from "@/lib/firebase/admin";
 import { getStore } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
 import { allow } from "@/lib/rate-limit";
+import { getCustomer } from "@/lib/customer";
 import { fileClaim, toTracked, type TrackedOrder } from "@/lib/orders";
 
 export type TrackState = { error?: string; order?: TrackedOrder; orderId?: string; email?: string; claimed?: boolean } | undefined;
@@ -25,6 +26,7 @@ async function findOrder(storeKey: string, orderIdRaw: string, emailRaw: string)
 export async function trackOrder(storeKey: string, _prev: TrackState, form: FormData): Promise<TrackState> {
   const orderId = String(form.get("order_id") ?? "");
   const email = String(form.get("email") ?? "");
+  if (!(await getCustomer())) return { orderId, email, error: "Silakan masuk dulu untuk melacak pesanan." };
   // Limits guessing invoice IDs / emails.
   if (!(await allow("track"))) return { orderId, email, error: "Terlalu banyak percobaan. Coba lagi dalam beberapa menit." };
   const snap = await findOrder(storeKey, orderId, email);
@@ -36,6 +38,7 @@ export async function claimWarranty(storeKey: string, _prev: TrackState, form: F
   const orderId = String(form.get("order_id") ?? "");
   const email = String(form.get("email") ?? "");
   const reason = String(form.get("reason") ?? "").trim();
+  if (!(await getCustomer())) return { orderId, email, error: "Silakan masuk dulu untuk klaim garansi." };
   if (!(await allow("claim"))) return { orderId, email, error: "Terlalu banyak klaim. Coba lagi nanti." };
 
   const snap = await findOrder(storeKey, orderId, email);

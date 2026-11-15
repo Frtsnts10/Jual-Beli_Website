@@ -19,14 +19,14 @@ const LABELS: Record<string, string> = {
 const inputCls = field;
 
 /** payBase: "/bayar/" link prefix for continuing an unpaid QRIS order. */
-export function TrackPortal({ storeKey, payBase }: { storeKey: string; payBase: string }) {
+export function TrackPortal({ storeKey, payBase, email }: { storeKey: string; payBase: string; email?: string }) {
   const [state, action, pending] = useActionState<TrackState, FormData>(trackOrder.bind(null, storeKey), undefined);
 
   return (
     <div className="grid gap-6">
       <form action={action} className="grid gap-3 rounded-2xl border bg-white p-5 shadow-sm">
         <input name="order_id" required placeholder="ID Invoice (ORD-XXXXXXXX)" defaultValue={state?.orderId} className={`${inputCls} font-mono uppercase`} />
-        <input name="email" type="email" required placeholder="Email saat checkout" defaultValue={state?.email} className={inputCls} />
+        <input name="email" type="email" required placeholder="Email saat checkout" defaultValue={state?.email ?? email} className={inputCls} />
         {state?.error && !state.order && <p className="text-sm text-red-600">{state.error}</p>}
         <button disabled={pending} className={btnPrimary}>
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Lacak pesanan
