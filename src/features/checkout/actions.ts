@@ -74,8 +74,28 @@ export async function startCheckout(storeKey: string, productId: string, _prev: 
     const vRef = useVoucher ? voucherRef(store.id, voucherCode) : null;
     const [voucherSnap, open] = await Promise.all([
       vRef ? tx.get(vRef) : null,
-      tx.get(adminDb.collection("orders").where("store_id", "==", store.id).where("payment_status", "==", "PENDING").select("amount")),
+      tx.get(
+        adminDb
+          .collection("orders")
+          .where("store_id", "==", store.id)
+          .where("payment_status", "==", "PENDING")
+          .select("amount", "product_id", "pay_by", "proof_uploaded_at")
+      ),
     ]);
+    // Unpaid orders still in their pay window (or with a proof waiting for the seller) hold
+    // their stock: without this, two buyers could both pay for the last account.
+    const now = Date.now();
+    const holding = open.docs.filter((d) => d.get("proof_uploaded_at") || (d.get("pay_by")?.toMillis?.() ?? 0) > now);
+    const ownComponents = product.bundle_items?.length ? product.bundle_items : [product.id];
+    const productIds = [...new Set([...ownComponents, ...holding.map((d) => d.get("product_id") as string)])];
+    const productSnaps = await tx.getAll(...productIds.map((id) => adminDb.collection("products").doc(id)));
+    const byId = new Map(productSnaps.map((p) => [p.id, p]));
+    const componentsOf = (id: string) => (byId.get(id)?.get("bundle_items") as string[] | null)?.length ? (byId.get(id)!.get("bundle_items") as string[]) : [id];
+    const reserved = new Map<string, number>();
+    for (const d of holding) for (const c of componentsOf(d.get("product_id"))) reserved.set(c, (reserved.get(c) ?? 0) + 1);
+    const free = Math.min(...ownComponents.map((c) => ((byId.get(c)?.get("stock_available") as number) ?? 0) - (reserved.get(c) ?? 0)));
+    if (free < 1) return { error: "Stok terakhir sedang dipesan pembeli lain yang belum bayar. Jika tidak dibayar, stok kembali dalam maksimal 60 menit — coba lagi nanti." };
+
     let discount = 0;
     if (vRef) {
       const check = evaluateVoucher(toVoucher(voucherSnap!), { storeId: store.id, productId: product.id, amount: price });
