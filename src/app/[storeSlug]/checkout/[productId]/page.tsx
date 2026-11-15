@@ -63,7 +63,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
               storeKey={storeSlug}
               productId={product.id}
               soldOut={product.stock_available < 1}
-              buyer={customer && { email: customer.email, phone: customer.phone, lastChannel: customer.last_channel }}
+              buyer={customer && { email: customer.email, phone: customer.phone }}
               signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}
               vouchers={TIERS[store.tier].vouchers}
             />

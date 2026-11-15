@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
           email,
           name: (name?.trim() || decoded.name || "").slice(0, 80),
           phone: "",
-          saved_checkout: { last_channel: null },
           created_at: FieldValue.serverTimestamp(),
         });
       } else if (email && snap.get("email") !== email) {

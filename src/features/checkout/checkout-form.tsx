@@ -7,12 +7,9 @@ import { formatIDR } from "@/lib/utils";
 import { normaliseCode } from "@/lib/voucher";
 import { checkVoucher, startCheckout, type CheckoutState, type VoucherPreview } from "./actions";
 
-const CHANNEL_NAMES: Record<string, string> = { QRIS: "QRIS", OVO: "OVO", DANA: "DANA", SHOPEEPAY: "ShopeePay", LINKAJA: "LinkAja", ASTRAPAY: "AstraPay" };
-
 export interface CheckoutBuyer {
   email: string;
   phone: string;
-  lastChannel: string | null;
 }
 
 export function CheckoutForm({
@@ -26,17 +23,16 @@ export function CheckoutForm({
   storeKey: string;
   productId: string;
   soldOut: boolean;
-  /** Signed-in buyer: contact prefilled, last payment channel offered. */
+  /** Signed-in buyer: contact prefilled. */
   buyer: CheckoutBuyer | null;
   signInHref: string;
   /** The store's plan includes discount codes. */
   vouchers: boolean;
 }) {
-  const [sameChannel, setSameChannel] = useState(!!buyer?.lastChannel);
   const [state, action, pending] = useActionState<CheckoutState, FormData>(startCheckout.bind(null, storeKey, productId), undefined);
 
   useEffect(() => {
-    // Xendit's hosted invoice (or the success page in manual mode) is on another origin/route.
+    // The QRIS payment page for the new order.
     if (state?.redirect) window.location.assign(state.redirect);
   }, [state?.redirect]);
 
@@ -70,19 +66,6 @@ export function CheckoutForm({
         <span className="text-xs font-normal text-neutral-500">Akun akan dikirim ke nomor ini.</span>
       </label>
       {vouchers && <VoucherField storeKey={storeKey} productId={productId} initial={state?.voucher} />}
-      {buyer?.lastChannel && CHANNEL_NAMES[buyer.lastChannel] && (
-        <fieldset className="grid gap-2 text-sm">
-          <legend className="mb-1.5 font-medium">Pembayaran</legend>
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2.5 has-checked:border-[var(--accent)] has-checked:ring-2 has-checked:ring-[var(--accent)]/20">
-            <input type="radio" name="channel" value={buyer.lastChannel} checked={sameChannel} onChange={() => setSameChannel(true)} className="accent-[var(--accent)]" />
-            Bayar pakai {CHANNEL_NAMES[buyer.lastChannel]} lagi
-          </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2.5 has-checked:border-[var(--accent)] has-checked:ring-2 has-checked:ring-[var(--accent)]/20">
-            <input type="radio" name="channel" value="" checked={!sameChannel} onChange={() => setSameChannel(false)} className="accent-[var(--accent)]" />
-            Pilih metode lain (QRIS / e-wallet)
-          </label>
-        </fieldset>
-      )}
       {state?.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
       <button
         type="submit"
@@ -93,10 +76,8 @@ export function CheckoutForm({
         {soldOut
           ? "Stok habis"
           : busy
-            ? "Membuat tagihan…"
-            : sameChannel && buyer?.lastChannel
-              ? `Bayar dengan ${CHANNEL_NAMES[buyer.lastChannel] ?? buyer.lastChannel}`
-              : "Bayar dengan QRIS / E-Wallet"}
+            ? "Membuat pesanan…"
+            : "Lanjut bayar dengan QRIS"}
       </button>
       {!buyer && (
         <p className="text-center text-xs text-neutral-500">

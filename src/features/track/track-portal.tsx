@@ -18,7 +18,8 @@ const LABELS: Record<string, string> = {
 
 const inputCls = "w-full min-w-0 rounded-lg border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
 
-export function TrackPortal({ storeKey }: { storeKey: string }) {
+/** payBase: "/bayar/" link prefix for continuing an unpaid QRIS order. */
+export function TrackPortal({ storeKey, payBase }: { storeKey: string; payBase: string }) {
   const [state, action, pending] = useActionState<TrackState, FormData>(trackOrder.bind(null, storeKey), undefined);
 
   return (
@@ -31,12 +32,12 @@ export function TrackPortal({ storeKey }: { storeKey: string }) {
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Lacak pesanan
         </button>
       </form>
-      {state?.order && <OrderCard key={state.order.id} storeKey={storeKey} order={state.order} email={state.email ?? ""} />}
+      {state?.order && <OrderCard key={state.order.id} storeKey={storeKey} order={state.order} email={state.email ?? ""} payHref={`${payBase}${state.order.id}`} />}
     </div>
   );
 }
 
-function OrderCard({ storeKey, order: initial, email }: { storeKey: string; order: TrackedOrder; email: string }) {
+function OrderCard({ storeKey, order: initial, email, payHref }: { storeKey: string; order: TrackedOrder; email: string; payHref: string }) {
   const [claim, claimAction, claiming] = useActionState<TrackState, FormData>(claimWarranty.bind(null, storeKey), undefined);
   const order = claim?.order ?? initial;
   const expired = order.access_expires_at ? new Date(order.access_expires_at) < new Date() : false;
@@ -63,6 +64,11 @@ function OrderCard({ storeKey, order: initial, email }: { storeKey: string; orde
           </div>
         ))}
       </dl>
+      {order.payment_status === "PENDING" && (
+        <a href={payHref} className="mt-4 block rounded-lg bg-[var(--accent)] py-2.5 text-center text-sm font-semibold text-[var(--accent-fg)]">
+          Lanjutkan pembayaran / cek status
+        </a>
+      )}
       {claim?.claimed && <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>}
       {canClaim && (
         <form action={claimAction} className="mt-5 grid gap-3 border-t pt-5">

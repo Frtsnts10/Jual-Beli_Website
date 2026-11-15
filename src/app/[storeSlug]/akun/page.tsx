@@ -17,7 +17,7 @@ function Pill({ className, children }: { className: string; children: React.Reac
   return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${className}`}>{children}</span>;
 }
 
-function OrderCard({ order, storeKey, buyHref }: { order: AccountOrder; storeKey: string; buyHref: string }) {
+function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder; storeKey: string; buyHref: string; payHref: string }) {
   const [payLabel, payCls] = PAY[order.payment_status] ?? [order.payment_status, "bg-neutral-100 text-neutral-600"];
   const expired = !!order.access_expires_at && new Date(order.access_expires_at) < new Date();
   const canClaim = order.payment_status === "PAID" && order.warranty_status !== "CLAIMED" && !expired;
@@ -48,9 +48,15 @@ function OrderCard({ order, storeKey, buyHref }: { order: AccountOrder; storeKey
       </div>
       {order.warranty_status === "CLAIMED" && order.claim_reason && <p className="mt-2 text-xs text-neutral-500">“{order.claim_reason}”</p>}
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 border-t pt-3">
-        <Link href={buyHref} className="text-sm font-semibold text-[var(--accent)] hover:underline">
-          {order.payment_status === "PAID" ? "Beli lagi / perpanjang" : "Pesan lagi"}
-        </Link>
+        {order.payment_status === "PENDING" ? (
+          <Link href={payHref} className="text-sm font-semibold text-[var(--accent)] hover:underline">
+            Lanjutkan pembayaran
+          </Link>
+        ) : (
+          <Link href={buyHref} className="text-sm font-semibold text-[var(--accent)] hover:underline">
+            {order.payment_status === "PAID" ? "Beli lagi / perpanjang" : "Pesan lagi"}
+          </Link>
+        )}
         {canClaim && <ClaimForm storeKey={storeKey} orderId={order.id} />}
       </div>
       {order.payment_status === "PAID" && (
@@ -81,7 +87,7 @@ export default async function AccountOrdersPage({ params }: { params: Promise<{ 
   return (
     <ul className="grid gap-3">
       {orders.map((o) => (
-        <OrderCard key={o.id} order={o} storeKey={storeSlug} buyHref={link(`/checkout/${o.product_id}`)} />
+        <OrderCard key={o.id} order={o} storeKey={storeSlug} buyHref={link(`/checkout/${o.product_id}`)} payHref={link(`/bayar/${o.id}`)} />
       ))}
     </ul>
   );

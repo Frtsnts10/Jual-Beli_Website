@@ -1,8 +1,8 @@
 # Shop Website — Dynamic Storefront & Checkout (B2C)
 
 Buyer-facing storefront for every store created in **Shop-Dashboard**. Renders one of
-five templates per store, runs a cart-less two-field checkout (email + WhatsApp) through
-Xendit, and offers an order-tracking / warranty portal.
+five templates per store, runs a cart-less two-field checkout (email + WhatsApp) paid to
+the seller's own QRIS, and offers an order-tracking / warranty portal.
 
 Spec: `plan-storefront.md` (phase 1 implemented).
 
@@ -38,11 +38,18 @@ to Hero Catalog.
 Server-side Admin SDK only. The storefront reads `stores` (via `store_slugs` /
 `store_domains`) and published `products`, and creates `orders` with
 `payment_status: "PENDING"` — price and title always come from the database. It never
-reads `credentials_vault`; of the store's private integrations it reads only the
-Xendit sub-account id/status, to route payment (split payment when the seller's
-XenPlatform account is LIVE, platform account otherwise); stock is shown from the denormalised
-`products.stock_available` counter maintained by the dashboard. Orders become PAID only
-through the dashboard's verified Xendit webhook.
+reads `credentials_vault` or the store's private integrations; stock is shown from the
+denormalised `products.stock_available` counter maintained by the dashboard.
+
+## Payment (seller's own QRIS)
+
+Each seller uploads their static QRIS in the dashboard (`stores.payment.qris_payload`).
+Checkout adds a 1–499 rupiah *kode unik* so transfers can be told apart, and
+`/bayar/[orderId]` shows the same QRIS with that exact amount filled in (dynamic QRIS,
+`lib/qris.ts`) — the money goes straight to the seller. The buyer must upload a screenshot
+(`payment_proofs/{orderId}`, compressed in the browser) within 60 minutes; the seller checks
+their mutations and confirms or rejects in the dashboard, which is the only place an order
+becomes PAID.
 
 ## Project layout
 
@@ -52,7 +59,7 @@ src/
   app/                 [storeSlug]/ (storefront, checkout, track), .well-known/store-check
   components/templates the 5 storefront templates
   features/            checkout and track (UI + server actions)
-  lib/                 store/product reads, pricing, Xendit, rate limiting, Firebase Admin
+  lib/                 store/product reads, pricing, QRIS, vouchers, rate limiting, Firebase Admin
   types/schema.ts      copy of the dashboard's data model
 ```
 
