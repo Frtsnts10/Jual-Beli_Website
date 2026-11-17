@@ -5,6 +5,7 @@ import { Countdown } from "@/components/countdown";
 import { ratingSummary } from "@/lib/rating";
 import { cn } from "@/lib/utils";
 import type { StoreProduct } from "./types";
+import { AddToCart } from "@/features/cart/cart-buttons";
 
 export const isSoldOut = (p: StoreProduct) => p.stock_available < 1;
 
@@ -57,24 +58,43 @@ export function RatingBadge({ product, className = "" }: { product: StoreProduct
   );
 }
 
-export function BuyButton({ product, className, children }: { product: StoreProduct; className?: string; children?: React.ReactNode }) {
+export function BuyButton({
+  product,
+  className,
+  children,
+  wrapClassName,
+  cartClassName,
+}: {
+  product: StoreProduct;
+  className?: string;
+  children?: React.ReactNode;
+  /** Layout of the [cart icon][Beli] pair inside the card. */
+  wrapClassName?: string;
+  /** Extra classes for the cart icon (it otherwise copies the Beli button's look). */
+  cartClassName?: string;
+}) {
   if (isSoldOut(product)) {
     return (
       // Same size as the template's Beli button, in a solid neutral color (a faded accent was
       // hard to read and looked disabled).
-      <Link
-        href={`${product.detailHref}#kabari`}
-        className={`${className} relative z-[2] border-neutral-300! bg-neutral-200! text-neutral-800! shadow-none!`}
-        title="Stok habis — minta dikabari saat tersedia"
-      >
-        Kabari saya
-      </Link>
+      <span className={cn("relative z-[2] flex shrink-0", wrapClassName)}>
+        <Link
+          href={`${product.detailHref}#kabari`}
+          className={`${className} border-neutral-300! bg-neutral-200! text-neutral-800! shadow-none!`}
+          title="Stok habis — minta dikabari saat tersedia"
+        >
+          Kabari saya
+        </Link>
+      </span>
     );
   }
   return (
-    <Link href={product.href} className={`${className} relative z-[2]`}>
-      {children ?? "Beli Langsung"}
-    </Link>
+    <span className={cn("relative z-[2] flex shrink-0 items-stretch gap-1.5", wrapClassName)}>
+      <AddToCart storeId={product.store_id} productId={product.id} compact className={cn(className, "mt-0! px-2.5!", cartClassName)} />
+      <Link href={product.href} className={className}>
+        {children ?? "Beli Langsung"}
+      </Link>
+    </span>
   );
 }
 

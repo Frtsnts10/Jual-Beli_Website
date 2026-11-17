@@ -11,7 +11,8 @@ async function failOrder(orderId: string, reason: string): Promise<boolean> {
   return adminDb.runTransaction(async (tx) => {
     const order = await tx.get(orderRef);
     if (!order.exists || order.get("payment_status") !== "PENDING" || order.get("proof_uploaded_at")) return false;
-    const code = order.get("voucher_code") as string | null;
+    // In a cart several orders carry the code but only one holds the use (voucher_use).
+    const code = (order.get("voucher_use") ?? !order.get("group_id")) ? (order.get("voucher_code") as string | null) : null;
     const voucherRef = code ? adminDb.collection("vouchers").doc(`${order.get("store_id")}_${code}`) : null;
     const voucher = voucherRef ? await tx.get(voucherRef) : null;
     tx.update(orderRef, { payment_status: "FAILED", rejected_reason: reason, failed_at: FieldValue.serverTimestamp() });
