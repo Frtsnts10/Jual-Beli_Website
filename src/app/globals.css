@@ -25,18 +25,21 @@ body {
   }
 }
 
-/* No visible scrollbars anywhere (page and inner scroll areas); scrolling still works by
-   touch, wheel, trackpad and keyboard. */
-@layer base {
-  html, body, * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  *::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
+/* No visible scrollbars anywhere (page and inner scroll areas, vertical and horizontal);
+   scrolling still works by touch, wheel, trackpad and keyboard. Unlayered and !important so
+   no component style can bring a bar back (Safari draws its own unless both rules apply). */
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 /*
