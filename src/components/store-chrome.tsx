@@ -41,7 +41,7 @@ export function StoreNav({
 
   const linkCls = variant === "brutalist" ? "font-bold uppercase hover:underline" : "text-neutral-600 hover:text-neutral-900";
   return (
-    <header className={cn("sticky top-0 z-40", BAR[variant])}>
+    <header className={cn("sticky top-0 z-40 print:hidden", BAR[variant])}>
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link href={homeHref} className="flex min-w-0 items-center gap-2">
           {logoUrl && <img src={logoUrl} alt="" className="size-8 shrink-0 rounded-md object-cover" />}
@@ -82,7 +82,7 @@ export function StoreNav({
 
 export function StoreFooter({ storeName, links, variant, chatButton = false }: { storeName: string; links: NavLink[]; variant: ChromeVariant; chatButton?: boolean }) {
   return (
-    <footer className={cn(variant === "brutalist" ? "border-t-4 border-black bg-white font-mono font-bold" : "border-t border-neutral-200 bg-white text-neutral-500")}>
+    <footer className={cn("print:hidden", variant === "brutalist" ? "border-t-4 border-black bg-white font-mono font-bold" : "border-t border-neutral-200 bg-white text-neutral-500")}>
       {/* With the floating chat button, extra room at the bottom so it never covers the links. */}
       <div className={cn("mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6", chatButton && "pb-24 sm:pb-8 sm:pr-48")}>
         <span>
@@ -109,7 +109,7 @@ export function WhatsAppButton({ phone, storeName }: { phone: string; storeName:
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat penjual di WhatsApp"
-      className="t-pill t-btn fixed right-4 bottom-4 z-30 flex items-center gap-2 bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-105 sm:right-6 sm:bottom-6"
+      className="t-pill t-btn fixed right-4 bottom-4 z-30 flex print:hidden items-center gap-2 bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-105 sm:right-6 sm:bottom-6"
     >
       <MessageCircle className="size-5" />
       <span className="hidden sm:inline">Chat penjual</span>

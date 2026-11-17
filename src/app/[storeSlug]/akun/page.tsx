@@ -13,7 +13,7 @@ function Pill({ className, children }: { className: string; children: React.Reac
   return <span className={`t-pill px-2 py-0.5 text-xs font-medium ${className}`}>{children}</span>;
 }
 
-function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder; storeKey: string; buyHref: string; payHref: string }) {
+function OrderCard({ order, storeKey, buyHref, payHref, receiptHref }: { order: AccountOrder; storeKey: string; buyHref: string; payHref: string; receiptHref: string }) {
   const { label: payLabel, tone: payCls } = PAY_STATE[order.pay_state];
   const expired = !!order.access_expires_at && new Date(order.access_expires_at) < new Date();
   const canClaim = order.payment_status === "PAID" && order.warranty_status !== "CLAIMED" && !expired;
@@ -53,6 +53,11 @@ function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder;
             {order.payment_status === "PAID" ? "Beli lagi / perpanjang" : "Pesan lagi"}
           </Link>
         )}
+        {order.payment_status === "PAID" && (
+          <Link href={receiptHref} className="text-sm font-medium text-neutral-600 hover:underline">
+            Struk
+          </Link>
+        )}
         {canClaim && <ClaimForm storeKey={storeKey} orderId={order.id} />}
       </div>
       {order.payment_status === "PAID" && (
@@ -83,7 +88,7 @@ export default async function AccountOrdersPage({ params }: { params: Promise<{ 
   return (
     <ul className="grid gap-3">
       {orders.map((o) => (
-        <OrderCard key={o.id} order={o} storeKey={storeSlug} buyHref={link(`/checkout/${o.product_id}`)} payHref={link(`/bayar/${o.id}`)} />
+        <OrderCard key={o.id} order={o} storeKey={storeSlug} buyHref={link(`/checkout/${o.product_id}`)} payHref={link(`/bayar/${o.id}`)} receiptHref={link(`/struk/${o.id}`)} />
       ))}
     </ul>
   );
