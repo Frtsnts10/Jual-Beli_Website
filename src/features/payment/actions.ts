@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { alertSellerOfProof } from "@/lib/seller-alerts";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getStore } from "@/lib/stores";
@@ -47,6 +49,8 @@ export async function uploadPaymentProof(storeKey: string, orderId: string, imag
     return null;
   });
   if (error) return { error };
+  // First proof of this checkout: tell the seller (bell/push, and WhatsApp if set up) after responding.
+  if (!first.get("proof_uploaded_at")) after(() => alertSellerOfProof(store!.id, first, members));
   revalidatePath("/", "layout");
   return { ok: true };
 }

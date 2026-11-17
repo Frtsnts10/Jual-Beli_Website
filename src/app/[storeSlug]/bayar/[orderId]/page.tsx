@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
-import { CheckCircle2, Clock, Hourglass, ShieldCheck, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Hourglass, ReceiptText, ShieldCheck, XCircle } from "lucide-react";
 import { adminDb } from "@/lib/firebase/admin";
 import { getStore, storeLinker } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
@@ -73,6 +73,9 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
           {auto ? "Akun Anda sedang dikirim ke WhatsApp secara otomatis." : "Penjual akan segera mengirim akun ke WhatsApp Anda."}
         </p>
         {summary}
+        <Link href={link(`/struk/${orderId}`)} className={`${btnPrimary} w-full`}>
+          <ReceiptText className="size-4" /> Lihat struk
+        </Link>
       </div>
     );
   } else if (status === "FAILED" || expired) {

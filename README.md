@@ -51,6 +51,16 @@ Checkout adds a 1–499 rupiah *kode unik* so transfers can be told apart, and
 their mutations and confirms or rejects in the dashboard, which is the only place an order
 becomes PAID.
 
+**Cart** (`/keranjang`, kept in the browser per store): a checkout of several products makes one
+order per unit, grouped under the first order (`group_id`): one QRIS for `group_total`, one
+kode unik and one proof. `/struk/[orderId]` is the printable receipt of a paid checkout.
+
+**Seller alerts**: the first proof of a checkout puts a notification in the dashboard bell (and
+push) of the store owner and admins. With Pro/Ultimate, a WhatsApp provider and a seller number
+set in the dashboard, it also sends a WhatsApp through n8n — set `N8N_WEBHOOK_URL` and
+`N8N_WEBHOOK_SECRET` (same values as the dashboard) and optionally `DASHBOARD_PUBLIC_URL` (the
+link a tapped push opens).
+
 ## Project layout
 
 ```

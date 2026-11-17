@@ -2,6 +2,7 @@ import "server-only";
 import { cert, getApp, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 import { formatPrivateKey } from "./private-key";
 
 // Not a secret; pinned so a stale FIREBASE_PROJECT_ID env var can't point the
@@ -36,3 +37,4 @@ function lazy<T extends object>(resolve: () => T): T {
 
 export const adminDb = lazy(() => getFirestore(getAdminApp()));
 export const adminAuth = lazy(() => getAuth(getAdminApp()));
+export const adminMessaging = lazy(() => getMessaging(getAdminApp()));
