@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { CheckCircle2, Clock, Hourglass, ShieldCheck, XCircle } from "lucide-react";
 import { adminDb } from "@/lib/firebase/admin";
@@ -7,6 +7,7 @@ import { getStore, storeLinker } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
 import { qrisWithAmount } from "@/lib/qris";
 import { payState } from "@/lib/order-status";
+import { groupIdOf, groupOrders, groupTotal } from "@/lib/order-group";
 import { formatDate, formatIDR } from "@/lib/utils";
 import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
@@ -25,10 +26,23 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   if (!snap.exists || snap.get("store_id") !== store.id) notFound();
 
   const link = await storeLinker(storeSlug);
+  // One page per checkout: an order bought in a cart shows its whole cart.
+  if (groupIdOf(snap) !== orderId) redirect(link(`/bayar/${groupIdOf(snap)}`));
+  const members = await groupOrders(snap);
   const status = snap.get("payment_status") as "PENDING" | "PAID" | "FAILED";
-  const amount = snap.get("amount") as number;
+  const amount = groupTotal(snap);
   const uniqueCode = (snap.get("unique_code") as number) ?? 0;
-  const discount = (snap.get("discount") as number) ?? 0;
+  const discount = members.reduce((s, m) => s + ((m.get("discount") as number) ?? 0), 0);
+  // Same product bought twice → one line "2× …".
+  const lines = new Map<string, { title: string; qty: number; price: number }>();
+  for (const m of members) {
+    const price = ((m.get("amount") as number) ?? 0) + ((m.get("discount") as number) ?? 0) - ((m.get("unique_code") as number) ?? 0);
+    const key = `${m.get("product_id")}:${price}`;
+    const line = lines.get(key);
+    if (line) line.qty++;
+    else lines.set(key, { title: m.get("product_title"), qty: 1, price });
+  }
+  const isCart = members.length > 1;
   const payBy = iso(snap.get("pay_by"));
   const proofAt = iso(snap.get("proof_uploaded_at"));
   const expired = payState({ payment_status: status, proof_uploaded_at: proofAt, pay_by: payBy }) === "EXPIRED";
@@ -38,7 +52,11 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   const summary = (
     <div className="t-soft p-4 text-left text-sm">
       <Row label="ID pesanan" value={<span className="font-mono font-medium">{orderId}</span>} />
-      <Row label="Produk" value={snap.get("product_title")} />
+      {isCart ? (
+        [...lines.values()].map((l, i) => <Row key={i} label={`${l.qty}× ${l.title}`} value={formatIDR(l.qty * l.price)} />)
+      ) : (
+        <Row label="Produk" value={snap.get("product_title")} />
+      )}
       {discount > 0 && <Row label={`Voucher ${snap.get("voucher_code")}`} value={<span className="text-emerald-700">−{formatIDR(discount)}</span>} />}
       {uniqueCode > 0 && <Row label="Kode unik" value={`+${formatIDR(uniqueCode)}`} />}
       <Row label="Total" value={<b>{formatIDR(amount)}</b>} />
@@ -66,8 +84,8 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
         {reason && <p className="text-neutral-600">{reason}</p>}
         <p className="text-sm text-neutral-500">Jika Anda sudah terlanjur membayar, hubungi penjual dengan menyebutkan ID pesanan.</p>
         {summary}
-        <Link href={link(`/checkout/${snap.get("product_id")}`)} className={`${btnPrimary} w-full`}>
-          Pesan ulang
+        <Link href={link(isCart ? "/" : `/checkout/${snap.get("product_id")}`)} className={`${btnPrimary} w-full`}>
+          {isCart ? "Belanja lagi" : "Pesan ulang"}
         </Link>
       </div>
     );

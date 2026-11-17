@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return product ? { title: product.title, description: product.description || `Beli ${product.title} — ${formatIDR(product.price)}` } : {};
 }
 
-// No cart: "Beli Langsung" lands here, the buyer enters email + WhatsApp and pays.
+// "Beli Langsung": one product, straight to payment (the cart is /keranjang).
 export default async function CheckoutPage({ params }: { params: Params }) {
   const { storeSlug, productId } = await params;
   const store = await getStore(storeSlug);
@@ -61,7 +61,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
             {product.stock_available < 1 && <RestockForm storeKey={storeSlug} productId={product.id} phone={customer?.phone} />}
             <CheckoutForm
               storeKey={storeSlug}
-              productId={product.id}
+              items={[{ id: product.id, qty: 1 }]}
               soldOut={product.stock_available < 1}
               buyer={customer && { email: customer.email, phone: customer.phone }}
               signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}

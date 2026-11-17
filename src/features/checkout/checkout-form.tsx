@@ -7,6 +7,8 @@ import { formatIDR } from "@/lib/utils";
 import { normaliseCode } from "@/lib/voucher";
 import { checkVoucher, startCheckout, type CheckoutState, type VoucherPreview } from "./actions";
 import { btnOutline, btnPrimary, field } from "@/lib/ui";
+import type { CartItemInput } from "@/lib/cart-math";
+import { cart } from "@/features/cart/cart-store";
 
 export interface CheckoutBuyer {
   email: string;
@@ -15,14 +17,18 @@ export interface CheckoutBuyer {
 
 export function CheckoutForm({
   storeKey,
-  productId,
+  items,
+  clearCartOf,
   soldOut,
   buyer,
   signInHref,
   vouchers,
 }: {
   storeKey: string;
-  productId: string;
+  /** What is being bought: one product ("Beli Langsung") or the whole cart. */
+  items: CartItemInput[];
+  /** Cart checkout: empty this store's cart once the order exists. */
+  clearCartOf?: string;
   soldOut: boolean;
   /** Signed-in buyer: contact prefilled. */
   buyer: CheckoutBuyer | null;
@@ -30,12 +36,14 @@ export function CheckoutForm({
   /** The store's plan includes discount codes. */
   vouchers: boolean;
 }) {
-  const [state, action, pending] = useActionState<CheckoutState, FormData>(startCheckout.bind(null, storeKey, productId), undefined);
+  const [state, action, pending] = useActionState<CheckoutState, FormData>(startCheckout.bind(null, storeKey, items), undefined);
 
   useEffect(() => {
     // The QRIS payment page for the new order.
-    if (state?.redirect) window.location.assign(state.redirect);
-  }, [state?.redirect]);
+    if (!state?.redirect) return;
+    if (clearCartOf) cart.clear(clearCartOf);
+    window.location.assign(state.redirect);
+  }, [state?.redirect, clearCartOf]);
 
   const busy = pending || !!state?.redirect;
   return (
@@ -66,7 +74,8 @@ export function CheckoutForm({
         />
         <span className="text-xs font-normal text-neutral-500">Akun akan dikirim ke nomor ini.</span>
       </label>
-      {vouchers && <VoucherField storeKey={storeKey} productId={productId} initial={state?.voucher} />}
+      {/* A different cart needs the voucher applied again (its discount depends on the items). */}
+      {vouchers && <VoucherField key={JSON.stringify(items)} storeKey={storeKey} items={items} initial={state?.voucher} />}
       {state?.error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
       <button
         type="submit"
@@ -92,13 +101,13 @@ export function CheckoutForm({
   );
 }
 
-function VoucherField({ storeKey, productId, initial }: { storeKey: string; productId: string; initial?: string }) {
+function VoucherField({ storeKey, items, initial }: { storeKey: string; items: CartItemInput[]; initial?: string }) {
   const [code, setCode] = useState(initial ?? "");
   const [open, setOpen] = useState(!!initial);
   const [result, setResult] = useState<VoucherPreview | null>(null);
   const [checking, start] = useTransition();
   const applied = result?.ok ? result : null;
-  const apply = () => start(async () => setResult(await checkVoucher(storeKey, productId, code)));
+  const apply = () => start(async () => setResult(await checkVoucher(storeKey, items, code)));
 
   if (!open) {
     return (

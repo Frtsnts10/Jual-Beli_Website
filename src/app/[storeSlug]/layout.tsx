@@ -7,6 +7,7 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { getCustomer } from "@/lib/customer";
 import { navControl } from "@/lib/ui";
+import { CartNavButton } from "@/features/cart/cart-buttons";
 
 type Params = Promise<{ storeSlug: string }>;
 
@@ -75,7 +76,12 @@ export default async function StoreLayout({ children, params }: { children: Reac
         homeHref={link("")}
         links={[{ href: `${link("")}#produk`, label: "Produk" }, track, ...info]}
         variant={variant}
-        actions={account}
+        actions={
+          <>
+            <CartNavButton storeId={store.id} href={link("/keranjang")} />
+            {account}
+          </>
+        }
       />
       {/* Phones: keep the end of every page clear of the floating chat button. */}
       <div className={store.store_info.whatsapp ? "flex-1 pb-16 sm:pb-0" : "flex-1"}>{children}</div>

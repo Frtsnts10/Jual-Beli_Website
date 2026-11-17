@@ -38,8 +38,15 @@ export function HeroTemplate({ store, products }: TemplateProps) {
                   </h3>
                   <RatingBadge product={p} />
                   <BundleContents product={p} />
-                  <Price product={p} className="mt-auto pt-2 font-semibold" />
-                  <BuyButton product={p} className="mt-2 rounded-lg bg-[var(--accent)] py-2 text-center text-sm font-medium text-[var(--accent-fg)]" />
+                  <Price product={p} className="mt-auto flex flex-wrap items-baseline gap-x-1 pt-2 font-semibold" />
+                  <BuyButton
+                    product={p}
+                    wrapClassName="mt-2"
+                    className="flex-1 rounded-lg bg-[var(--accent)] py-2 text-center text-sm font-medium text-[var(--accent-fg)]"
+                    cartClassName="flex-none"
+                  >
+                    Beli
+                  </BuyButton>
                 </div>
               </Lift>
             </Reveal>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AddToCart } from "@/features/cart/cart-buttons";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, ShieldCheck, Zap } from "lucide-react";
 import { getPublishedProduct, getStore, storeLinker } from "@/lib/stores";
@@ -13,7 +14,7 @@ import { Countdown } from "@/components/countdown";
 import { Stars } from "@/components/stars";
 import { RestockForm } from "@/features/restock/restock-form";
 import { getCustomer } from "@/lib/customer";
-import { btnMuted, btnPrimary } from "@/lib/ui";
+import { btnMuted, btnOutline, btnPrimary } from "@/lib/ui";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
 
@@ -120,12 +121,12 @@ export default async function ProductPage({ params }: { params: Params }) {
             ) : soldOut ? (
               <RestockForm storeKey={storeSlug} productId={product.id} phone={customer?.phone} />
             ) : (
-              <Link
-                href={link(`/checkout/${product.id}`)}
-                className={`${btnPrimary} w-full`}
-              >
-                Beli sekarang
-              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                <AddToCart storeId={store.id} productId={product.id} className={btnOutline} />
+                <Link href={link(`/checkout/${product.id}`)} className={btnPrimary}>
+                  Beli sekarang
+                </Link>
+              </div>
             )}
             {!soldOut && product.stock_available <= 3 && <p className="-mt-2 text-center text-xs text-amber-600">Sisa {product.stock_available} lagi</p>}
 
