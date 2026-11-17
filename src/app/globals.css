@@ -38,3 +38,107 @@ body {
     height: 0;
   }
 }
+
+/*
+ * Store themes. The store layout sets data-theme from the template the seller picked in the
+ * dashboard; every storefront page (product, checkout, pay, track, account, sign-in, info)
+ * is built from the t-* classes below, so the whole site follows the template, not just the
+ * home page. Tokens:
+ *   --page / --surface / --soft   page background, cards, inner panels
+ *   --line / --bw                 card border colour / width
+ *   --ctl-line / --ctl-bw         input & outline-button border colour / width
+ *   --r-card / --r-inner / --r-input / --r-btn / --r-pill   radii
+ *   --sh-card / --sh-btn          shadows
+ *   --font / --head-case / --head-weight
+ */
+[data-theme] {
+  --page: #fafafa;
+  --surface: #ffffff;
+  --soft: #f5f5f5;
+  --line: #e5e5e5;
+  --bw: 1px;
+  --ctl-line: #d4d4d4;
+  --ctl-bw: 1px;
+  --r-card: 1rem;
+  --r-inner: 0.75rem;
+  --r-input: 0.5rem;
+  --r-btn: 0.5rem;
+  --r-pill: 9999px;
+  --sh-card: 0 1px 2px rgb(0 0 0 / 0.05);
+  --sh-btn: none;
+  --font: var(--font-sans);
+  --head-case: none;
+  --head-weight: 600;
+  font-family: var(--font);
+}
+[data-theme="bento"] {
+  --page: #f5f5f5;
+  --r-card: 1.75rem;
+  --r-inner: 1.25rem;
+  --r-input: 0.875rem;
+  --r-btn: 9999px;
+}
+[data-theme="list"] {
+  --page: #ffffff;
+  --soft: #fafafa;
+  --r-card: 0.75rem;
+  --r-inner: 0.5rem;
+  --r-input: 0.375rem;
+  --r-btn: 0.375rem;
+  --sh-card: none;
+}
+[data-theme="hero"] {
+  --r-card: 1rem;
+  --sh-card: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+[data-theme="appstore"] {
+  --page: #ffffff;
+  --r-card: 1.25rem;
+  --r-inner: 1rem;
+  --r-input: 0.75rem;
+  --r-btn: 9999px;
+  --sh-card: none;
+}
+[data-theme="brutalist"] {
+  --page: #f4f4ef;
+  --soft: #fff7d6;
+  --line: #000000;
+  --bw: 3px;
+  --ctl-line: #000000;
+  --ctl-bw: 2px;
+  --r-card: 0;
+  --r-inner: 0;
+  --r-input: 0;
+  --r-btn: 0;
+  --r-pill: 0;
+  --sh-card: 6px 6px 0 #000000;
+  --sh-btn: 3px 3px 0 #000000;
+  --font: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --head-case: uppercase;
+  --head-weight: 900;
+}
+
+@layer components {
+  .t-page { background: var(--page); }
+  .t-card {
+    background: var(--surface);
+    border: var(--bw) solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--sh-card);
+  }
+  .t-card-dashed {
+    background: var(--surface);
+    border: var(--bw) dashed var(--line);
+    border-radius: var(--r-card);
+  }
+  .t-soft { background: var(--soft); border-radius: var(--r-inner); }
+  .t-media { border: var(--bw) solid var(--line); border-radius: var(--r-card); overflow: hidden; }
+  .t-input { border: var(--ctl-bw) solid var(--ctl-line); border-radius: var(--r-input); background: #fff; }
+  .t-btn { border-radius: var(--r-btn); box-shadow: var(--sh-btn); }
+  .t-btn-line { border: var(--ctl-bw) solid var(--ctl-line); }
+  .t-pill { border-radius: var(--r-pill); }
+  .t-heading { text-transform: var(--head-case); font-weight: var(--head-weight); }
+  /* Brutalist buttons press in like the home page cards. */
+  [data-theme="brutalist"] .t-btn { border: var(--ctl-bw) solid #000; }
+  [data-theme="brutalist"] .t-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+}

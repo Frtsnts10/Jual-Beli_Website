@@ -67,7 +67,7 @@ export function CheckoutForm({
         <span className="text-xs font-normal text-neutral-500">Akun akan dikirim ke nomor ini.</span>
       </label>
       {vouchers && <VoucherField storeKey={storeKey} productId={productId} initial={state?.voucher} />}
-      {state?.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state?.error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
       <button
         type="submit"
         disabled={busy || soldOut}

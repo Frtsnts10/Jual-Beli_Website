@@ -33,17 +33,17 @@ export default async function CheckoutPage({ params }: { params: Params }) {
   const customer = await getCustomer();
 
   return (
-    <main className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 px-4 py-10">
+    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-10">
       <div className="mx-auto max-w-md">
         <Link href={link("/")} className="mb-6 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900">
           <ArrowLeft className="size-4" /> {store.store_name}
         </Link>
-        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+        <div className="overflow-hidden t-card">
           <div className="flex gap-4 border-b p-5">
-            <ProductImage src={product.image_url} alt={product.title} className="size-20 shrink-0 rounded-xl" />
+            <ProductImage src={product.image_url} alt={product.title} className="size-20 shrink-0 rounded-[var(--r-inner)]" />
             <div className="min-w-0">
               <p className="text-xs text-neutral-500">{product.platform_type} · {product.duration_days} hari</p>
-              <h1 className="font-semibold">
+              <h1 className="t-heading font-semibold">
                 <Link href={link(`/p/${product.id}`)} className="hover:underline">
                   {product.title}
                 </Link>

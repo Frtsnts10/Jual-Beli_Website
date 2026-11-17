@@ -110,7 +110,7 @@ export function SignInForm({ next, accountHref, signUpHref, forgotHref }: { next
         <Link href={forgotHref} className="justify-self-end text-xs text-neutral-500 hover:text-neutral-900">
           Lupa password?
         </Link>
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        {error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button disabled={busy} className={primaryBtn}>
           {busy && <Loader2 className="size-4 animate-spin" />} Masuk
         </button>
@@ -156,7 +156,7 @@ export function SignUpForm({ next, accountHref, signInHref, email }: { next: str
         <input name="name" required minLength={2} autoComplete="name" placeholder="Nama" className={inputCls} />
         <input name="email" type="email" required autoComplete="email" placeholder="Email" defaultValue={email} className={inputCls} />
         <input name="password" type="password" required minLength={6} autoComplete="new-password" placeholder="Password (min. 6 karakter)" className={inputCls} />
-        {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        {error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
         <button disabled={busy} className={primaryBtn}>
           {busy && <Loader2 className="size-4 animate-spin" />} Buat akun
         </button>
@@ -178,7 +178,7 @@ export function ForgotPasswordForm({ signInHref }: { signInHref: string }) {
   if (state.sent) {
     return (
       <div className="grid gap-4 text-sm">
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-emerald-700">Jika email terdaftar, link untuk membuat password baru sudah kami kirim. Cek juga folder spam.</p>
+        <p className="rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-emerald-700">Jika email terdaftar, link untuk membuat password baru sudah kami kirim. Cek juga folder spam.</p>
         <Link href={signInHref} className="text-center font-medium underline underline-offset-4">
           Kembali ke halaman masuk
         </Link>
@@ -203,7 +203,7 @@ export function ForgotPasswordForm({ signInHref }: { signInHref: string }) {
       }}
     >
       <input name="email" type="email" required autoComplete="email" placeholder="Email akun Anda" className={inputCls} />
-      {state.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state.error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={state.busy} className={primaryBtn}>
         {state.busy && <Loader2 className="size-4 animate-spin" />} Kirim link reset password
       </button>

@@ -10,7 +10,7 @@ import { ClaimForm, ReviewForm } from "@/features/account/account-client";
 const WARRANTY: Record<string, string> = { CLAIMED: "Klaim diproses", REPLACED: "Akun sudah diganti" };
 
 function Pill({ className, children }: { className: string; children: React.ReactNode }) {
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${className}`}>{children}</span>;
+  return <span className={`t-pill px-2 py-0.5 text-xs font-medium ${className}`}>{children}</span>;
 }
 
 function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder; storeKey: string; buyHref: string; payHref: string }) {
@@ -18,7 +18,7 @@ function OrderCard({ order, storeKey, buyHref, payHref }: { order: AccountOrder;
   const expired = !!order.access_expires_at && new Date(order.access_expires_at) < new Date();
   const canClaim = order.payment_status === "PAID" && order.warranty_status !== "CLAIMED" && !expired;
   return (
-    <li className="rounded-2xl border bg-white p-4 shadow-sm sm:p-5">
+    <li className="t-card p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-medium">{order.product_title}</p>
@@ -72,7 +72,7 @@ export default async function AccountOrdersPage({ params }: { params: Promise<{ 
 
   if (orders.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed bg-white p-10 text-center text-sm text-neutral-500">
+      <div className="t-card-dashed p-10 text-center text-sm text-neutral-500">
         Belum ada pesanan di {store.store_name}.{" "}
         <Link href={`${link("")}#produk`} className="font-medium text-neutral-900 underline underline-offset-4">
           Lihat produk

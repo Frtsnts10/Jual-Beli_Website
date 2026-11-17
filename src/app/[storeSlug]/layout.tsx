@@ -42,10 +42,13 @@ export default async function StoreLayout({ children, params }: { children: Reac
   const accent = store.storefront_config.accent_color;
   const style = { "--accent": accent, "--accent-fg": readableOn(accent) } as React.CSSProperties;
 
+  // template_a_bento → "bento" … : the theme every storefront page follows (globals.css).
+  const theme = store.template.split("_")[2];
+
   if (!store.is_active) {
     return (
-      <main style={style} className="flex min-h-svh flex-col items-center justify-center gap-2 p-6 text-center">
-        <h1 className="text-2xl font-semibold">{store.store_name}</h1>
+      <main style={style} data-theme={theme} className="t-page flex min-h-svh flex-col items-center justify-center gap-2 p-6 text-center">
+        <h1 className="t-heading text-2xl">{store.store_name}</h1>
         <p className="text-neutral-500">Toko sedang tutup sementara. Silakan kembali lagi nanti.</p>
       </main>
     );
@@ -55,7 +58,7 @@ export default async function StoreLayout({ children, params }: { children: Reac
   const track = { href: link("/track"), label: "Lacak pesanan" };
   const customer = await getCustomer();
   const account = customer ? (
-    <Link href={link("/akun")} className={`${navControl} border border-current/15 px-3`}>
+    <Link href={link("/akun")} className={`${navControl} t-btn-line bg-white px-3`}>
       <UserRound className="size-4" />
       <span className="max-w-24 truncate">{customer.name.split(" ")[0] || "Akun"}</span>
     </Link>
@@ -65,7 +68,7 @@ export default async function StoreLayout({ children, params }: { children: Reac
     </Link>
   );
   return (
-    <div style={style} className="flex min-h-svh flex-col">
+    <div style={style} data-theme={theme} className="t-page flex min-h-svh flex-col">
       <StoreNav
         storeName={store.store_name}
         logoUrl={store.storefront_config.logo_url}

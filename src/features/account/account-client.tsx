@@ -61,7 +61,7 @@ export function SignOutButton({ homeHref }: { homeHref: string }) {
 export function VerifyEmailBanner() {
   const [state, setState] = useState<"idle" | "sent" | "error">("idle");
   return (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+    <div className="rounded-[var(--r-inner)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
       Email Anda belum diverifikasi. Verifikasi agar pesanan lama dengan email ini ikut tampil.{" "}
       {state === "sent" ? (
         <span className="font-medium">Link verifikasi terkirim — cek email Anda, lalu muat ulang halaman ini.</span>
@@ -84,8 +84,8 @@ export function VerifyEmailBanner() {
 }
 
 function Feedback({ state, ok }: { state: FormState; ok: string }) {
-  if (state?.error) return <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>;
-  if (state?.ok) return <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{ok}</p>;
+  if (state?.error) return <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>;
+  if (state?.ok) return <p className="rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{ok}</p>;
   return null;
 }
 
@@ -113,7 +113,7 @@ export function ProfileForm({ name, phone }: { name: string; phone: string }) {
 export function ClaimForm({ storeKey, orderId }: { storeKey: string; orderId: string }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState(claimFromAccount.bind(null, storeKey), undefined);
-  if (state?.ok) return <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>;
+  if (state?.ok) return <p className="rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Klaim terkirim. Penjual akan mengganti akun Anda secepatnya.</p>;
   if (!open) {
     return (
       <button type="button" onClick={() => setOpen(true)} className="text-sm font-semibold text-red-600 hover:underline">
@@ -186,7 +186,7 @@ export function ReviewForm({ storeKey, orderId, review }: { storeKey: string; or
       </div>
       <textarea name="text" rows={3} maxLength={1000} defaultValue={review?.text} placeholder="Ceritakan pengalaman Anda (opsional)" className={textarea} />
       {state?.ok ? (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Terima kasih! Ulasan Anda tersimpan.</p>
+        <p className="rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-sm text-emerald-700">Terima kasih! Ulasan Anda tersimpan.</p>
       ) : (
         <Feedback state={state} ok="" />
       )}
@@ -231,7 +231,7 @@ export function ChangeEmailForm({ email }: { email: string }) {
   const [state, setState] = useState<{ sent?: string; error?: string; busy?: boolean }>({});
   if (state.sent) {
     return (
-      <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+      <p className="rounded-[var(--r-inner)] bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
         Link konfirmasi dikirim ke <b>{state.sent}</b>. Email baru aktif setelah link diklik; setelah itu masuk lagi dengan email baru.
       </p>
     );
@@ -255,7 +255,7 @@ export function ChangeEmailForm({ email }: { email: string }) {
     >
       <input name="new_email" type="email" required placeholder="Email baru" autoComplete="email" className={inputCls} />
       <input name="password" type="password" required placeholder="Password saat ini" autoComplete="current-password" className={inputCls} />
-      {state.error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
+      {state.error && <p className="rounded-[var(--r-inner)] bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>}
       <button disabled={state.busy} className={cn(outline, "w-fit")}>
         {state.busy && <Loader2 className="size-4 animate-spin" />} Ganti email
       </button>
@@ -268,7 +268,7 @@ export function DeletionRequestForm({ storeKey, rejectedReason }: { storeKey: st
   return (
     <form action={action} className="grid gap-3">
       {rejectedReason && (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
+        <p className="rounded-[var(--r-inner)] bg-amber-50 px-3 py-2 text-sm text-amber-800">
           Pengajuan sebelumnya ditolak: {rejectedReason}. Anda bisa mengajukan lagi.
         </p>
       )}
