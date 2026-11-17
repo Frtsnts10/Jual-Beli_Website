@@ -36,6 +36,23 @@ export interface StorefrontConfig {
   logo_url?: string;
 }
 
+/**
+ * stores/{id}.hero_slides — the storefront's hero banner (carousel when >1). Kept outside
+ * storefront_config so saving the store settings form never overwrites it.
+ */
+export interface HeroSlide {
+  id: string;
+  image_url: string;
+  /** Optional portrait/narrow crop for phones; falls back to image_url. */
+  image_mobile_url: string | null;
+  title: string;
+  subtitle: string;
+  cta_label: string;
+  /** A product id of this store, or an https:// URL. */
+  cta_target: string;
+  active: boolean;
+}
+
 /** Public "about this store" content shown on the storefront's info pages and footer. */
 export interface StoreInfo {
   about: string;
@@ -70,6 +87,7 @@ export interface Store {
   /** The seller's own QRIS; buyers pay it directly and the seller confirms. null = not set up. */
   payment: StorePayment | null;
   storefront_config: StorefrontConfig;
+  hero_slides: HeroSlide[];
   is_active: boolean;
   /** Set by a platform admin; the storefront and bots treat it like a closed store. */
   suspended: boolean;

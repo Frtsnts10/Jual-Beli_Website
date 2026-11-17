@@ -64,6 +64,19 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
       banner_url: config.banner_url ?? "",
       logo_url: config.logo_url ?? "",
     },
+    // Only active slides with an image reach the page.
+    hero_slides: (Array.isArray(d.hero_slides) ? d.hero_slides : [])
+      .filter((h: Record<string, unknown>) => h && h.active && typeof h.image_url === "string" && h.image_url)
+      .map((h: Record<string, unknown>) => ({
+        id: str(h.id),
+        image_url: str(h.image_url),
+        image_mobile_url: str(h.image_mobile_url) || null,
+        title: str(h.title),
+        subtitle: str(h.subtitle),
+        cta_label: str(h.cta_label),
+        cta_target: str(h.cta_target),
+        active: true,
+      })),
     store_info: {
       about: str(d.store_info?.about),
       faq: Array.isArray(d.store_info?.faq)
