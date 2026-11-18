@@ -18,7 +18,7 @@ export function ListTemplate({ store, products }: TemplateProps) {
       <div className="mx-auto max-w-3xl px-6 pt-16">
         <h1 className="text-3xl font-bold tracking-tight">{store.store_name}</h1>
         {store.storefront_config.tagline && <p className="mt-2 text-neutral-500">{store.storefront_config.tagline}</p>}
-        <label className="mt-8 flex items-center gap-2 rounded-sm border border-neutral-200 px-3 py-2 focus-within:border-neutral-400">
+        <label className="mt-8 flex items-center gap-2 rounded-[var(--r-input)] border border-neutral-200 px-3 py-2 focus-within:border-neutral-400">
           <Search className="size-4 text-neutral-400" />
           <input
             value={query}
@@ -47,7 +47,7 @@ export function ListTemplate({ store, products }: TemplateProps) {
                 <Price product={p} className="mt-1 block text-sm tabular-nums sm:hidden" />
               </div>
               <Price product={p} className="hidden shrink-0 text-right text-sm tabular-nums sm:block" />
-              <BuyButton product={p} className="shrink-0 rounded-sm bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
+              <BuyButton product={p} className="shrink-0 rounded-[var(--r-btn)] bg-[var(--accent)] px-3 py-1.5 text-xs font-medium text-[var(--accent-fg)]">
                 Beli
               </BuyButton>
             </li>

@@ -12,7 +12,7 @@ export function DemoPayButton({ storeKey, orderId }: { storeKey: string; orderId
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   return (
-    <div className="grid gap-2 rounded-sm border border-dashed border-violet-300 bg-violet-50 p-3 text-center text-sm">
+    <div className="grid gap-2 rounded-[var(--r-inner)] border border-dashed border-violet-300 bg-violet-50 p-3 text-center text-sm">
       <p className="text-violet-800">
         <b>Toko demo</b> — tidak perlu transfer sungguhan.
       </p>

@@ -15,7 +15,7 @@ export function HeroTemplate({ store, products }: TemplateProps) {
           <StoreLogo src={logo_url} name={store.store_name} className="mb-6 size-14" />
           <h1 className="max-w-2xl text-4xl font-bold tracking-tight md:text-6xl">{store.store_name}</h1>
           {tagline && <p className="mt-4 max-w-xl text-lg opacity-90">{tagline}</p>}
-          <a href="#produk" className="mt-8 inline-block rounded-sm bg-white px-5 py-3 text-sm font-semibold text-neutral-900 shadow">
+          <a href="#produk" className="mt-8 inline-block rounded-[var(--r-btn)] bg-white px-5 py-3 text-sm font-semibold text-neutral-900 shadow">
             Lihat produk
           </a>
         </div>
@@ -26,7 +26,7 @@ export function HeroTemplate({ store, products }: TemplateProps) {
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {products.map((p, i) => (
             <Reveal key={p.id} index={i}>
-              <Lift className="relative flex h-full flex-col overflow-hidden rounded-sm border bg-white shadow-sm">
+              <Lift className="relative flex h-full flex-col overflow-hidden rounded-[var(--r-card)] border bg-white shadow-sm">
                 <div className="relative">
                   <ProductImage src={p.image_url} alt={p.title} className="aspect-[4/3] w-full" />
                   {p.is_flash_sale && <span className="absolute top-2 left-2 rounded bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">FLASH SALE</span>}
@@ -42,7 +42,7 @@ export function HeroTemplate({ store, products }: TemplateProps) {
                   <BuyButton
                     product={p}
                     wrapClassName="mt-2"
-                    className="flex-1 rounded-sm bg-[var(--accent)] py-2 text-center text-sm font-medium text-[var(--accent-fg)]"
+                    className="flex-1 rounded-[var(--r-btn)] bg-[var(--accent)] py-2 text-center text-sm font-medium text-[var(--accent-fg)]"
                     cartClassName="flex-none"
                   >
                     Beli

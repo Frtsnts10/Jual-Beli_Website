@@ -4,7 +4,6 @@ import { ArrowLeft } from "lucide-react";
 import { getPublishedProducts, getStore, storeLinker } from "@/lib/stores";
 import { priceFor } from "@/lib/pricing";
 import { getCustomer } from "@/lib/customer";
-import { TIERS } from "@/config/tiers";
 import { CartView } from "@/features/cart/cart-view";
 
 export const metadata = { title: "Keranjang", robots: { index: false } };
@@ -33,14 +32,14 @@ export default async function CartPage({ params }: { params: Promise<{ storeSlug
             duration_days: p.duration_days,
             bundle_titles: p.bundle_titles,
             stock: p.stock_available,
-            price: priceFor(p, store.tier).price,
-            original: priceFor(p, store.tier).original,
+            price: priceFor(p, store.features).price,
+            original: priceFor(p, store.features).original,
             href: link(`/p/${p.id}`),
           }))}
           buyer={customer && { email: customer.email, phone: customer.phone }}
           signInHref={link(`/masuk?next=${encodeURIComponent(link("/keranjang"))}`)}
           shopHref={link("/")}
-          vouchers={TIERS[store.tier].vouchers}
+          vouchers={store.features.vouchers}
           canPay={!!store.payment}
         />
       </div>

@@ -44,7 +44,7 @@ export function StoreNav({
     <header className={cn("sticky top-0 z-40 print:hidden", BAR[variant])}>
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link href={homeHref} className="flex min-w-0 items-center gap-2">
-          {logoUrl && <img src={logoUrl} alt="" className="size-8 shrink-0 rounded-sm object-cover" />}
+          {logoUrl && <img src={logoUrl} alt="" className="size-8 shrink-0 rounded-[var(--r-inner)] object-cover" />}
           <span className={cn("truncate font-semibold", variant === "brutalist" && "font-black uppercase")}>{storeName}</span>
         </Link>
         <nav className="ml-auto hidden items-center gap-5 text-sm md:flex">

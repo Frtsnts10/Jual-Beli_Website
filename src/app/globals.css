@@ -62,7 +62,8 @@ body,
   --bw: 1px;
   --ctl-line: #d4d4d4;
   --ctl-bw: 1px;
-  /* Every template uses small corners (Tailwind rounded-sm); Brutalist stays square. */
+  /* Small corners by default (= rounded-sm); Brutalist stays square. Platform admins can
+     override radius and font per template (dashboard → Tema), applied inline by the store layout. */
   --r-card: 0.25rem;
   --r-inner: 0.25rem;
   --r-input: 0.25rem;

@@ -2,7 +2,8 @@ import "server-only";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { adminDb } from "@/lib/firebase/admin";
-import { TIERS } from "@/config/tiers";
+import type { TierConfig } from "@/config/tiers";
+import { cleanOverrides, getCatalog, resolveFeatures, templateFor, type TemplateStyle } from "@/lib/catalog";
 import { ratingCounts } from "@/lib/rating";
 import type { LayoutTemplate, Product, Store, SubscriptionTier } from "@/types/schema";
 
@@ -25,9 +26,16 @@ function iso(v: unknown): string {
 
 export interface PublicStore extends Store {
   tier: SubscriptionTier;
-  /** layout_template after enforcing the owner's plan (falls back to Hero Catalog). */
+  /** What the owner's plan (plus admin-granted overrides) includes — platform/catalog. */
+  features: TierConfig;
+  /** layout_template after enforcing the owner's plan and the platform's switched-on templates. */
   template: LayoutTemplate;
+  /** The platform admin's look for that template (radius / font; null = built-in). */
+  theme_style: TemplateStyle;
 }
+
+/** New stores start with this accent; until the seller changes it, the theme's default accent wins. */
+const STARTER_ACCENT = "#10B981";
 
 /** Resolves the [storeSlug] segment, which is either a slug or a custom domain. */
 export const getStore = cache(async (key: string): Promise<PublicStore | null> => {
@@ -46,11 +54,16 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
 
   const owner = await adminDb.collection("users").doc(d.owner_uid).get();
   const tier = effectiveTier(owner.get("subscription_tier"), owner.get("subscription_expiry"));
+  const catalog = await getCatalog();
+  const features = resolveFeatures(catalog, tier, cleanOverrides(owner.get("feature_overrides")));
   // A custom domain only works while the owner's plan includes it.
-  if (isDomain && !TIERS[tier].customDomain) return null;
+  if (isDomain && !features.customDomain) return null;
 
   const config = d.storefront_config ?? {};
   const wanted: LayoutTemplate = config.layout_template ?? "template_c_hero";
+  const template = templateFor(wanted, features);
+  const theme = catalog.templates.find((t) => t.id === template)!;
+  const ownAccent = typeof config.accent_color === "string" && config.accent_color && config.accent_color.toUpperCase() !== STARTER_ACCENT ? config.accent_color : null;
   return {
     id: snap.id,
     owner_uid: d.owner_uid,
@@ -59,7 +72,7 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
     custom_domain: d.custom_domain ?? null,
     storefront_config: {
       layout_template: wanted,
-      accent_color: config.accent_color ?? "#10B981",
+      accent_color: ownAccent ?? theme.style.accent ?? STARTER_ACCENT,
       tagline: config.tagline ?? "",
       banner_url: config.banner_url ?? "",
       logo_url: config.logo_url ?? "",
@@ -93,7 +106,9 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
     suspended: d.suspended ?? false,
     created_at: iso(d.created_at),
     tier,
-    template: TIERS[tier].templates.includes(wanted) ? wanted : "template_c_hero",
+    features,
+    template,
+    theme_style: theme.style,
   };
 });
 

@@ -15,5 +15,5 @@ export function ProductImage({ src, alt, className }: { src: string | null; alt:
 
 export function StoreLogo({ src, name, className }: { src?: string; name: string; className?: string }) {
   if (!src) return null;
-  return <img src={src} alt={name} className={cn("rounded-sm object-cover", className)} />;
+  return <img src={src} alt={name} className={cn("rounded-[var(--r-inner)] object-cover", className)} />;
 }

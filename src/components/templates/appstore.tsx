@@ -35,7 +35,7 @@ function Shelf({ title, items, featured }: { title: string; items: StoreProduct[
       <div className="flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-4 [scrollbar-width:none]">
         {items.map((p) => (
           <Lift key={p.id} className={`relative shrink-0 snap-start ${featured ? "w-72" : "w-44"}`}>
-            <div className="overflow-hidden rounded-sm bg-neutral-100">
+            <div className="overflow-hidden rounded-[var(--r-card)] bg-neutral-100">
               <ProductImage src={p.image_url} alt={p.title} className={featured ? "aspect-video w-full" : "aspect-square w-full"} />
             </div>
             <h3 className="mt-2 line-clamp-2 min-h-10 text-sm font-medium">
@@ -45,7 +45,7 @@ function Shelf({ title, items, featured }: { title: string; items: StoreProduct[
             <BundleContents product={p} className="line-clamp-1" />
             <div className="mt-1 flex items-center justify-between gap-2">
               <Price product={p} className="text-xs text-neutral-500" />
-              <BuyButton product={p} className="shrink-0 rounded-sm whitespace-nowrap bg-neutral-100 px-3 py-1 text-xs font-bold text-[var(--accent)] uppercase">
+              <BuyButton product={p} className="shrink-0 rounded-[var(--r-btn)] whitespace-nowrap bg-neutral-100 px-3 py-1 text-xs font-bold text-[var(--accent)] uppercase">
                 Beli
               </BuyButton>
             </div>

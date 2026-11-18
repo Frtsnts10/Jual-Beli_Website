@@ -7,6 +7,13 @@ import Link from "next/link";
 import { UserRound } from "lucide-react";
 import { getCustomer } from "@/lib/customer";
 import { navControl } from "@/lib/ui";
+import { RADIUS, type FontKey } from "@/lib/catalog-core";
+
+const FONT_STACK: Record<FontKey, string> = {
+  sans: "var(--font-sans)",
+  serif: 'ui-serif, Georgia, Cambria, "Times New Roman", serif',
+  mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+};
 import { CartNavButton } from "@/features/cart/cart-buttons";
 
 type Params = Promise<{ storeSlug: string }>;
@@ -41,7 +48,15 @@ export default async function StoreLayout({ children, params }: { children: Reac
   const link = await storeLinker(storeSlug);
 
   const accent = store.storefront_config.accent_color;
-  const style = { "--accent": accent, "--accent-fg": readableOn(accent) } as React.CSSProperties;
+  // Admin-set look for this template (dashboard → Tema): overrides the theme's radius and font.
+  const { radius, font } = store.theme_style;
+  const r = radius ? RADIUS[radius] : null;
+  const style = {
+    "--accent": accent,
+    "--accent-fg": readableOn(accent),
+    ...(r ? { "--r-card": r, "--r-inner": r, "--r-input": r, "--r-btn": r, "--r-pill": r } : {}),
+    ...(font ? { "--font": FONT_STACK[font] } : {}),
+  } as React.CSSProperties;
 
   // template_a_bento → "bento" … : the theme every storefront page follows (globals.css).
   const theme = store.template.split("_")[2];
