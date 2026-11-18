@@ -24,7 +24,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
           const big = i % SPANS.length === 0;
           return (
             <Reveal key={p.id} index={i} className={cn(SPANS[i % SPANS.length])}>
-              <Lift className="group relative h-full overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-black/5">
+              <Lift className="group relative h-full overflow-hidden rounded-sm bg-white shadow-sm ring-1 ring-black/5">
                 {/* Without an image the initial sits top-right, clear of the title at the bottom. */}
                 <ProductImage
                   src={p.image_url}
@@ -36,7 +36,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 text-white">
                   <div className="min-w-0">
                     {p.is_flash_sale && (
-                      <span className="mb-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-2 py-0.5 text-xs backdrop-blur">
+                      <span className="mb-2 inline-flex items-center gap-1 rounded-sm bg-white/20 px-2 py-0.5 text-xs backdrop-blur">
                         <Sparkles className="size-3" /> Flash sale
                       </span>
                     )}
@@ -49,7 +49,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                   </div>
                   <BuyButton
                     product={p}
-                    className="shrink-0 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium whitespace-nowrap text-[var(--accent-fg)]"
+                    className="shrink-0 rounded-sm bg-[var(--accent)] px-4 py-2 text-sm font-medium whitespace-nowrap text-[var(--accent-fg)]"
                   >
                     Beli
                   </BuyButton>

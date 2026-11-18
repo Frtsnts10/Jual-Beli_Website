@@ -62,11 +62,12 @@ body,
   --bw: 1px;
   --ctl-line: #d4d4d4;
   --ctl-bw: 1px;
-  --r-card: 1rem;
-  --r-inner: 0.75rem;
-  --r-input: 0.5rem;
-  --r-btn: 0.5rem;
-  --r-pill: 9999px;
+  /* Every template uses small corners (Tailwind rounded-sm); Brutalist stays square. */
+  --r-card: 0.25rem;
+  --r-inner: 0.25rem;
+  --r-input: 0.25rem;
+  --r-btn: 0.25rem;
+  --r-pill: 0.25rem;
   --sh-card: 0 1px 2px rgb(0 0 0 / 0.05);
   --sh-btn: none;
   --font: var(--font-sans);
@@ -76,30 +77,17 @@ body,
 }
 [data-theme="bento"] {
   --page: #f5f5f5;
-  --r-card: 1.75rem;
-  --r-inner: 1.25rem;
-  --r-input: 0.875rem;
-  --r-btn: 9999px;
 }
 [data-theme="list"] {
   --page: #ffffff;
   --soft: #fafafa;
-  --r-card: 0.75rem;
-  --r-inner: 0.5rem;
-  --r-input: 0.375rem;
-  --r-btn: 0.375rem;
   --sh-card: none;
 }
 [data-theme="hero"] {
-  --r-card: 1rem;
   --sh-card: 0 1px 3px rgb(0 0 0 / 0.08);
 }
 [data-theme="appstore"] {
   --page: #ffffff;
-  --r-card: 1.25rem;
-  --r-inner: 1rem;
-  --r-input: 0.75rem;
-  --r-btn: 9999px;
   --sh-card: none;
 }
 [data-theme="brutalist"] {

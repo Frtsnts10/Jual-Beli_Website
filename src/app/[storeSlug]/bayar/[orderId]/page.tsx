@@ -13,6 +13,8 @@ import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
 import { CopyAmount, PayTimer, ProofUpload } from "@/features/payment/pay-client";
 import { btnPrimary } from "@/lib/ui";
+import { DEMO_STORE_ID } from "@/lib/demo-pay";
+import { DemoPayButton } from "@/features/demo/demo-pay-button";
 
 export const metadata = { title: "Pembayaran", robots: { index: false } };
 
@@ -43,6 +45,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
     else lines.set(key, { title: m.get("product_title"), qty: 1, price });
   }
   const isCart = members.length > 1;
+  const isDemo = store.id === DEMO_STORE_ID;
   const payBy = iso(snap.get("pay_by"));
   const proofAt = iso(snap.get("proof_uploaded_at"));
   const expired = payState({ payment_status: status, proof_uploaded_at: proofAt, pay_by: payBy }) === "EXPIRED";
@@ -103,6 +106,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
         </p>
         {summary}
         <ProofUpload storeKey={storeSlug} orderId={orderId} replacing />
+        {isDemo && <DemoPayButton storeKey={storeSlug} orderId={orderId} />}
       </div>
     );
   } else if (!store.payment) {
@@ -129,7 +133,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
           </p>
           {uniqueCode > 0 && <p className="mt-1 text-xs text-neutral-500">Termasuk kode unik {uniqueCode} supaya pembayaran Anda mudah dicocokkan.</p>}
           {payBy && (
-            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-800">
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-sm bg-amber-50 px-3 py-1 text-sm text-amber-800">
               <Clock className="size-4" /> Selesaikan dalam <PayTimer payBy={payBy} />
             </p>
           )}
@@ -140,6 +144,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
           <li>3. Screenshot bukti berhasil, lalu unggah di bawah.</li>
         </ol>
         <ProofUpload storeKey={storeSlug} orderId={orderId} />
+        {isDemo && <DemoPayButton storeKey={storeSlug} orderId={orderId} />}
         <p className="flex items-center justify-center gap-1.5 text-xs text-neutral-500">
           <ShieldCheck className="size-3.5" /> Dana langsung ke penjual. Akun dikirim setelah penjual mengonfirmasi.
         </p>

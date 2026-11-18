@@ -18,13 +18,13 @@ export default function PlatformLanding() {
           { icon: MessageCircle, text: "Akun dikirim ke WhatsApp" },
           { icon: ShieldCheck, text: "Portal garansi & lacak pesanan" },
         ].map(({ icon: Icon, text }) => (
-          <div key={text} className="rounded-xl border p-4 text-sm">
+          <div key={text} className="rounded-sm border p-4 text-sm">
             <Icon className="mb-2 size-5 text-emerald-600" />
             {text}
           </div>
         ))}
       </div>
-      <a href={SIGN_UP_URL} className="mt-10 w-fit rounded-lg bg-neutral-900 px-5 py-3 text-sm font-medium text-white">
+      <a href={SIGN_UP_URL} className="mt-10 w-fit rounded-sm bg-neutral-900 px-5 py-3 text-sm font-medium text-white">
         Buka toko Anda gratis →
       </a>
     </main>

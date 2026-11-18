@@ -164,8 +164,8 @@ export default async function ProductPage({ params }: { params: Params }) {
                   {STARS.map((k) => (
                     <div key={k} className="flex items-center gap-2 text-xs text-neutral-600">
                       <span className="w-3">{k}</span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
-                        <span className="block h-full rounded-full bg-amber-400" style={{ width: `${(product.rating[k] / rating.count) * 100}%` }} />
+                      <span className="h-2 flex-1 overflow-hidden rounded-sm bg-neutral-100">
+                        <span className="block h-full rounded-sm bg-amber-400" style={{ width: `${(product.rating[k] / rating.count) * 100}%` }} />
                       </span>
                       <span className="w-6 text-right tabular-nums">{product.rating[k]}</span>
                     </div>
