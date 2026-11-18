@@ -1,6 +1,6 @@
-# Shop Website — Dynamic Storefront & Checkout (B2C)
+# Jual — Storefront & Checkout (B2C)
 
-Buyer-facing storefront for every store created in **Shop-Dashboard**. Renders one of
+Storefront of **Jual** (`belidi.biz.id`; stores at `<slug>.belidi.biz.id`) for every store created in **Shop-Dashboard**. Renders one of
 five templates per store (styled by the platform admin's theme settings), runs a cart and
 checkout paid to the seller's own QRIS with a payment-proof upload, issues printable receipts,
 and gives buyers an account with order history, warranty claims, reviews and restock alerts.

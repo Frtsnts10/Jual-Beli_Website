@@ -80,6 +80,8 @@ export function StoreNav({
   );
 }
 
+const PLATFORM_URL = process.env.NEXT_PUBLIC_ROOT_DOMAIN ? `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN.trim().toLowerCase()}` : null;
+
 export function StoreFooter({ storeName, links, variant, chatButton = false }: { storeName: string; links: NavLink[]; variant: ChromeVariant; chatButton?: boolean }) {
   return (
     <footer className={cn("print:hidden", variant === "brutalist" ? "border-t-4 border-black bg-white font-mono font-bold" : "border-t border-neutral-200 bg-white text-neutral-500")}>
@@ -87,6 +89,14 @@ export function StoreFooter({ storeName, links, variant, chatButton = false }: {
       <div className={cn("mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6", chatButton && "pb-24 sm:pb-8 sm:pr-48")}>
         <span>
           © {new Date().getFullYear()} {storeName}
+          {PLATFORM_URL && (
+            <>
+              {" · "}
+              <a href={PLATFORM_URL} target="_blank" rel="noreferrer" className="hover:text-neutral-900 hover:underline">
+                Dibuat dengan Jual
+              </a>
+            </>
+          )}
         </span>
         <nav className="flex flex-wrap gap-x-5 gap-y-2">
           {links.map((l) => (
