@@ -1,6 +1,8 @@
 import { Zap, ShieldCheck, MessageCircle } from "lucide-react";
 
-const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL?.replace(/\/+$/, "");
+// NEXT_PUBLIC_DASHBOARD_URL wins; otherwise the dashboard lives at jual.<ROOT_DOMAIN>.
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim().toLowerCase();
+const DASHBOARD_URL = (process.env.NEXT_PUBLIC_DASHBOARD_URL || (ROOT_DOMAIN ? `https://jual.${ROOT_DOMAIN}` : ""))?.replace(/\/+$/, "") || undefined;
 // Sellers land straight on the dashboard's sign-up form.
 const SIGN_UP_URL = DASHBOARD_URL ? `${DASHBOARD_URL}/sign-up` : "#";
 
