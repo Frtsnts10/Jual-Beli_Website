@@ -98,7 +98,7 @@ export function CopyAmount({ amount, label }: { amount: number; label: string })
     <button
       type="button"
       onClick={() => navigator.clipboard?.writeText(String(amount)).then(() => setCopied(true))}
-      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-neutral-500 hover:bg-neutral-100"
+      className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-xs font-medium text-neutral-500 hover:bg-neutral-100"
       aria-label={`Salin nominal ${label}`}
     >
       {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />} {copied ? "Tersalin" : "Salin"}

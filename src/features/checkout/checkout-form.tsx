@@ -121,7 +121,7 @@ function VoucherField({ storeKey, items, initial }: { storeKey: string; items: C
       {/* Only an applied code is submitted; the server checks it again when creating the order. */}
       <input type="hidden" name="voucher" value={applied?.code ?? ""} />
       {applied ? (
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-emerald-800">
+        <div className="flex items-center justify-between gap-3 rounded-sm border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-emerald-800">
           <span className="min-w-0">
             <b className="font-mono">{applied.code}</b> · hemat {formatIDR(applied.discount)}
             <span className="block text-xs">Total bayar {formatIDR(applied.total)}</span>
