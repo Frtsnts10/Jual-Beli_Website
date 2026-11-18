@@ -1,10 +1,9 @@
 # Shop Website — Dynamic Storefront & Checkout (B2C)
 
 Buyer-facing storefront for every store created in **Shop-Dashboard**. Renders one of
-five templates per store, runs a cart-less two-field checkout (email + WhatsApp) paid to
-the seller's own QRIS, and offers an order-tracking / warranty portal.
-
-Spec: `plan-storefront.md` (phase 1 implemented).
+five templates per store (styled by the platform admin's theme settings), runs a cart and
+checkout paid to the seller's own QRIS with a payment-proof upload, issues printable receipts,
+and gives buyers an account with order history, warranty claims, reviews and restock alerts.
 
 ## Routing
 
@@ -21,7 +20,12 @@ It also stores `?ref=<username>` in a 30-day cookie; checkout copies it to the o
 | Route (inside a store) | |
 | --- | --- |
 | `/` | Storefront in the store's template |
-| `/checkout/[productId]` | Instant checkout (no cart) |
+| `/p/[productId]` | Product page with reviews |
+| `/keranjang` | Cart: several products, one QRIS payment |
+| `/checkout/[productId]` | Buy-now checkout |
+| `/bayar/[orderId]` | QRIS + exact amount, payment-proof upload |
+| `/struk/[orderId]` | Printable receipt of a paid order or cart |
+| `/masuk`, `/daftar`, `/akun` | Buyer account: profile, order history, warranty, reviews |
 | `/checkout?item=<productId>` | Deep link for WhatsApp catalogue bots |
 | `/checkout/success?order=` | Payment status, auto-refreshes until the webhook lands |
 | `/track` | Order lookup (invoice ID + email) and warranty claim |
@@ -30,8 +34,10 @@ It also stores `?ref=<username>` in a 30-day cookie; checkout copies it to the o
 
 `src/components/templates/`: Bento Grid, List Minimalist (with search), Hero Catalog,
 App Store Hub, Neo-Brutalist. The template comes from
-`stores.storefront_config.layout_template`; templates outside the owner's plan fall back
-to Hero Catalog.
+`stores.storefront_config.layout_template`. Which templates a plan may use, their names
+and their style (corner radius, font, accent colour) come from the platform catalogue
+(`platform/catalog`, managed in the dashboard's admin panel; `src/lib/catalog-core.ts`).
+A template outside the owner's plan, or one the admin disabled, falls back to an allowed one.
 
 ## Data access
 
@@ -89,3 +95,7 @@ Checkout (10 / 10 min), order lookup (20 / 10 min) and warranty claims (5 / hour
 rate-limited per client IP (`src/lib/rate-limit.ts`, stored hashed in `rate_limits`).
 Enable a Firestore TTL policy on `rate_limits.expire_at` so old windows are deleted.
 CI (`.github/workflows/ci.yml`) runs typecheck, lint and build on every PR.
+
+## License
+
+[MIT](LICENSE)
