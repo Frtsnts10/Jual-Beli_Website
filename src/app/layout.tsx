@@ -3,8 +3,9 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Toko Digital",
-  description: "Etalase produk digital dengan checkout instan.",
+  title: "Jual — buka toko digital di belidi.biz.id",
+  description: "Jual: etalase produk digital dengan keranjang, pembayaran QRIS dan pengiriman akun otomatis lewat WhatsApp.",
+  applicationName: "Jual",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
