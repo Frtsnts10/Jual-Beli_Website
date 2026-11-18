@@ -42,7 +42,7 @@ export function CartNavButton({ storeId, href }: { storeId: string; href: string
     <Link href={href} aria-label={count ? `Keranjang, ${count} item` : "Keranjang"} className={cn(navControl, "t-btn-line relative w-9 bg-white")}>
       <ShoppingCart className="size-4" />
       {count > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-5 rounded-sm bg-[var(--accent)] px-1 text-center text-[10px] leading-5 font-semibold text-[var(--accent-fg)]">
+        <span className="absolute -top-1.5 -right-1.5 min-w-5 rounded-[var(--r-pill)] bg-[var(--accent)] px-1 text-center text-[10px] leading-5 font-semibold text-[var(--accent-fg)]">
           {count > 99 ? "99+" : count}
         </span>
       )}

@@ -9,7 +9,6 @@ import { qrisWithAmount } from "@/lib/qris";
 import { payState } from "@/lib/order-status";
 import { groupIdOf, groupOrders, groupTotal } from "@/lib/order-group";
 import { formatDate, formatIDR } from "@/lib/utils";
-import { TIERS } from "@/config/tiers";
 import { AutoRefresh } from "@/features/checkout/auto-refresh";
 import { CopyAmount, PayTimer, ProofUpload } from "@/features/payment/pay-client";
 import { btnPrimary } from "@/lib/ui";
@@ -50,7 +49,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   const proofAt = iso(snap.get("proof_uploaded_at"));
   const expired = payState({ payment_status: status, proof_uploaded_at: proofAt, pay_by: payBy }) === "EXPIRED";
   const linked = !!snap.get("customer_uid");
-  const auto = TIERS[store.tier].autoFulfillment;
+  const auto = store.features.autoFulfillment;
 
   const summary = (
     <div className="t-soft p-4 text-left text-sm">
@@ -133,7 +132,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
           </p>
           {uniqueCode > 0 && <p className="mt-1 text-xs text-neutral-500">Termasuk kode unik {uniqueCode} supaya pembayaran Anda mudah dicocokkan.</p>}
           {payBy && (
-            <p className="mt-2 inline-flex items-center gap-1.5 rounded-sm bg-amber-50 px-3 py-1 text-sm text-amber-800">
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-[var(--r-pill)] bg-amber-50 px-3 py-1 text-sm text-amber-800">
               <Clock className="size-4" /> Selesaikan dalam <PayTimer payBy={payBy} />
             </p>
           )}

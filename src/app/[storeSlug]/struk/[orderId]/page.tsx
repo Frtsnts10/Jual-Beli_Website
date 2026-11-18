@@ -47,12 +47,12 @@ export default async function ReceiptPage({ params }: { params: Promise<{ storeS
     <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8 print:min-h-0 print:bg-white print:p-0">
       <article className="t-card mx-auto w-full max-w-md p-6 text-sm print:max-w-none print:border-0 print:shadow-none sm:p-8">
         <header className="flex items-center gap-3 border-b pb-4">
-          {store.storefront_config.logo_url && <img src={store.storefront_config.logo_url} alt="" className="size-10 rounded-sm object-cover" />}
+          {store.storefront_config.logo_url && <img src={store.storefront_config.logo_url} alt="" className="size-10 rounded-[var(--r-inner)] object-cover" />}
           <div className="min-w-0">
             <p className="t-heading truncate text-base font-semibold">{store.store_name}</p>
             <p className="text-xs text-neutral-500">Struk pembelian</p>
           </div>
-          <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-sm bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+          <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-[var(--r-pill)] bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
             <CheckCircle2 className="size-3.5" /> LUNAS
           </span>
         </header>

@@ -6,7 +6,6 @@ import { adminDb } from "@/lib/firebase/admin";
 import { getPublishedProduct, getStore, storeLinker, type PublicStore, type StoreProductData } from "@/lib/stores";
 import { newOrderId } from "@/lib/order-id";
 import { getCustomer } from "@/lib/customer";
-import { TIERS } from "@/config/tiers";
 import { priceFor } from "@/lib/pricing";
 import { allow } from "@/lib/rate-limit";
 import { normalisePhone } from "@/lib/phone";
@@ -33,7 +32,7 @@ export async function checkVoucher(storeKey: string, rawItems: CartItemInput[], 
   if (!code) return { ok: false, error: "Masukkan kode voucher." };
   if (!(await allow("voucher"))) return { ok: false, error: "Terlalu banyak percobaan. Coba lagi nanti." };
   const store = await getStore(storeKey);
-  if (!store || !TIERS[store.tier].vouchers) return { ok: false, error: "Kode voucher tidak ditemukan." };
+  if (!store || !store.features.vouchers) return { ok: false, error: "Kode voucher tidak ditemukan." };
   const lines = await cartLines(store, normaliseItems(rawItems));
   if (typeof lines === "string") return { ok: false, error: lines };
   await expireUnpaidOrders(store.id); // frees voucher uses held by abandoned orders
@@ -62,7 +61,7 @@ async function cartLines(store: PublicStore, items: CartItemInput[]): Promise<Li
     if (product.stock_available < it.qty) {
       return product.stock_available < 1 ? `Maaf, stok ${product.title} sedang habis.` : `Stok ${product.title} tinggal ${product.stock_available}.`;
     }
-    const price = priceFor(product, store.tier).price;
+    const price = priceFor(product, store.features).price;
     for (let i = 0; i < it.qty; i++) lines.push({ productId: product.id, price, product });
   }
   if (lines.length > MAX_LINES) return `Maksimal ${MAX_LINES} item per checkout.`;
@@ -92,7 +91,7 @@ export async function startCheckout(storeKey: string, rawItems: CartItemInput[],
   if (!store.payment) return { ...echo, error: "Toko ini belum mengatur pembayaran QRIS. Hubungi penjual." };
   if (voucherCode) await expireUnpaidOrders(store.id); // frees voucher uses held by abandoned orders
 
-  const useVoucher = !!voucherCode && TIERS[store.tier].vouchers;
+  const useVoucher = !!voucherCode && store.features.vouchers;
   const ref = (await cookies()).get("ref")?.value ?? null;
   // Signed-in buyers: the orders join their history, and their WhatsApp is remembered.
   const customer = await getCustomer();

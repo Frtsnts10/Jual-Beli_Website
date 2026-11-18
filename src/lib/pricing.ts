@@ -1,8 +1,7 @@
-import { TIERS } from "@/config/tiers";
-import { effectivePrice, type Product, type SubscriptionTier } from "@/types/schema";
+import { effectivePrice, type Product } from "@/types/schema";
 
-/** What the buyer pays now. Flash-sale prices count only for Ultimate stores (Growth Engine). */
-export function priceFor(product: Product, tier: SubscriptionTier, now = new Date()) {
-  if (!TIERS[tier].marketing) return { price: product.price, original: null, endsAt: null };
+/** What the buyer pays now. Flash-sale prices count only when the store's plan includes Marketing. */
+export function priceFor(product: Product, features: { marketing: boolean }, now = new Date()) {
+  if (!features.marketing) return { price: product.price, original: null, endsAt: null };
   return effectivePrice(product, now);
 }

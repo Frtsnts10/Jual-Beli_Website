@@ -2,7 +2,7 @@ import "server-only";
 import { createHmac } from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb, adminMessaging } from "@/lib/firebase/admin";
-import { TIERS } from "@/config/tiers";
+import { cleanOverrides, getCatalog, resolveFeatures } from "@/lib/catalog";
 import type { SubscriptionTier } from "@/types/schema";
 import { formatIDR } from "@/lib/utils";
 
@@ -82,7 +82,7 @@ export async function alertSellerOfProof(storeId: string, lead: FirebaseFirestor
     const token = integrations.get("wa_api_token") as string | null | undefined;
     if (!sellerPhone || !provider || !token) return;
     const owner = await adminDb.collection("users").doc(store.get("owner_uid")).get();
-    if (!TIERS[tierOf(owner)].autoFulfillment) return;
+    if (!resolveFeatures(await getCatalog(), tierOf(owner), cleanOverrides(owner.get("feature_overrides"))).autoFulfillment) return;
     await postToN8n({
       event: "order.notice",
       kind: "seller_proof",

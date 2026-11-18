@@ -9,7 +9,6 @@ import { CheckoutForm } from "@/features/checkout/checkout-form";
 import { Countdown } from "@/components/countdown";
 import { priceFor } from "@/lib/pricing";
 import { getCustomer } from "@/lib/customer";
-import { TIERS } from "@/config/tiers";
 import { RestockForm } from "@/features/restock/restock-form";
 
 type Params = Promise<{ storeSlug: string; productId: string }>;
@@ -29,7 +28,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
   const product = await getPublishedProduct(store.id, productId);
   if (!product) notFound();
   const link = await storeLinker(storeSlug);
-  const sale = priceFor(product, store.tier);
+  const sale = priceFor(product, store.features);
   const customer = await getCustomer();
 
   return (
@@ -65,7 +64,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
               soldOut={product.stock_available < 1}
               buyer={customer && { email: customer.email, phone: customer.phone }}
               signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}
-              vouchers={TIERS[store.tier].vouchers}
+              vouchers={store.features.vouchers}
             />
           </div>
         </div>
