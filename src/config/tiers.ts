@@ -21,6 +21,8 @@ export interface TierConfig {
   multiAdmin: boolean;
   /** Discount codes at checkout. */
   vouchers: boolean;
+  /** "Buat tema dengan AI" in the store settings (also needs the platform-wide AI switch). */
+  aiTheme: boolean;
 }
 
 const ALL_TEMPLATES = TEMPLATES.map((t) => t.id);
@@ -38,6 +40,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     marketing: false,
     multiAdmin: false,
     vouchers: false,
+    aiTheme: false,
   },
   pro: {
     name: "Pro",
@@ -51,6 +54,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     marketing: false,
     multiAdmin: false,
     vouchers: true,
+    aiTheme: true,
   },
   ultimate: {
     name: "Ultimate",
@@ -64,6 +68,7 @@ export const TIERS: Record<SubscriptionTier, TierConfig> = {
     marketing: true,
     multiAdmin: true,
     vouchers: true,
+    aiTheme: true,
   },
 };
 
