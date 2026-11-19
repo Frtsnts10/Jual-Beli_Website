@@ -6,7 +6,10 @@
 import { TEMPLATES, TIERS, type TierConfig } from "@/config/tiers";
 import type { LayoutTemplate, SubscriptionTier } from "@/types/schema";
 
-export const PLAN_KEYS: SubscriptionTier[] = ["starter", "pro", "ultimate"];
+/** Plans that always exist. Starter is the free plan everyone falls back to; admins can add more (custom: true). */
+export const BUILTIN_PLANS: SubscriptionTier[] = ["starter", "pro", "ultimate"];
+/** Key of an admin-added plan (stored as users.subscription_tier). */
+export const PLAN_KEY_RE = /^[a-z0-9][a-z0-9-]{1,23}$/;
 
 export const FEATURE_KEYS = ["autoFulfillment", "vouchers", "marketing", "customDomain", "multiAdmin", "aiTheme"] as const;
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
@@ -52,6 +55,10 @@ export const AI_DEFAULTS: AiThemeSettings = { enabled: false, monthlyLimit: 5 };
 
 export interface Catalog {
   plans: Record<SubscriptionTier, TierConfig>;
+  /** Every plan in display order: Starter first, then by monthly price. */
+  planKeys: SubscriptionTier[];
+  /** Plans an admin added (they can be removed while nobody is on them). */
+  customPlans: SubscriptionTier[];
   templates: TemplateInfo[];
   ai: AiThemeSettings;
 }
@@ -78,8 +85,10 @@ export function mergeCatalog(raw: Record<string, unknown> | undefined | null): C
   const rawPlans = (raw?.plans ?? {}) as Record<string, Record<string, unknown>>;
   const rawTemplates = (raw?.templates ?? {}) as Record<string, Record<string, unknown>>;
   const plans = {} as Record<SubscriptionTier, TierConfig>;
-  for (const key of PLAN_KEYS) {
-    const d = TIERS[key];
+  const customPlans = Object.keys(rawPlans).filter((k) => !BUILTIN_PLANS.includes(k) && PLAN_KEY_RE.test(k) && rawPlans[k]?.custom === true);
+  for (const key of [...BUILTIN_PLANS, ...customPlans]) {
+    // A new plan starts from Pro's defaults until the admin fills it in.
+    const d = TIERS[key] ?? TIERS.pro;
     const r = rawPlans[key] ?? {};
     plans[key] = {
       name: text(r.name, d.name, 30),
@@ -116,7 +125,9 @@ export function mergeCatalog(raw: Record<string, unknown> | undefined | null): C
         ? rawAi.monthlyLimit
         : AI_DEFAULTS.monthlyLimit,
   };
-  return { plans, templates, ai };
+  const order = (k: string) => (k === "starter" ? -1 : plans[k].priceMonthly);
+  const planKeys = Object.keys(plans).sort((a, b) => order(a) - order(b) || BUILTIN_PLANS.indexOf(b) - BUILTIN_PLANS.indexOf(a) || a.localeCompare(b));
+  return { plans, planKeys, customPlans, templates, ai };
 }
 
 export function cleanOverrides(raw: unknown): FeatureOverrides {
