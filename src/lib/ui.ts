@@ -18,7 +18,7 @@ export const btnMuted = `${btn} bg-neutral-200 text-neutral-500`;
 export const navControl = "t-btn inline-flex h-9 shrink-0 items-center justify-center gap-1.5 text-sm font-medium";
 
 /** Theme-aware building blocks (tokens in globals.css, set per template via data-theme). */
-export const page = "t-page min-h-[calc(100svh-3.5rem)] px-4";
+export const page = "t-page flex-1 px-4";
 export const card = "t-card";
 export const cardDashed = "t-card-dashed";
 export const soft = "t-soft";

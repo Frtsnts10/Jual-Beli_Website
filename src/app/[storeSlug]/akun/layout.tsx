@@ -9,7 +9,7 @@ export default async function AccountLayout({ children, params }: { children: Re
   const link = await storeLinker((await params).storeSlug);
   const customer = await requireCustomer(link(`/masuk?next=${encodeURIComponent(link("/akun"))}`));
   return (
-    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8 sm:py-12">
+    <main className="t-page flex-1 px-4 py-8 sm:py-12">
       <div className="mx-auto grid max-w-3xl gap-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">

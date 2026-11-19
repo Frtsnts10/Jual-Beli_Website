@@ -16,7 +16,7 @@ export default async function CartPage({ params }: { params: Promise<{ storeSlug
   const [products, customer] = await Promise.all([getPublishedProducts(store.id), getCustomer()]);
 
   return (
-    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-10">
+    <main className="t-page flex-1 px-4 py-10">
       <div className="mx-auto max-w-4xl">
         <Link href={link("/")} className="mb-6 inline-flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900">
           <ArrowLeft className="size-4" /> Lanjut belanja

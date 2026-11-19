@@ -10,7 +10,7 @@ const SPANS = ["md:col-span-2 md:row-span-2", "md:col-span-2", "", "", "md:col-s
 
 export function BentoTemplate({ store, products }: TemplateProps) {
   return (
-    <div className="min-h-[calc(100svh-3.5rem)] bg-neutral-100 text-neutral-900">
+    <div className="flex-1 bg-neutral-100 text-neutral-900">
       <header className="mx-auto flex max-w-6xl items-center gap-4 px-6 pt-12 pb-8">
         <StoreLogo src={store.storefront_config.logo_url} name={store.store_name} className="size-12" />
         <div>

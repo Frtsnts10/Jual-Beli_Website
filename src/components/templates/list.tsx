@@ -14,7 +14,7 @@ export function ListTemplate({ store, products }: TemplateProps) {
   }, [products, query]);
 
   return (
-    <div className="min-h-[calc(100svh-3.5rem)] bg-white text-neutral-900">
+    <div className="flex-1 bg-white text-neutral-900">
       <div className="mx-auto max-w-3xl px-6 pt-16">
         <h1 className="text-3xl font-bold tracking-tight">{store.store_name}</h1>
         {store.storefront_config.tagline && <p className="mt-2 text-neutral-500">{store.storefront_config.tagline}</p>}

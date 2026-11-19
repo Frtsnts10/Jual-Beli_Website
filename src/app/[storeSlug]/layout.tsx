@@ -99,7 +99,7 @@ export default async function StoreLayout({ children, params }: { children: Reac
         }
       />
       {/* Phones: keep the end of every page clear of the floating chat button. */}
-      <div className={store.store_info.whatsapp ? "flex-1 pb-16 sm:pb-0" : "flex-1"}>{children}</div>
+      <div className={store.store_info.whatsapp ? "flex flex-1 flex-col pb-16 sm:pb-0" : "flex flex-1 flex-col"}>{children}</div>
       <StoreFooter storeName={store.store_name} links={[track, ...info]} variant={variant} chatButton={!!store.store_info.whatsapp} />
       {store.store_info.whatsapp && <WhatsAppButton phone={store.store_info.whatsapp} storeName={store.store_name} />}
     </div>

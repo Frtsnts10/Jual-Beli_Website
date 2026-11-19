@@ -153,7 +153,7 @@ export default async function PayPage({ params }: { params: Promise<{ storeSlug:
   }
 
   return (
-    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8">
+    <main className="t-page flex-1 px-4 py-8">
       <div className="mx-auto w-full max-w-md t-card p-5 sm:p-8">{body}</div>
       <div className="mt-6 flex justify-center gap-5 text-sm">
         <Link href={link(linked ? "/akun" : "/track")} className="font-medium underline underline-offset-4">

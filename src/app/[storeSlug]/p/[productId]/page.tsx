@@ -66,7 +66,7 @@ export default async function ProductPage({ params }: { params: Params }) {
   };
 
   return (
-    <main className="t-page min-h-[calc(100svh-3.5rem)] px-4 py-8 sm:py-12">
+    <main className="t-page flex-1 px-4 py-8 sm:py-12">
       {/* JSON.stringify output can't close the script tag once "<" is escaped. */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="mx-auto max-w-5xl">

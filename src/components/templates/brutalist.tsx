@@ -8,7 +8,7 @@ const CARD_BG = ["bg-[#ffc900]", "bg-[#ff90e8]", "bg-[#90a8ed]", "bg-[#23a094]",
 
 export function BrutalistTemplate({ store, products }: TemplateProps) {
   return (
-    <div className="min-h-[calc(100svh-3.5rem)] bg-[#f4f4f0] font-mono text-black">
+    <div className="flex-1 bg-[#f4f4f0] font-mono text-black">
       <header className="border-b-4 border-black bg-[var(--accent)] text-[var(--accent-fg)]">
         <div className="mx-auto max-w-6xl px-6 py-14">
           <h1 className="text-4xl font-black tracking-tighter uppercase [overflow-wrap:anywhere] sm:text-5xl md:text-7xl">{store.store_name}</h1>

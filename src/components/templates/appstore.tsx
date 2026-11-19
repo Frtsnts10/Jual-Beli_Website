@@ -10,7 +10,7 @@ export function AppStoreTemplate({ store, products }: TemplateProps) {
   const flash = products.filter((p) => p.is_flash_sale);
 
   return (
-    <div className="min-h-[calc(100svh-3.5rem)] bg-white text-neutral-900">
+    <div className="flex-1 bg-white text-neutral-900">
       <header className="mx-auto flex max-w-6xl items-center gap-3 px-6 pt-10 pb-6">
         <StoreLogo src={store.storefront_config.logo_url} name={store.store_name} className="size-10" />
         <div>
