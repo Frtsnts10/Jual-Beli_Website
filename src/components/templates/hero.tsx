@@ -8,7 +8,7 @@ import type { TemplateProps } from "./types";
 export function HeroTemplate({ store, products }: TemplateProps) {
   const { banner_url, tagline, logo_url } = store.storefront_config;
   return (
-    <div className="min-h-[calc(100svh-3.5rem)] bg-neutral-50 text-neutral-900">
+    <div className="flex-1 bg-neutral-50 text-neutral-900">
       <section className="relative isolate overflow-hidden bg-[var(--accent)] text-[var(--accent-fg)]">
         {banner_url && <img src={banner_url} alt="" className="absolute inset-0 -z-10 size-full object-cover opacity-40" />}
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
