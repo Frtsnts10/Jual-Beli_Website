@@ -3,7 +3,7 @@ import { cache } from "react";
 import { headers } from "next/headers";
 import { adminDb } from "@/lib/firebase/admin";
 import type { TierConfig } from "@/config/tiers";
-import { cleanOverrides, getCatalog, resolveFeatures, templateFor, type TemplateStyle } from "@/lib/catalog";
+import { cleanOverrides, FONTS, getCatalog, RADIUS, resolveFeatures, templateFor, type TemplateStyle } from "@/lib/catalog";
 import { ratingCounts } from "@/lib/rating";
 import type { LayoutTemplate, Product, Store, SubscriptionTier } from "@/types/schema";
 
@@ -108,7 +108,12 @@ export const getStore = cache(async (key: string): Promise<PublicStore | null> =
     tier,
     features,
     template,
-    theme_style: theme.style,
+    // A store's own corner/font choice (set by "Buat tema dengan AI") wins over the template's.
+    theme_style: {
+      ...theme.style,
+      radius: d.theme_override?.radius in RADIUS ? d.theme_override.radius : theme.style.radius,
+      font: d.theme_override?.font in FONTS ? d.theme_override.font : theme.style.font,
+    },
   };
 });
 

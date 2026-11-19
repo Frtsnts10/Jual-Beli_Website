@@ -8,7 +8,7 @@ import type { LayoutTemplate, SubscriptionTier } from "@/types/schema";
 
 export const PLAN_KEYS: SubscriptionTier[] = ["starter", "pro", "ultimate"];
 
-export const FEATURE_KEYS = ["autoFulfillment", "vouchers", "marketing", "customDomain", "multiAdmin"] as const;
+export const FEATURE_KEYS = ["autoFulfillment", "vouchers", "marketing", "customDomain", "multiAdmin", "aiTheme"] as const;
 export type FeatureKey = (typeof FEATURE_KEYS)[number];
 
 export const FEATURE_INFO: Record<FeatureKey, { label: string; description: string }> = {
@@ -17,6 +17,7 @@ export const FEATURE_INFO: Record<FeatureKey, { label: string; description: stri
   marketing: { label: "Marketing", description: "Flash sale, bundling, broadcast WhatsApp, bot Telegram/Discord." },
   customDomain: { label: "Domain sendiri", description: "Etalase di domain milik seller." },
   multiAdmin: { label: "Tim (multi-admin)", description: "Mengundang admin lain untuk mengelola toko." },
+  aiTheme: { label: "Tema AI", description: "AI merancang template, warna, sudut, font dan teks toko (perlu Tema AI dinyalakan di menu Tema)." },
 };
 
 export const RADIUS = { none: "0", sm: "0.25rem", md: "0.5rem", lg: "0.75rem", xl: "1rem" } as const;
@@ -40,9 +41,19 @@ export interface TemplateInfo {
   style: TemplateStyle;
 }
 
+/** platform/catalog.ai — the platform-wide switch for "Buat tema dengan AI". */
+export interface AiThemeSettings {
+  enabled: boolean;
+  /** Designs one seller may generate per calendar month. */
+  monthlyLimit: number;
+}
+
+export const AI_DEFAULTS: AiThemeSettings = { enabled: false, monthlyLimit: 5 };
+
 export interface Catalog {
   plans: Record<SubscriptionTier, TierConfig>;
   templates: TemplateInfo[];
+  ai: AiThemeSettings;
 }
 
 /** users/{uid}.feature_overrides — what an admin granted or removed for one seller. */
@@ -97,7 +108,15 @@ export function mergeCatalog(raw: Record<string, unknown> | undefined | null): C
   });
   // A template switched off everywhere would leave stores with nothing: keep at least one.
   if (!templates.some((t) => t.enabled)) templates[0].enabled = true;
-  return { plans, templates };
+  const rawAi = (raw?.ai ?? {}) as Record<string, unknown>;
+  const ai: AiThemeSettings = {
+    enabled: rawAi.enabled === true,
+    monthlyLimit:
+      typeof rawAi.monthlyLimit === "number" && Number.isInteger(rawAi.monthlyLimit) && rawAi.monthlyLimit >= 1 && rawAi.monthlyLimit <= 100
+        ? rawAi.monthlyLimit
+        : AI_DEFAULTS.monthlyLimit,
+  };
+  return { plans, templates, ai };
 }
 
 export function cleanOverrides(raw: unknown): FeatureOverrides {
