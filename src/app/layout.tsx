@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Jual — buka toko digital di belidi.biz.id",
+  title: "Jual — Buka Toko Digital di belidi.biz.id",
   description: "Jual: etalase produk digital dengan keranjang, pembayaran QRIS dan pengiriman akun otomatis lewat WhatsApp.",
   applicationName: "Jual",
 };
