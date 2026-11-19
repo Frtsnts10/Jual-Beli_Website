@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getCustomer } from "@/lib/customer";
 import { getStore, storeLinker } from "@/lib/stores";
 import { listCustomerOrders, type AccountOrder } from "@/lib/orders";
+import { AutoRefresh } from "@/features/checkout/auto-refresh";
 import { formatDate, formatIDR } from "@/lib/utils";
 import { canOpenPayPage, PAY_STATE } from "@/lib/order-status";
 import { ClaimForm, ReviewForm } from "@/features/account/account-client";
@@ -85,8 +86,12 @@ export default async function AccountOrdersPage({ params }: { params: Promise<{ 
       </div>
     );
   }
+  // Something the seller still has to act on (confirm a payment, send the account, answer a
+  // claim): keep the list fresh so the buyer sees it change without reloading.
+  const waiting = orders.some((o) => o.payment_status === "PENDING" || (o.payment_status === "PAID" && o.delivery_status === "PENDING") || o.warranty_status === "CLAIMED");
   return (
     <ul className="grid gap-3">
+      {waiting && <AutoRefresh everyMs={10_000} maxTries={180} />}
       {orders.map((o) => (
         <OrderCard key={o.id} order={o} storeKey={storeSlug} buyHref={link(`/checkout/${o.product_id}`)} payHref={link(`/bayar/${o.id}`)} receiptHref={link(`/struk/${o.id}`)} />
       ))}
