@@ -7,7 +7,8 @@
 
 import type { RatingCounts } from "@/lib/rating";
 
-export type SubscriptionTier = "starter" | "pro" | "ultimate";
+/** "starter" | "pro" | "ultimate", or the key of a plan an admin added (platform/catalog). */
+export type SubscriptionTier = string;
 
 export type LayoutTemplate =
   | "template_a_bento"
@@ -266,7 +267,7 @@ export interface AccountDeletionRequest {
 export interface SubscriptionPayment {
   id: string;
   uid: string;
-  tier: Exclude<SubscriptionTier, "starter">;
+  tier: SubscriptionTier;
   period: BillingPeriod;
   amount: number;
   status: "PENDING" | "PAID" | "EXPIRED" | "REJECTED";
