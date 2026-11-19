@@ -134,3 +134,36 @@ body,
   [data-theme="brutalist"] .t-btn { border: var(--ctl-bw) solid #000; }
   [data-theme="brutalist"] .t-btn:active { transform: translate(2px, 2px); box-shadow: none; }
 }
+
+/* LogoLoader (components/logo-loader.tsx) */
+@keyframes jb-breathe {
+  0%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes jb-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+.jb-loader-logo {
+  animation: jb-breathe 1.4s ease-in-out infinite;
+}
+.jb-loader-bar {
+  animation: jb-slide 1.1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jb-loader-logo,
+  .jb-loader-bar {
+    animation: none;
+  }
+}
