@@ -7,7 +7,9 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 // sign-in; everything else goes through server actions with the Admin SDK.
 const firebaseConfig = {
   apiKey: "AIzaSyDYlTzu5G2qS7OzBmZSIqybLW30cOwpfJ8",
-  authDomain: "web-store-dashboard.firebaseapp.com",
+  // The host serving Firebase's sign-in handler. In production: the dashboard domain, which proxies
+  // /__/auth to firebaseapp.com (dashboard next.config.ts) so Google shows our own domain.
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "web-store-dashboard.firebaseapp.com",
   projectId: "web-store-dashboard",
   storageBucket: "web-store-dashboard.firebasestorage.app",
   messagingSenderId: "658565631786",
