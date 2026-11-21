@@ -6,6 +6,9 @@ const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim().toLowerCase();
 const DASHBOARD_URL = (process.env.NEXT_PUBLIC_DASHBOARD_URL || (ROOT_DOMAIN ? `https://jual.${ROOT_DOMAIN}` : ""))?.replace(/\/+$/, "") || undefined;
 // Sellers land straight on the dashboard's sign-up form.
 const SIGN_UP_URL = DASHBOARD_URL ? `${DASHBOARD_URL}/sign-up` : "#";
+// Showcase: the read-only demo seller dashboard and the demo store (slug "demo").
+const DEMO_DASHBOARD_URL = DASHBOARD_URL ? `${DASHBOARD_URL}/demo` : null;
+const DEMO_STORE_URL = ROOT_DOMAIN ? `https://demo.${ROOT_DOMAIN}` : "/demo";
 
 export default function PlatformLanding() {
   return (
@@ -33,9 +36,19 @@ export default function PlatformLanding() {
           </div>
         ))}
       </div>
-      <a href={SIGN_UP_URL} className="mt-10 w-fit rounded-sm bg-[#FF6F0F] px-5 py-3 text-sm font-medium text-white hover:bg-[#e8620a]">
-        Buka toko Anda gratis →
-      </a>
+      <div className="mt-10 flex flex-wrap items-center gap-3">
+        <a href={SIGN_UP_URL} className="w-fit rounded-sm bg-[#FF6F0F] px-5 py-3 text-sm font-medium text-white hover:bg-[#e8620a]">
+          Buka toko Anda gratis →
+        </a>
+        {DEMO_DASHBOARD_URL && (
+          <a href={DEMO_DASHBOARD_URL} className="w-fit rounded-sm border px-5 py-3 text-sm font-medium hover:bg-neutral-50">
+            Coba dashboard demo
+          </a>
+        )}
+        <a href={DEMO_STORE_URL} className="text-sm font-medium text-[#0B5CE5] underline-offset-4 hover:underline">
+          Lihat toko demo
+        </a>
+      </div>
     </main>
   );
 }

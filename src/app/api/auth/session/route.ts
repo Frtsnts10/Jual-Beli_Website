@@ -36,10 +36,12 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const session = await adminAuth.createSessionCookie(idToken, { expiresIn: EXPIRES_IN_MS });
+    // The shared demo buyer gets a short session (it is read-only anyway).
+    const expiresIn = decoded.demo === true ? 24 * 60 * 60 * 1000 : EXPIRES_IN_MS;
+    const session = await adminAuth.createSessionCookie(idToken, { expiresIn });
     const res = NextResponse.json({ success: true });
     res.cookies.set(CUSTOMER_COOKIE, session, {
-      maxAge: EXPIRES_IN_MS / 1000,
+      maxAge: expiresIn / 1000,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",

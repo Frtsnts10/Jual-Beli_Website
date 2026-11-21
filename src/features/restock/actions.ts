@@ -3,7 +3,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
 import { getPublishedProduct, getStore } from "@/lib/stores";
-import { getCustomer } from "@/lib/customer";
+import { DEMO_MESSAGE, getCustomer } from "@/lib/customer";
 import { normalisePhone } from "@/lib/phone";
 import { allow } from "@/lib/rate-limit";
 
@@ -26,6 +26,7 @@ export async function requestRestock(storeKey: string, productId: string, _prev:
   if (product.stock_available > 0 && store.is_active) return { error: "Produk ini sudah tersedia — silakan langsung beli." };
 
   const customer = await getCustomer();
+  if (customer?.demo) return { error: DEMO_MESSAGE };
   const ref = adminDb.collection("restock_requests").doc(`${store.id}_${product.id}_${phone.replace(/\D/g, "")}`);
   const existing = await ref.get();
   await ref.set(

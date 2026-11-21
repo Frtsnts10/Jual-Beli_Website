@@ -15,7 +15,11 @@ export interface Customer {
   google: boolean;
   name: string;
   phone: string;
+  /** The shared showcase buyer (custom claim demo: true): read-only account pages. */
+  demo: boolean;
 }
+
+export const DEMO_MESSAGE = "Mode demo: akun pembeli demo hanya bisa melihat.";
 
 /** The signed-in buyer on this domain, or null. */
 export const getCustomer = cache(async (): Promise<Customer | null> => {
@@ -35,6 +39,7 @@ export const getCustomer = cache(async (): Promise<Customer | null> => {
       google: decoded.firebase?.sign_in_provider === "google.com",
       name: (snap.get("name") as string) ?? "",
       phone: (snap.get("phone") as string) ?? "",
+      demo: decoded.demo === true,
     };
   } catch {
     return null; // expired, revoked (password change, account deleted) or malformed

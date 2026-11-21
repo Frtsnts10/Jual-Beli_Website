@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   sendPasswordResetEmail,
+  signInWithCustomToken,
   signInWithEmailAndPassword,
   signInWithPopup,
   updateProfile,
@@ -84,7 +85,46 @@ function Divider() {
   );
 }
 
-export function SignInForm({ next, accountHref, signUpHref, forgotHref }: { next: string; accountHref: string; signUpHref: string; forgotHref: string }) {
+/** Demo store only: signs in as the read-only demo buyer (custom token from /api/auth/demo). */
+function DemoBuyerButton({ storeKey, next, onError }: { storeKey: string; next: string; onError: (msg: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          const res = await fetch("/api/auth/demo", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ store: storeKey }) });
+          const data = (await res.json().catch(() => ({}))) as { token?: string; error?: string };
+          if (!res.ok || !data.token) throw new Error(data.error ?? "Demo tidak tersedia saat ini.");
+          await startSession(await signInWithCustomToken(auth, data.token), next);
+        } catch (err) {
+          onError(authError(err));
+          setBusy(false);
+        }
+      }}
+      className={`${btnOutline} w-full font-medium`}
+    >
+      {busy && <Loader2 className="size-4 animate-spin" />} Masuk sebagai pembeli demo
+    </button>
+  );
+}
+
+export function SignInForm({
+  next,
+  accountHref,
+  signUpHref,
+  forgotHref,
+  demoStoreKey,
+}: {
+  next: string;
+  accountHref: string;
+  signUpHref: string;
+  forgotHref: string;
+  /** Set on the demo store: shows the one-click demo buyer login. */
+  demoStoreKey?: string;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const dest = safeNext(next, accountHref);
@@ -117,6 +157,7 @@ export function SignInForm({ next, accountHref, signUpHref, forgotHref }: { next
       </form>
       <Divider />
       <GoogleButton next={dest} onError={setError} />
+      {demoStoreKey && <DemoBuyerButton storeKey={demoStoreKey} next={dest} onError={setError} />}
       <p className="text-center text-sm text-neutral-500">
         Belum punya akun?{" "}
         <Link href={signUpHref} className="font-medium text-neutral-900 underline underline-offset-4">

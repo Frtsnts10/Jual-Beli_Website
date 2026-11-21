@@ -11,6 +11,13 @@ export default async function SecurityPage({ params }: { params: Promise<{ store
   const { storeSlug } = await params;
   const customer = await getCustomer();
   if (!customer) notFound();
+  if (customer.demo)
+    return (
+      <Section
+        title="Akun demo"
+        description="Ini akun pembeli contoh untuk melihat-lihat. Password, email dan penghapusan akun tidak bisa diubah di mode demo."
+      />
+    );
   const request = await adminDb.collection("account_deletion_requests").doc(customer.uid).get();
   const pendingSince = request.get("status") === "PENDING" ? (iso(request.get("requested_at")) ?? new Date().toISOString()) : null;
   const rejectedReason = request.get("status") === "REJECTED" ? (request.get("rejected_reason") as string) : null;

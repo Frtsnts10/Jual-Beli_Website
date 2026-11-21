@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "@/lib/firebase/admin";
-import { getCustomer } from "@/lib/customer";
+import { DEMO_MESSAGE, getCustomer } from "@/lib/customer";
 import { getStore } from "@/lib/stores";
 import { fileClaim } from "@/lib/orders";
 import { normalisePhone } from "@/lib/phone";
@@ -17,6 +17,7 @@ const SIGNED_OUT: FormState = { error: "Sesi Anda berakhir. Silakan masuk lagi."
 export async function updateProfile(_prev: FormState, form: FormData): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
+  if (customer.demo) return { error: DEMO_MESSAGE };
   const name = String(form.get("name") ?? "").trim().slice(0, 80);
   const phoneRaw = String(form.get("phone") ?? "").trim();
   if (name.length < 2) return { error: "Nama minimal 2 karakter." };
@@ -31,6 +32,7 @@ export async function updateProfile(_prev: FormState, form: FormData): Promise<F
 export async function claimFromAccount(storeKey: string, _prev: FormState, form: FormData): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
+  if (customer.demo) return { error: DEMO_MESSAGE };
   if (!(await allow("claim"))) return { error: "Terlalu banyak klaim. Coba lagi nanti." };
   const store = await getStore(storeKey);
   const snap = await adminDb.collection("orders").doc(String(form.get("order_id") ?? "")).get();
@@ -48,6 +50,7 @@ export async function claimFromAccount(storeKey: string, _prev: FormState, form:
 export async function submitReview(storeKey: string, _prev: FormState, form: FormData): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
+  if (customer.demo) return { error: DEMO_MESSAGE };
   if (!(await allow("review"))) return { error: "Terlalu banyak percobaan. Coba lagi nanti." };
   const rating = Number(form.get("rating"));
   const text = String(form.get("text") ?? "").trim().slice(0, 1000);
@@ -70,6 +73,7 @@ export async function submitReview(storeKey: string, _prev: FormState, form: For
 export async function requestAccountDeletion(storeKey: string, _prev: FormState, form: FormData): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
+  if (customer.demo) return { error: DEMO_MESSAGE };
   if (String(form.get("confirm") ?? "").trim().toUpperCase() !== "HAPUS") return { error: 'Ketik "HAPUS" untuk mengonfirmasi.' };
   if (!(await allow("account"))) return { error: "Terlalu banyak percobaan. Coba lagi nanti." };
   const ref = adminDb.collection("account_deletion_requests").doc(customer.uid);
@@ -94,6 +98,7 @@ export async function requestAccountDeletion(storeKey: string, _prev: FormState,
 export async function cancelAccountDeletion(): Promise<FormState> {
   const customer = await getCustomer();
   if (!customer) return SIGNED_OUT;
+  if (customer.demo) return { error: DEMO_MESSAGE };
   await adminDb.collection("account_deletion_requests").doc(customer.uid).delete();
   revalidatePath("/", "layout");
   return { ok: true };
