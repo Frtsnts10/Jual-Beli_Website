@@ -6,7 +6,7 @@ import { adminDb } from "@/lib/firebase/admin";
 // Same allocation as the dashboard's fulfillOrder (lib/payments/fulfillment.ts) — keep in sync.
 
 /** The seeded demo store (scripts/seed-demo.mjs in the dashboard). Nowhere else can skip payment. */
-export const DEMO_STORE_ID = "demo-dionycte";
+export const DEMO_STORE_ID = "demo-store";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
