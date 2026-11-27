@@ -35,6 +35,7 @@ export default async function CartPage({ params }: { params: Promise<{ storeSlug
             price: priceFor(p, store.features).price,
             original: priceFor(p, store.features).original,
             href: link(`/p/${p.id}`),
+            terms: p.terms,
           }))}
           buyer={customer && { email: customer.email, phone: customer.phone }}
           signInHref={link(`/masuk?next=${encodeURIComponent(link("/keranjang"))}`)}
