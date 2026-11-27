@@ -9,6 +9,7 @@ import { getStore } from "@/lib/stores";
 import { ORDER_ID_RE } from "@/lib/order-id";
 import { allow } from "@/lib/rate-limit";
 import { groupIdOf, groupOrders } from "@/lib/order-group";
+import { toDataUrl, type ImagePayload } from "@/lib/image-blob";
 
 export type ProofState = { ok?: boolean; error?: string } | undefined;
 
@@ -22,8 +23,9 @@ const DATA_URL_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/;
  * the buyer's capability (it's random and only shown to them); proofs can be replaced until
  * the seller decides, but not after the order is paid, failed or past its pay-by time.
  */
-export async function uploadPaymentProof(storeKey: string, orderId: string, image: string): Promise<ProofState> {
+export async function uploadPaymentProof(storeKey: string, orderId: string, payload: ImagePayload): Promise<ProofState> {
   if (!ORDER_ID_RE.test(orderId)) return { error: "Pesanan tidak ditemukan." };
+  const image = (await toDataUrl(payload, 712_000)) ?? "";
   if (image.length > MAX_DATA_URL || !DATA_URL_RE.test(image)) return { error: "Gambar tidak valid atau terlalu besar. Unggah screenshot JPG/PNG." };
   if (!(await allow("proof"))) return { error: "Terlalu banyak unggahan. Coba lagi beberapa menit lagi." };
 

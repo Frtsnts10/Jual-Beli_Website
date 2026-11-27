@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Copy, ImageUp, Loader2 } from "lucide-react";
 import { uploadPaymentProof } from "./actions";
+import { dataUrlToBlob } from "@/lib/image-blob";
 import { btnOutline, btnPrimary } from "@/lib/ui";
 
 /** Screenshots can be several MB: re-encode to a ≤1280px JPEG before sending (keeps text legible). */
@@ -57,7 +58,7 @@ export function ProofUpload({ storeKey, orderId, replacing = false }: { storeKey
               disabled={pending}
               onClick={() =>
                 start(async () => {
-                  const res = await uploadPaymentProof(storeKey, orderId, preview);
+                  const res = await uploadPaymentProof(storeKey, orderId, dataUrlToBlob(preview));
                   if (res?.error) return setError(res.error);
                   setPreview(null);
                   router.refresh();
