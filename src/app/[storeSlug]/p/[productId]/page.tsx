@@ -136,6 +136,12 @@ export default async function ProductPage({ params }: { params: Params }) {
                 <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700 [overflow-wrap:anywhere]">{product.description}</p>
               </section>
             )}
+            {product.terms.trim() && (
+              <section>
+                <h2 className="t-heading mb-1 font-semibold">Syarat & ketentuan</h2>
+                <p className="text-sm leading-relaxed whitespace-pre-line text-neutral-700 [overflow-wrap:anywhere]">{product.terms}</p>
+              </section>
+            )}
             {policy && (
               <section>
                 <h2 className="t-heading mb-1 font-semibold">Garansi</h2>

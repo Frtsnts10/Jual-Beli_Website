@@ -126,6 +126,7 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     store_id: d.store_id,
     title: d.title ?? "",
     description: d.description ?? "",
+    terms: d.terms ?? "",
     image_url: d.image_url ?? null,
     platform_type: d.platform_type ?? "Other",
     price: d.price ?? 0,

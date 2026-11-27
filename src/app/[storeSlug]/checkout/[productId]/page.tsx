@@ -65,6 +65,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
               buyer={customer && { email: customer.email, phone: customer.phone }}
               signInHref={link(`/masuk?next=${encodeURIComponent(link(`/checkout/${product.id}`))}`)}
               vouchers={store.features.vouchers}
+              terms={product.terms.trim() ? [{ title: product.title, text: product.terms }] : []}
             />
           </div>
         </div>

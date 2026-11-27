@@ -87,6 +87,11 @@ export async function startCheckout(storeKey: string, rawItems: CartItemInput[],
   const lines = await cartLines(store, normaliseItems(rawItems));
   if (typeof lines === "string") return { ...echo, error: lines };
 
+  // Products with S&K need the buyer's agreement (the form's checkbox is also required).
+  if (lines.some((l) => l.product.terms?.trim()) && form.get("agree") !== "on") {
+    return { ...echo, error: "Centang persetujuan syarat & ketentuan dulu." };
+  }
+
   // Payment goes straight to the seller's own QRIS; without one there is nothing to pay into.
   if (!store.payment) return { ...echo, error: "Toko ini belum mengatur pembayaran QRIS. Hubungi penjual." };
   if (voucherCode) await expireUnpaidOrders(store.id); // frees voucher uses held by abandoned orders

@@ -124,6 +124,8 @@ export interface Product {
   store_id: string;
   title: string;
   description: string;
+  /** Product terms & conditions (S&K): shown on the product page, agreed to at checkout. */
+  terms: string;
   image_url: string | null;
   platform_type: PlatformType;
   price: number;

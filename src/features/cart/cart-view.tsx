@@ -20,6 +20,8 @@ export interface CartProduct {
   price: number;
   original: number | null;
   href: string;
+  /** S&K, empty when none. */
+  terms: string;
 }
 
 export function CartView({
@@ -155,6 +157,10 @@ export function CartView({
             buyer={buyer}
             signInHref={signInHref}
             vouchers={vouchers}
+            terms={buyable.flatMap((i) => {
+              const p = byId.get(i.id)!;
+              return p.terms.trim() ? [{ title: p.title, text: p.terms }] : [];
+            })}
           />
         ) : (
           <p className="text-sm text-neutral-600">Toko ini belum mengatur pembayaran QRIS. Hubungi penjual.</p>
