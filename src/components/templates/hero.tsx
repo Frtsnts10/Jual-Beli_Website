@@ -28,7 +28,7 @@ export function HeroTemplate({ store, products }: TemplateProps) {
             <Reveal key={p.id} index={i}>
               <Lift className="relative flex h-full flex-col overflow-hidden rounded-[var(--r-card)] border bg-white shadow-sm">
                 <div className="relative">
-                  <ProductImage src={p.image_url} alt={p.title} className="aspect-[4/3] w-full" />
+                  <ProductImage src={p.image_url} focus={p.image_focus} alt={p.title} className="aspect-[4/3] w-full" />
                   {p.is_flash_sale && <span className="absolute top-2 left-2 rounded bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">FLASH SALE</span>}
                 </div>
                 <div className="flex flex-1 flex-col gap-1 p-4">

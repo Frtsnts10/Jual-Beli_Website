@@ -28,6 +28,7 @@ export function BentoTemplate({ store, products }: TemplateProps) {
                 {/* Without an image the initial sits top-right, clear of the title at the bottom. */}
                 <ProductImage
                   src={p.image_url}
+                  focus={p.image_focus}
                   alt={p.title}
                   className="absolute inset-0 size-full items-start justify-end p-5 text-5xl opacity-90 transition duration-500 group-hover:scale-105"
                 />

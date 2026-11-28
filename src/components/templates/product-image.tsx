@@ -1,9 +1,17 @@
 /* eslint-disable @next/next/no-img-element -- sellers paste arbitrary https image URLs; next/image would need an open remotePatterns proxy */
 import { cn } from "@/lib/utils";
+import { focusStyle, type ImageFocus } from "@/lib/image-focus";
 
 const INITIAL_BG = ["bg-rose-200", "bg-amber-200", "bg-emerald-200", "bg-sky-200", "bg-violet-200"];
 
-export function ProductImage({ src, alt, className }: { src: string | null; alt: string; className?: string }) {
+export function ProductImage({ src, alt, className, focus }: { src: string | null; alt: string; className?: string; focus?: ImageFocus | null }) {
+  // A seller-set position: the frame clips the zoomed photo (className sizes the frame).
+  if (src && focus)
+    return (
+      <div className={cn("relative overflow-hidden", className)}>
+        <img src={src} alt={alt} loading="lazy" className="absolute inset-0 size-full object-cover" style={focusStyle(focus)} />
+      </div>
+    );
   if (src) return <img src={src} alt={alt} loading="lazy" className={cn("object-cover", className)} />;
   const bg = INITIAL_BG[alt.length % INITIAL_BG.length];
   return (

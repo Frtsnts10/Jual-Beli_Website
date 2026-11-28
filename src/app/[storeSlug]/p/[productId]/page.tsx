@@ -76,7 +76,7 @@ export default async function ProductPage({ params }: { params: Params }) {
 
         <div className="grid gap-6 md:grid-cols-2 md:gap-10">
           <div className="relative">
-            <ProductImage src={product.image_url} alt={product.title} className="t-media aspect-square w-full" />
+            <ProductImage src={product.image_url} focus={product.image_focus} alt={product.title} className="t-media aspect-square w-full" />
             {product.is_flash_sale && sale.original && (
               <span className="absolute top-3 left-3 rounded bg-red-500 px-2 py-0.5 text-xs font-semibold text-white">FLASH SALE</span>
             )}

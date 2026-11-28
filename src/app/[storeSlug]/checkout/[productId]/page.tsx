@@ -39,7 +39,7 @@ export default async function CheckoutPage({ params }: { params: Params }) {
         </Link>
         <div className="overflow-hidden t-card">
           <div className="flex gap-4 border-b p-5">
-            <ProductImage src={product.image_url} alt={product.title} className="size-20 shrink-0 rounded-[var(--r-inner)]" />
+            <ProductImage src={product.image_url} focus={product.image_focus} alt={product.title} className="size-20 shrink-0 rounded-[var(--r-inner)]" />
             <div className="min-w-0">
               <p className="text-xs text-neutral-500">{product.platform_type} · {product.duration_days} hari</p>
               <h1 className="t-heading font-semibold">

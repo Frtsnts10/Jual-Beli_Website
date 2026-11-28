@@ -1,5 +1,6 @@
 "use client";
 
+import type { ImageFocus } from "@/lib/image-focus";
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
@@ -14,6 +15,7 @@ export interface CartProduct {
   id: string;
   title: string;
   image_url: string | null;
+  image_focus: ImageFocus | null;
   duration_days: number;
   bundle_titles: string[] | null;
   stock: number;
@@ -80,7 +82,7 @@ export function CartView({
           const soldOut = p.stock < 1;
           return (
             <li key={id} className="flex gap-3 p-4">
-              <ProductImage src={p.image_url} alt={p.title} className="size-16 shrink-0 rounded-[var(--r-inner)] text-xl" />
+              <ProductImage src={p.image_url} focus={p.image_focus} alt={p.title} className="size-16 shrink-0 rounded-[var(--r-inner)] text-xl" />
               <div className="min-w-0 flex-1">
                 <Link href={p.href} className="t-heading font-medium hover:underline">
                   {p.title}
