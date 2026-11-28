@@ -22,7 +22,7 @@ export function BrutalistTemplate({ store, products }: TemplateProps) {
         {products.map((p, i) => (
           <Reveal key={p.id} index={i}>
             <Lift className={`relative flex h-full flex-col border-4 border-black shadow-[8px_8px_0_#000] ${CARD_BG[i % CARD_BG.length]}`}>
-              <ProductImage src={p.image_url} alt={p.title} className="aspect-video w-full border-b-4 border-black" />
+              <ProductImage src={p.image_url} focus={p.image_focus} alt={p.title} className="aspect-video w-full border-b-4 border-black" />
               <div className="flex flex-1 flex-col gap-2 p-4">
                 <div className="flex items-center justify-between">
                   <span className="border-2 border-black bg-white px-2 text-xs font-bold uppercase">{p.platform_type}</span>

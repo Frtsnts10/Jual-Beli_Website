@@ -1,4 +1,5 @@
 import "server-only";
+import { normalizeFocus } from "@/lib/image-focus";
 import { cache } from "react";
 import { headers } from "next/headers";
 import { adminDb } from "@/lib/firebase/admin";
@@ -127,6 +128,7 @@ function mapProduct(id: string, d: FirebaseFirestore.DocumentData): Product {
     title: d.title ?? "",
     description: d.description ?? "",
     terms: d.terms ?? "",
+    image_focus: normalizeFocus(d.image_focus),
     image_url: d.image_url ?? null,
     platform_type: d.platform_type ?? "Other",
     price: d.price ?? 0,

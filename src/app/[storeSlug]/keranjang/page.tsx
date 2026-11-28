@@ -29,6 +29,7 @@ export default async function CartPage({ params }: { params: Promise<{ storeSlug
             id: p.id,
             title: p.title,
             image_url: p.image_url,
+            image_focus: p.image_focus,
             duration_days: p.duration_days,
             bundle_titles: p.bundle_titles,
             stock: p.stock_available,
